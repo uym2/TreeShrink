@@ -3,31 +3,38 @@ import operator
 from dendropy import Tree
 from copy import deepcopy
 
-def filter_branch(a_tree,method='median',factor=1):
+def filter_branch(a_tree,method='median',factor=0.6):
     branch_list = list_branch(a_tree,sort=(method=='median'))
     d = compute_diameter(a_tree,branch_list)
     thres = d*factor
-    print("Threshold: ",thres)
+    #print(thres)
+    count_leaves(a_tree)
     for br in branch_list:
-        print(br.length)
+        #print(br.length)
         if br.length > thres:
-            remove_branch(br)
-            #p = br.tail_node
-            #c = br.head_node
-            #if p is not None:
-            #    p.remove_child(c,suppress_unifurcations=True)
+            remove_branch(a_tree,br)
+
+def count_leaves(a_tree):
+    for node in a_tree.postorder_node_iter():
+        if node.is_leaf():
+            node.nleaf = 0
+        else:
+            node.nleaf = sum([ch.nleaf for ch in node.child_node_iter()])
 
 
-def remove_branch(br):
+def remove_branch(a_tree,br):
             p = br.tail_node
             c = br.head_node
-            if p is not None:
+            if c.nleaf > a_tree.seed_node.nleaf/2:
+                p.remove_child(c)
+                a_tree.seed_node = c
+            elif p is not None:
                 p.remove_child(c,suppress_unifurcations=True)
-            while p and p.num_child_nodes() == 0:
-                c = p
-                p = p.parent_node
-                if p is not None:
-                    p.remove_child(c,supress_unifurcations=True)
+                while p and p.num_child_nodes() == 0:
+                    c = p
+                    p = p.parent_node
+                    if p is not None:
+                        p.remove_child(c,supress_unifurcations=True)
 
 
 def list_branch(a_tree,sort=True):
@@ -44,7 +51,7 @@ def list_branch(a_tree,sort=True):
 def compute_diameter(a_tree,branch_list,method='median'):
     # method \in {'median','mean'}
     if method == 'median':
-        unit_length = branch_list[len(branch_list)//2].length
+        unit_length = branch_list[int(len(branch_list)*0.4)].length
     elif method == 'mean':
         unit_length = 0
         for br in branch_list:
@@ -72,7 +79,7 @@ def compute_diameter(a_tree,branch_list,method='median'):
             node.max_br_below = max1
     d =  max_br_distance*unit_length
 
-    print("Estimated diameter: ", d)
+    #print("Estimated diameter: ", d)
 
     return d
 
