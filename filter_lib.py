@@ -3,9 +3,9 @@ import operator
 from dendropy import Tree
 from copy import deepcopy
 
-def filter_branch(a_tree,method='median',factor=0.6):
-    branch_list = list_branch(a_tree,sort=(method=='median'))
-    d = compute_diameter(a_tree,branch_list)
+def filter_branch(a_tree,percentile=0.5,factor=1):
+    branch_list = list_branch(a_tree,sort=(percentile>=0))
+    d = compute_diameter(a_tree,branch_list,percentile=percentile)
     thres = d*factor
     #print(thres)
     count_leaves(a_tree)
@@ -48,11 +48,11 @@ def list_branch(a_tree,sort=True):
     return branch_list
 
 
-def compute_diameter(a_tree,branch_list,method='median'):
-    # method \in {'median','mean'}
-    if method == 'median':
-        unit_length = branch_list[int(len(branch_list)*0.4)].length
-    elif method == 'mean':
+def compute_diameter(a_tree,branch_list,percentile=0.5):
+    # percentile < 0: take mean instead of percentile. Default is the median
+    if percentile >= 0:
+        unit_length = branch_list[int(len(branch_list)*percentile)].length
+    else:
         unit_length = 0
         for br in branch_list:
             unit_length += br.length
