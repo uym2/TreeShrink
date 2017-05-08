@@ -4,6 +4,7 @@ from dendropy import Tree
 from copy import deepcopy
 
 def filter_branch(a_tree,percentile=0.5,factor=1):
+    a_tree.deroot()
     branch_list = list_branch(a_tree,sort=(percentile>=0))
     d = compute_diameter(a_tree,branch_list,percentile=percentile)
     thres = d*factor
