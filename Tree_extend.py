@@ -450,7 +450,7 @@ class MBR_Tree(Tree_extend):
 # supportive class to implement midpoint balance root 
         def __init__(self,ddpTree=None,tree_file=None,schema="newick",Tree_records=None):
             if tree_file:
-                    self.ddpTree = Tree.get_from_path(tree_file,schema)
+                    self.ddpTree = Tree.get_from_path(tree_file,schema,preserve_underscores=True)
             else:
                     #self.ddpTree = copy.deepcopy(ddpTree)
                     self.ddpTree = ddpTree

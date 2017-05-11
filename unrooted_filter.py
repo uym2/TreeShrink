@@ -11,17 +11,21 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-i','--input',required=True,help="input file")
 parser.add_argument('-o','--outfile',required=True,help="output file")
-parser.add_argument('-p','--percentile',required=False,help="default is 0.5. Fill in -1 to use the mean instead of percentile")
-parser.add_argument('-factor','--factor',required=False,help="default is 1")
+parser.add_argument('-u','--unit',required=False,help="unit-length for unit-based filter")
+parser.add_argument('-l','--lowthres',required=False,help="low threshold")
+parser.add_argument('-g','--highthres',required=False,help="high threshold")
+parser.add_argument('-f','--factor',required=False,help="factor")
 
 args = vars(parser.parse_args())
 
 infile = args['input']
 outfile = args['outfile']
-a_tree = Tree.get_from_path(infile,"newick")
-p = float(args['percentile']) if args['percentile'] else 0.5
-f = float(args['factor']) if args['factor'] else 1
+a_tree = Tree.get_from_path(infile,"newick",preserve_underscores=True)
+unit=args['unit'] if args['unit'] else None
+low = float(args['lowthres']) if args['lowthres'] else 0
+high = float(args['highthres']) if args['highthres'] else 1
+factor = float(args['factor']) if args['factor'] else 1
 
-filter_branch(a_tree,percentile=p,factor=f)
+filter_branch(a_tree,unit_length=args['unit'],low_percentile=low,high_percentile=high)
 
 a_tree.write_to_path(outfile,"newick")
