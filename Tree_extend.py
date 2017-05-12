@@ -78,7 +78,7 @@ class Tree_extend(object):
 
         def filter_by_threshold(self,threshold=None):
             if threshold is None:
-                threshold = self.compute_threshold(k=3)
+                threshold = self.compute_threshold(k=3.5)
             
             def __filter(node,cumm_l):
                 removed = False
@@ -114,7 +114,7 @@ class Tree_extend(object):
             
             return __filter(self.get_root(),0)         
 
-        def compute_threhold(self,k=3):
+        def compute_threhold(self,k=3.5):
             print("Abstract class! Should never be called")
             return 0
 
@@ -283,7 +283,7 @@ class MPR_Tree(Tree_extend):
         def prepare_root(self):
             pass
         
-        def compute_threhold(self,k=3):
+        def compute_threhold(self,k=3.5):
             print("We don't do thresholding for MPR_Tree. How come it got here?")
             return 0
 
@@ -334,7 +334,7 @@ class MVR2_Tree(Tree_extend):
             self.total_leaves = self.Tree_records[self.get_root_idx()].nleaf
             self.compute_dRoot_VAR()
         
-        def compute_threshold(self,k=3):
+        def compute_threshold(self,k=3.5):
             # should be called only AFTER the MV root was found
             mean = (self.Tree_records[self.opt_root.idx].sum_total - self.opt_x*(self.total_leaves-2*self.Tree_records[self.opt_root.idx].nleaf))/self.total_leaves
             print(mean)
@@ -387,7 +387,7 @@ class MVR_Tree(Tree_extend):
             self.total_leaves = self.Tree_records[self.get_root_idx()].nleaf
             self.compute_dRoot_VAR()
         
-        def compute_threshold(self,k=3):
+        def compute_threshold(self,k=3.5):
             # should be called only AFTER the MV root was found
             mean = (self.Tree_records[self.opt_root.idx].sum_total - self.opt_x*(self.total_leaves-2*self.Tree_records[self.opt_root.idx].nleaf))/self.total_leaves
             print(mean)
@@ -477,7 +477,7 @@ class MBR_Tree(Tree_extend):
                 node.x = None
                 node.mean = None
 
-        def compute_threhold(self,k=3):
+        def compute_threhold(self,k=3.5):
             print("MBR_Tree filtering is not yet implemented. Please try again later!")
             return 0
 

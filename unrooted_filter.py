@@ -26,6 +26,6 @@ low = float(args['lowthres']) if args['lowthres'] else 0
 high = float(args['highthres']) if args['highthres'] else 1
 factor = float(args['factor']) if args['factor'] else 1
 
-filter_branch(a_tree,unit_length=args['unit'],low_percentile=low,high_percentile=high)
+filter_branch(a_tree,unit_length=args['unit'],low_percentile=low,high_percentile=high,factor=factor)
 
 a_tree.write_to_path(outfile,"newick")

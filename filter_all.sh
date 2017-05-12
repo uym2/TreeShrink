@@ -9,7 +9,7 @@ outfile=$2
 temp=`mktemp`
 
 echo Phase1: unrooted filtering
-unrooted_filter.py -i $infile -o $temp
+unrooted_filter.py -i $infile -o $temp -g 0.95
 
 echo Phase2: rooted filtering
 rooted_filter.py $temp $outfile

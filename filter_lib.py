@@ -8,10 +8,10 @@ def filter_branch(a_tree,unit_length=None,low_percentile=0,high_percentile=1,fac
     branch_list = list_branch(a_tree)
     d = estimate_diameter(a_tree,branch_list,unit_length=unit_length,low_percentile=low_percentile,high_percentile=high_percentile)
     thres = d*factor
-    print(thres)
+    #print(thres)
     count_leaves(a_tree)
     for br in branch_list:
-        print(br.length)
+        #print(br.length)
         if br.length > thres:
             remove_branch(a_tree,br)
 
