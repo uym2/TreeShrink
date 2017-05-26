@@ -2,13 +2,14 @@ import numpy as np
 import operator
 from dendropy import Tree
 from copy import deepcopy
+from Tree_extend import MPR_Tree, MV00_Tree,MVDF_Tree
 
-def filter_branch(a_tree,unit_length=None,low_percentile=0,high_percentile=1,factor=1):
+def filter_branch(a_tree,root_method=None,unit_length=None,low_percentile=0,high_percentile=1,factor=1):
     a_tree.deroot()
     branch_list = list_branch(a_tree)
-    d = estimate_diameter(a_tree,branch_list,unit_length=unit_length,low_percentile=low_percentile,high_percentile=high_percentile)
+    d = estimate_diameter(a_tree,branch_list,root_method=root_method,unit_length=unit_length,low_percentile=low_percentile,high_percentile=high_percentile)
     thres = d*factor
-    #print(thres)
+    print("Branch length threshod: ",thres)
     count_leaves(a_tree)
     for br in branch_list:
         #print(br.length)
@@ -48,7 +49,8 @@ def list_branch(a_tree):
     return branch_list
 
 
-def estimate_diameter(a_tree,branch_list,unit_length=None,low_percentile=0,high_percentile=1):
+def estimate_diameter(a_tree,branch_list,root_method=None,unit_length=None,low_percentile=0,high_percentile=1):
+    # root_method: 'MV00','MVDF', or 'MP'
     # unit_length: use the specified length to be the branch length of a unit-branch tree 
     # special options: 'median': use the median branch length as the length for the unit tree
     #                  'avg': use the average instead of the median
@@ -111,8 +113,20 @@ def estimate_diameter(a_tree,branch_list,unit_length=None,low_percentile=0,high_
         high_thres = branch_list[int(len(branch_list)*high_percentile)].length
         return __compute_max_distance(low_thres=low_thres,high_thres=high_thres)
 
+    if root_method:
+        if root_method == 'MP':
+            rooted_tree = MPR_Tree(ddpTree=a_tree)
+        elif root_method == 'MV00':
+            rooted_tree = MV00_Tree(ddpTree=a_tree)
+        else:
+            rooted_tree = MVDF_Tree(ddpTree=a_tree)
 
-    
+        rooted_tree.Reroot()
+        D = rooted_tree.compute_ingroup_distances()
+        D.sort()
+        print(D)
+        return D[int(len(D)*0.5)]
+
     if unit_length is not None:
         return __unit_based_diameter(unit=unit_length)
     
