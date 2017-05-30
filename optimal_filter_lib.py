@@ -1,6 +1,9 @@
 from dendropy import Tree
 from math import sqrt
-from Queue import Queue
+try:
+    from queue import Queue # python 3
+except:
+    from Queue import Queue # python 2
 from copy import deepcopy
 
 class TreeInduced:
@@ -194,9 +197,11 @@ class TreeFilter:
         self.best_entries = []
         self.min_diams = []
 
+    def __default_d__(self):
+        return 2*int(sqrt(self.nleaf))
+
     def optFilter(self,d=None):
-        if d is None:
-            d = 2*int(sqrt(self.nleaf))
+        d = self.__default_d__() if d is None else d
 
         first_entry = Entry(bestLCA=self.bestLCA)
         #print(self.__get_anchor1__(first_entry).taxon.label,self.__get_anchor2__(first_entry).taxon.label)
@@ -241,3 +246,34 @@ class TreeFilter:
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor1,inherit_info=True))
 
             curr_entry.info = None
+        self.min_diams.append(min_diam)
+        self.best_entries.append(best_entry)
+
+    def __prune_taxon__(self,taxon):
+        pnode = taxon.parent_node
+        pnode.remove_child(taxon)
+        if pnode.num_child_nodes() < 2:
+            # remove pnode and make its only child the child of its parent
+            gnode = pnode.parent_node
+            gnode.remove_child(pnode)
+            gnode.add_child(pnode.child_nodes()[0])
+
+    def filterOut(self,d=None):
+        d = self.__default_d__() if d is None else d
+        entry = self.best_entries[d]
+        while entry.backtrack is not None:
+            print(entry.removed.taxon.label + " removed")
+            self.__prune_taxon__(entry.removed)
+            entry = entry.backtrack
+
+        return self.ddpTree
+
+    def list_removals(self,d=None): 
+        d = self.__default_d__() if d is None else d
+        last_entry = self.best_entries[d]
+        def __list__(entry):
+            if entry.backtrack is not None:
+                __list__(entry.backtrack)
+                print(entry.removed.taxon.label + " removed")
+
+        __list__(last_entry)

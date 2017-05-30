@@ -5,22 +5,28 @@ from sys import argv
 from Tree_extend import MV00_Tree
 from math import sqrt
 
-tree = argv[1]
-
+intree = argv[1]
+#outtree = argv[2]
 
 #MVTree = MV00_Tree(tree_file=tree)
 #MVTree.find_root()
 
 #std = sqrt(MVTree.minVAR)
 
-myfilter = TreeFilter(tree_file=tree)
-myfilter.optFilter(d=60)
+myfilter = TreeFilter(tree_file=intree)
+myfilter.optFilter(d=50)
+
+#myfilter.list_removals(d=5)
+
+#fTree = myfilter.filterOut(d=172)
+
+#fTree.write_to_path(outtree,"newick")
 
 #print(myfilter.best_entries[1].removed)
 for i in range(1,len(myfilter.min_diams)):
-   #print(myfilter.min_diams[i-1]/ myfilter.min_diams[i])
+   print(myfilter.min_diams[i-1]/ myfilter.min_diams[i])
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])
-   print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]
+   #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]/std
    #print(myfilter.min_diams[i-1])
 
