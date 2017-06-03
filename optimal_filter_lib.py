@@ -254,10 +254,16 @@ class TreeFilter:
         pnode = taxon.parent_node
         pnode.remove_child(taxon)
         if pnode.num_child_nodes() < 2:
+            if pnode is self.ddpTree.seed_node:
+            # remove pnode and make its only child the new root
+                ch = pnode.child_nodes()[0]
+                pnode.remove_child(ch)
+                self.ddpTree.seed_node = ch
+            else:
             # remove pnode and make its only child the child of its parent
-            gnode = pnode.parent_node
-            gnode.remove_child(pnode)
-            gnode.add_child(pnode.child_nodes()[0])
+                gnode = pnode.parent_node
+                gnode.remove_child(pnode)
+                gnode.add_child(pnode.child_nodes()[0])
 
     def filterOut(self,d=None,fout=stdout):
         d = self.__default_d__() if d is None else d

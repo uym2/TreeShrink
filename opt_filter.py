@@ -1,4 +1,4 @@
-# ! /usr/bin/env python
+#! /usr/bin/env python
 
 from optimal_filter_lib import TreeFilter
 from sys import argv
