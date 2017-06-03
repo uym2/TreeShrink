@@ -25,9 +25,9 @@ myfilter.optFilter()
 #print(myfilter.best_entries[1].removed)
 for i in range(1,len(myfilter.min_diams)):
 #   print(myfilter.min_diams[i-1]/ myfilter.min_diams[i])
-#   print(myfilter.min_diams[i-1] - myfilter.min_diams[i])
+   print(myfilter.min_diams[i-1] - myfilter.min_diams[i])
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]/std
-   print(myfilter.min_diams[i-1])
+#   print(myfilter.min_diams[i-1])
 
 
