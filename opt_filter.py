@@ -1,4 +1,4 @@
-# ! /usr/bin/env python
+#! /usr/bin/env python
 
 from optimal_filter_lib import TreeFilter
 from sys import argv
@@ -19,7 +19,7 @@ for i in range(1,len(myfilter.min_diams)):
 
 fout.close()
 
-opt_k = int(check_output(["Rscript","find_d.R",datafile,"0.05"])[4:].rstrip())
+opt_k = int(check_output(["Rscript","/home/umai/my_gits/LongBranchFiltering/find_d.R",datafile,"0.05"])[4:].rstrip())
 
 fTree = myfilter.filterOut(d=opt_k)
 fTree.write_to_path(outtree,"newick")
