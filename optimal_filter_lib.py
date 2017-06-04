@@ -215,6 +215,8 @@ class TreeFilter:
             if self.myQueue.empty():
                 break
             curr_entry = self.myQueue.get()
+            if curr_entry.info.bestLCA is None:
+                break
             diam = self.__get_diam__(curr_entry)
 
             anchor1,anchor2 = self.__get_anchors__(curr_entry)
