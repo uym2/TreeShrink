@@ -5,6 +5,7 @@ try:
 except:
     from Queue import Queue # python 2
 from copy import deepcopy
+from sys import stdout
 
 class TreeInduced:
     def __init__(self,bestLCA=None):
@@ -266,22 +267,22 @@ class TreeFilter:
                 gnode.remove_child(pnode)
                 gnode.add_child(pnode.child_nodes()[0])
 
-    def filterOut(self,d=None):
+    def filterOut(self,d=None,fout=stdout):
         d = self.__default_d__() if d is None else d
         entry = self.best_entries[d]
         while entry.backtrack is not None:
-            print(entry.removed.taxon.label + " removed")
+            fout.write(entry.removed.taxon.label + " removed")
             self.__prune_taxon__(entry.removed)
             entry = entry.backtrack
 
         return self.ddpTree
 
-    def list_removals(self,d=None): 
+    def list_removals(self,d=None,fout=stdout): 
         d = self.__default_d__() if d is None else d
         last_entry = self.best_entries[d]
         def __list__(entry):
             if entry.backtrack is not None:
                 __list__(entry.backtrack)
-                print(entry.removed.taxon.label + " removed")
+                fout.write(entry.removed.taxon.label + " removed")
 
         __list__(last_entry)
