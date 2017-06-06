@@ -271,7 +271,7 @@ class TreeFilter:
         d = self.__default_d__() if d is None else d
         entry = self.best_entries[d]
         while entry.backtrack is not None:
-            fout.write(entry.removed.taxon.label + " removed")
+            fout.write(entry.removed.taxon.label + " removed\n")
             self.__prune_taxon__(entry.removed)
             entry = entry.backtrack
 
@@ -283,6 +283,6 @@ class TreeFilter:
         def __list__(entry):
             if entry.backtrack is not None:
                 __list__(entry.backtrack)
-                fout.write(entry.removed.taxon.label + " removed")
+                fout.write(entry.removed.taxon.label + " removed\n")
 
         __list__(last_entry)

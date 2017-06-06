@@ -11,6 +11,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("-i","--input",required=True,help="input tree")
 parser.add_argument("-o","--output",required=True,help="output tree")
+parser.add_argument("-k","--k",required=False,help="number of taxon to be removed")
 parser.add_argument("-r","--removal",required=False,help="list of removed taxa")
 parser.add_argument("-d","--diameter",required=False,help="list of optimal diameter by level")
 parser.add_argument("-g","--gradient",required=False,help="list of the gradient of the diameter by level")
@@ -39,7 +40,7 @@ if fout1:
 
 fout.close()
 
-opt_k = int(check_output(["Rscript","/Users/uym2/my_gits/LongBranchFiltering/find_d.R",datafile,"0.05"])[4:].rstrip())
+opt_k = min(int(args["k"]),len(myfilter.min_diams)-1) if args["k"] else int(check_output(["Rscript","/Users/uym2/my_gits/LongBranchFiltering/find_d.R",datafile,"0.05"])[4:].rstrip())
 
 fTree = myfilter.filterOut(d=opt_k, fout=open(args["removal"],"w") if args["removal"] else stdout)
 fTree.write_to_path(outtree,"newick")
