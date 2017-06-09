@@ -14,7 +14,7 @@ intree = argv[1]
 #std = sqrt(MVTree.minVAR)
 
 myfilter = TreeFilter(tree_file=intree)
-myfilter.optFilter()
+myfilter.optFilter(d=30)
 
 #myfilter.list_removals(d=2)
 
@@ -24,8 +24,8 @@ myfilter.optFilter()
 
 #print(myfilter.best_entries[1].removed)
 for i in range(1,len(myfilter.min_diams)):
-#   print(myfilter.min_diams[i-1]/ myfilter.min_diams[i])
-   print(myfilter.min_diams[i-1] - myfilter.min_diams[i])
+   print(myfilter.min_diams[i-1]/ myfilter.min_diams[i])
+#   print(myfilter.min_diams[i-1] - myfilter.min_diams[i])
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]
    #print(myfilter.min_diams[i-1] - myfilter.min_diams[i])/myfilter.min_diams[i]/std
 #   print(myfilter.min_diams[i-1])
