@@ -267,11 +267,12 @@ class TreeFilter:
                 gnode.remove_child(pnode)
                 gnode.add_child(pnode.child_nodes()[0])
 
-    def filterOut(self,d=None,fout=stdout):
+    def filterOut(self,d=None,fout=None):
         d = self.__default_d__() if d is None else d
         entry = self.best_entries[d]
         while entry.backtrack is not None:
-            fout.write(entry.removed.taxon.label + " removed\n")
+            if fout:
+                fout.write(entry.removed.taxon.label + " removed\n")
             self.__prune_taxon__(entry.removed)
             entry = entry.backtrack
 
