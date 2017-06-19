@@ -340,7 +340,7 @@ class Centroid_Tree(MPR_Tree):
             x = (node.max_out - m)/2
             if curr_max_distance > self.max_distance and x >= 0 and x <= 1:
                 self.max_distance = curr_max_distance
-                self.opt_x = x
+                self.opt_x = node.edge_length/2
                 self.opt_root = node
 
         def bUp_update(self, node):
