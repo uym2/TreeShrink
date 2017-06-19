@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument("-i","--input",required=True,help="input trees")
 parser.add_argument("-m","--method",required=True,help="method: ind,med,sts")
 parser.add_argument("-f","--function",required=True,help="a function to fit to data: lnorm, kernel,lkernel")
-parser.add_argument("-o","--output",required=True,help="output trees")
+parser.add_argument("-o","--output",required=False,help="output trees")
 parser.add_argument("-r","--removal",required=False,help="list of the removals")
 parser.add_argument("-q","--quantile",required=False,help="the cut-off quantile of the gradient to be used as threshold")
 parser.add_argument("-g","--gradient",required=False,help="list of the gradient of the diameter by level")
@@ -30,7 +30,7 @@ parser.add_argument("-g","--gradient",required=False,help="list of the gradient 
 args = vars(parser.parse_args())
 
 intree = args["input"]
-outtree = open(args["output"],'a')
+outtree = open(args["output"],'a') if args["output"] else None
 method = args["method"]
 thres = args["quantile"] if args["quantile"] else "0.05"
 
@@ -92,7 +92,8 @@ with open(intree,"r") as f:
             opt_t=float(check_output(["Rscript",Rfunction,datafile,thres]).lstrip().rstrip()[5:])
             opt_k=find_k(data,opt_t)
             fTree = a_filter.filterOut(d=opt_k, fout=fr)
-            outtree.write(fTree.as_string("newick"))
+            if outtree:
+                outtree.write(fTree.as_string("newick"))
         else:
             myfilters.append(a_filter)
             mydata.append(data)        
@@ -125,11 +126,12 @@ if method != "ind":
             fTree = myfilters[i].ddpTree
         '''            
         fTree = myfilters[i].filterOut(d=opt_k,fout=fr)
-
-        outtree.write(fTree.as_string("newick"))
+        if outtree:
+            outtree.write(fTree.as_string("newick"))
     if fr:
         fr.close()
     if fg:
         fg.close()
-outtree.close()
+if outtree:
+    outtree.close()
 call(["rm",datafile])
