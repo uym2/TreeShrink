@@ -24,7 +24,7 @@ class Entry:
 
 class TreeFilter:       
     def __init__(self, ddpTree = None, tree_file = None, schema = "newick", centroid_reroot = False):
-        a_tree = MPR_Tree(ddpTree=ddpTree,tree_file=tree_file,schema=schema)
+        a_tree = Centroid_Tree(ddpTree=ddpTree,tree_file=tree_file,schema=schema)
 
         if centroid_reroot:
 #            print("Rerooting at centroid ...")
@@ -49,6 +49,9 @@ class TreeFilter:
                if (self.records[node][3] and self.records[node][3] > diam):
                    diam = self.records[node][3]
                    self.bestLCA = node
+
+        #print(self.records[self.bestLCA][0].taxon.label)
+        #print(self.records[self.bestLCA][1].taxon.label)
 
         #self.myQueue = [first_entry]
         self.myQueue = Queue()
@@ -229,7 +232,7 @@ class TreeFilter:
             if curr_entry.info.bestLCA is None:
                 break
             diam = self.__get_diam__(curr_entry)
-
+            
             anchor1,anchor2 = self.__get_anchors__(curr_entry)
             if curr_entry.level != curr_level:
                 # reached a next level
@@ -237,6 +240,16 @@ class TreeFilter:
                 if min_diam is not None:
                     self.min_diams.append(min_diam)
                     self.best_entries.append(best_entry)
+                    
+                    #if best_entry:
+                        #print("Best: ")    
+                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[0].taxon.label)
+                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[1].taxon.label)
+                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[3])
+                    #print(curr_entry.level)    
+                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[0].taxon.label)
+                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[1].taxon.label)
+                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[3])
                 min_diam = diam
                 best_entry = curr_entry
                 if curr_level < d:
@@ -244,6 +257,10 @@ class TreeFilter:
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor1,inherit_info=False))
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor2,inherit_info=True))
             else:
+                #print(curr_entry.level)
+                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[0].taxon.label)
+                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[1].taxon.label)
+                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[3])
                 if diam < min_diam:
                     min_diam  = diam
                     best_entry = curr_entry
@@ -261,6 +278,8 @@ class TreeFilter:
             curr_entry.info = None
         self.min_diams.append(min_diam)
         self.best_entries.append(best_entry)
+
+        #print(self.min_diams)
 
     def __prune_taxon__(self,taxon):
         pnode = taxon.parent_node

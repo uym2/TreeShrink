@@ -56,10 +56,13 @@ with open(intree,"r") as f:
         a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
         a_filter.optFilter()
 
-        branch_list = []
+        if a_filter.ddpTree.seed_node.num_child_nodes() > 2:
+            branch_list = [ch.edge_length for ch in a_filter.ddpTree.seed_node().child_node_iter()]
+        else:
+            branch_list = [sum([ch.edge_length for ch in a_filter.ddpTree.seed_node.child_node_iter()])]
 
         for br in a_filter.ddpTree.preorder_edge_iter():
-            if br.tail_node is not None:
+            if br.tail_node is not None and br.tail_node is not a_filter.ddpTree.seed_node:
                 branch_list.append(br.length)
 
         branch_list.sort()
@@ -67,6 +70,8 @@ with open(intree,"r") as f:
             med_br = branch_list[len(branch_list)//2]
         else: 
             med_br = (branch_list[len(branch_list)//2] + branch_list[len(branch_list)//2-1])/2
+
+#        print(med_br)
 
         data = [(a_filter.min_diams[i-1]-a_filter.min_diams[i])/med_br for i in range(1,len(a_filter.min_diams))]
 
@@ -111,6 +116,7 @@ if method != "ind":
 #    fg = open(args["gradient"],'w') if args["gradient"] else None
     
     opt_t=float(check_output(["Rscript",Rfunction,datafile,thres]).lstrip().rstrip()[5:])
+    print(opt_t)
     for i in range(len(mydata)):
 #        if fr:
 #            fr.write("Tree " + str(i+1) + "\n")
