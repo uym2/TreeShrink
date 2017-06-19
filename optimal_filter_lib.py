@@ -6,6 +6,8 @@ except:
     from Queue import Queue # python 2
 from copy import deepcopy
 from sys import stdout
+from Tree_extend import Centroid_Tree, MPR_Tree
+
 
 class TreeInduced:
     def __init__(self,bestLCA=None):
@@ -21,6 +23,38 @@ class Entry:
         self.retained = None
 
 class TreeFilter:       
+    def __init__(self, ddpTree = None, tree_file = None, schema = "newick", centroid_reroot = False):
+        a_tree = MPR_Tree(ddpTree=ddpTree,tree_file=tree_file,schema=schema)
+
+        if centroid_reroot:
+#            print("Rerooting at centroid ...")
+            a_tree.Reroot()
+#        if tree_file:
+#            self.ddpTree = Tree.get_from_path(tree_file,schema,preserve_underscores=True)
+#        else:  
+#            self.ddpTree = ddpTree
+
+        self.ddpTree = a_tree.ddpTree
+
+        self.bestLCA = None
+        self.nleaf = 0
+        self.records = {}
+
+        diam = -1
+
+        for node in self.ddpTree.postorder_node_iter():
+               if node.is_leaf():
+                   self.nleaf += 1
+               self.__updateNode__(node)
+               if (self.records[node][3] and self.records[node][3] > diam):
+                   diam = self.records[node][3]
+                   self.bestLCA = node
+
+        #self.myQueue = [first_entry]
+        self.myQueue = Queue()
+        self.best_entries = []
+        self.min_diams = []
+    
     def __updateNode__(self,node,records=None):
         if records is None:
             records = self.records
@@ -173,30 +207,6 @@ class TreeFilter:
 
         return node_record
     
-    def __init__(self, ddpTree = None, tree_file = None, schema = "newick"):
-        if tree_file:
-            self.ddpTree = Tree.get_from_path(tree_file,schema,preserve_underscores=True)
-        else:  
-            self.ddpTree = ddpTree
-
-        self.bestLCA = None
-        self.nleaf = 0
-        self.records = {}
-
-        diam = -1
-
-        for node in self.ddpTree.postorder_node_iter():
-               if node.is_leaf():
-                   self.nleaf += 1
-               self.__updateNode__(node)
-               if (self.records[node][3] and self.records[node][3] > diam):
-                   diam = self.records[node][3]
-                   self.bestLCA = node
-
-        #self.myQueue = [first_entry]
-        self.myQueue = Queue()
-        self.best_entries = []
-        self.min_diams = []
 
     def __default_d__(self):
         return 2*int(sqrt(self.nleaf))

@@ -4,10 +4,10 @@ import math
 
 class Tree_extend(object):
         def __init__(self, ddpTree = None, tree_file = None, schema = "newick"):
-                if tree_file:
-                    self.ddpTree = Tree.get_from_path(tree_file,schema)
-                else:
+                if ddpTree:
                     self.ddpTree = ddpTree
+                else:
+                    self.ddpTree = Tree.get_from_path(tree_file,schema,preserve_underscores=True)
 
         def Bottomup_label(self):
             # assign each node a label so that we can later relate to it
@@ -40,24 +40,24 @@ class Tree_extend(object):
 
         def compute_distances(self):
             D = {}
-            def __compute_dRoot(node,cumm_l):
+            def __compute_dRoot__(node,cumm_l):
                 if node.is_leaf():
                     D[node.name] = cumm_l
                 else:
                     for child in node.child_node_iter():
-                        __compute_dRoot(child,cumm_l+child.edge_length)      
+                        __compute_dRoot__(child,cumm_l+child.edge_length)      
 
-            __compute_dRoot(self.ddpTree.seed_node,0)
+            __compute_dRoot__(self.ddpTree.seed_node,0)
             return D
 
         def compute_ingroup_distances(self):
             D = []
-            def __compute_dLeaf(node,cumm_l):
+            def __compute_dLeaf__(node,cumm_l):
                 if node.is_leaf():
                     D.append(cumm_l)
                 else:
                     for child in node.child_node_iter():
-                        __compute_dLeaf(child,cumm_l+child.edge_length)      
+                        __compute_dLeaf__(child,cumm_l+child.edge_length)      
 
             children = self.ddpTree.seed_node.child_nodes()
             crowded_child = None
@@ -68,7 +68,7 @@ class Tree_extend(object):
                     maxleaf = node.nleaf
                     crowded_child = node
 
-            __compute_dLeaf(children[1],0)
+            __compute_dLeaf__(children[1],0)
 
             return D
         
@@ -91,11 +91,11 @@ class Tree_extend(object):
             if threshold is None:
                 threshold = self.compute_threshold(k = k)
             
-            def __filter(node,cumm_l):
+            def __filter__(node,cumm_l):
                 removed = False
                 node.child_removed = False
                 for child in node.child_nodes():
-                    check = __filter(child,cumm_l + child.edge_length)
+                    check = __filter__(child,cumm_l + child.edge_length)
                     removed = removed or check
                 
                 p = node.parent_node
@@ -123,7 +123,7 @@ class Tree_extend(object):
                     child.edge_length = e1 + e2
                 return removed  
             
-            return __filter(self.get_root(),0)         
+            return __filter__(self.get_root(),0)         
 
         def compute_threhold(self, k=3.5):
             print("Abstract class! Should never be called")
@@ -157,52 +157,52 @@ class Tree_extend(object):
         def tree_as_newick(self, outfile=None, append = False, label_by_name = False):
         # dendropy's method to write newick seems to have problem ...
             if outfile:
-#                outstream = open(outfile,'a' if append else 'w')
-                outstream = open(outfile,'ab' if append else 'wb')
+                outstream = open(outfile,'a' if append else 'w')
+#                outstream = open(outfile,'ab' if append else 'wb')
             else:
                 outstream = sys.stdout
             self.__write_newick(self.ddpTree.seed_node, outstream, label_by_name = label_by_name)
-#            outstream.write(";\n")
-            outstream.write(bytes(";\n", "ascii"))
+            outstream.write(";\n")
+#            outstream.write(bytes(";\n", "ascii"))
             if outfile:
                 outstream.close()
 
         def __write_newick(self, node, outstream, label_by_name = False):
             if node.is_leaf():
                 if label_by_name:
-#                    outstream.write(str(node.name))
-                    outstream.write(bytes(str(node.name), "ascii"))
+                    outstream.write(str(node.name))
+#                    outstream.write(bytes(str(node.name), "ascii"))
                 else:
                     try:
-#                        outstream.write(node.taxon.label)
-                        outstream.write(bytes(node.taxon.label, "ascii"))
+                        outstream.write(node.taxon.label)
+#                        outstream.write(bytes(node.taxon.label, "ascii"))
                     except:
-#                        outstream.write(str(node.label))
-                        outstream.write(bytes(str(node.label), "ascii"))
+                        outstream.write(str(node.label))
+#                        outstream.write(bytes(str(node.label), "ascii"))
             else:
-#                outstream.write('(')
-                outstream.write(bytes('(', "ascii"))
+                outstream.write('(')
+                #outstream.write(bytes('(', "ascii"))
                 is_first_child = True
                 for child in node.child_node_iter():
                     if is_first_child:
                         is_first_child = False
                     else:
-#                        outstream.write(',')
-                        outstream.write(bytes(',', "ascii"))
+                        outstream.write(',')
+#                        outstream.write(bytes(',', "ascii"))
                     self.__write_newick(child,outstream, label_by_name = label_by_name)
-#                outstream.write(')')
-                outstream.write(bytes(')', "ascii"))
+                outstream.write(')')
+#                outstream.write(bytes(')', "ascii"))
             if not node.is_leaf():
                 if label_by_name:
-#                    outstream.write(str(node.name))
-                    outstream.write(bytes(str(node.name), "ascii"))
+                    outstream.write(str(node.name))
+#                    outstream.write(bytes(str(node.name), "ascii"))
                 elif node.label is not None:
-#                    outstream.write(str(node.label))
-                    outstream.write(bytes(str(node.label), "ascii"))
+                    outstream.write(str(node.label))
+#                    outstream.write(bytes(str(node.label), "ascii"))
             
             if not node.edge_length is None:
-#                outstream.write(":" + str(node.edge_length))
-                outstream.write(bytes(":" + str(node.edge_length), "ascii"))
+                outstream.write(":" + str(node.edge_length))
+#                outstream.write(bytes(":" + str(node.edge_length), "ascii"))
 
         def reroot_at_edge(self, edge, length1, length2):
         # the method provided by dendropy DOESN'T seem to work ...
@@ -300,8 +300,7 @@ class MPR_Tree(Tree_extend):
 
         def Node_init(self, node, max_in = None, max_out = -1):
             node.max_in = max_in if max_in else [0, 0]
-            node.max_out = max_out
-            
+            node.max_out = max_out           
 
         def Opt_function(self,node):
             m = max(node.max_in) 
@@ -332,6 +331,32 @@ class MPR_Tree(Tree_extend):
         def compute_threhold(self, k=3.5):
             print("We don't do thresholding for MPR_Tree. How come it got here?")
             return 0
+
+class Centroid_Tree(MPR_Tree):
+    # supportive class to implement centroid-reroot (midpoint reroot ignoring branch lengths)
+        def Opt_function(self,node):
+            m = max(node.max_in) 
+            curr_max_distance = m + node.max_out
+            x = (node.max_out - m)/2
+            if curr_max_distance > self.max_distance and x >= 0 and x <= 1:
+                self.max_distance = curr_max_distance
+                self.opt_x = x
+                self.opt_root = node
+
+        def bUp_update(self, node):
+            if not node.is_leaf():
+                node.max_in=[]
+                for child in node.child_node_iter():
+                    node.max_in.append(max(child.max_in) + 1)    
+
+
+        def tDown_update(self, node, opt_function):
+            child_idx = 0
+            for child in node.child_node_iter():
+                child.max_out = max([node.max_out] + [node.max_in[k] for k in range(len(node.max_in))
+                                if k != child_idx]) + 1
+                opt_function(child)
+                child_idx += 1
 
 class minVAR_Base_Tree(Tree_extend):
      # supportive base class to implement VAR-reroot, hence the name

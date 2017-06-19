@@ -26,6 +26,7 @@ parser.add_argument("-o","--output",required=False,help="output trees")
 parser.add_argument("-r","--removal",required=False,help="the removing set")
 parser.add_argument("-q","--quantile",required=False,help="the cut-off quantile of the gradient to be used as threshold")
 parser.add_argument("-g","--gradient",required=False,help="list of the gradient of the diameter by level")
+parser.add_argument("-c","--centroid",required=False,action='store_true',help="do centroid reroot in preprocessing")
 
 args = vars(parser.parse_args())
 
@@ -52,7 +53,7 @@ with open(intree,"r") as f:
     i = 1
     for line in f:
         a_tree = Tree.get(data=line,schema="newick")
-        a_filter = TreeFilter(ddpTree=a_tree)
+        a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
         a_filter.optFilter()
 
         branch_list = []
