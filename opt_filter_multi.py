@@ -25,6 +25,7 @@ parser.add_argument("-f","--function",required=False,help="a function to fit to 
 parser.add_argument("-o","--output",required=False,help="output trees")
 parser.add_argument("-r","--removal",required=False,help="the removing set")
 parser.add_argument("-q","--quantile",required=False,help="the cut-off quantile of the gradient to be used as threshold")
+parser.add_argument("-d","--diameter",required=False,help="list of the optimal diameter by level")
 parser.add_argument("-g","--gradient",required=False,help="list of the gradient of the diameter by level")
 parser.add_argument("-c","--centroid",required=False,action='store_true',help="do centroid reroot in preprocessing")
 
@@ -47,6 +48,7 @@ datafile = check_output(["mktemp"]).rstrip()
 
 fr = open(args["removal"],'w') if args["removal"] else stdout
 fg = open(args["gradient"],'w') if args["gradient"] else None
+fd = open(args["diameter"],'w') if args["diameter"] else None
 
 
 with open(intree,"r") as f:
@@ -56,8 +58,9 @@ with open(intree,"r") as f:
         a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
         a_filter.optFilter()
 
+
         if a_filter.ddpTree.seed_node.num_child_nodes() > 2:
-            branch_list = [ch.edge_length for ch in a_filter.ddpTree.seed_node().child_node_iter()]
+            branch_list = [ch.edge_length for ch in a_filter.ddpTree.seed_node.child_node_iter()]
         else:
             branch_list = [sum([ch.edge_length for ch in a_filter.ddpTree.seed_node.child_node_iter()])]
 
@@ -86,6 +89,15 @@ with open(intree,"r") as f:
            fout.write(str(x) + "\n")
         fout.close()
 
+        if fg:
+            for d in data:
+                fg.write(str(d) + "\t")
+            fg.write("\n")
+        if fd:
+            for d in a_filter.min_diams:
+                fd.write(str(d) + "\t")
+            fd.write("\n")
+
         if method == "ind":
 #            fg = open(args["gradient"],'a') if args["gradient"] else None
 #            fr = open(args["removal"],'a') if args["removal"] else stdout
@@ -93,14 +105,7 @@ with open(intree,"r") as f:
 #            f.write("Tree " + str(i) + "\n")
 #            if fr:
 #                fr.write("Tree " + str(i) + "\n")
-            if fg:
-#                fg.write("Tree " + str(i) + "\n")
-                for d in data:
-                    fg.write(str(d) + "\t")
-                fg.write("\n")
             i = i + 1
-#            opt_k = int(check_output(["Rscript","/Users/uym2/my_gits/LongBranchFiltering/find_d.R",datafile,thres])[4:].rstrip())
-#            opt_t = float(check_output(["Rscript","/Users/uym2/my_gits/LongBranchFiltering/find_d.R",datafile,thres])[4:].rstrip())
             opt_t=float(check_output(["Rscript",Rfunction,datafile,thres]).lstrip().rstrip()[5:])
             opt_k=find_k(data,opt_t)
             fTree = a_filter.filterOut(d=opt_k, fout=fr)
@@ -116,25 +121,25 @@ if method != "ind":
 #    fg = open(args["gradient"],'w') if args["gradient"] else None
     
     opt_t=float(check_output(["Rscript",Rfunction,datafile,thres]).lstrip().rstrip()[5:])
-    print(opt_t)
+#    print(opt_t)
     for i in range(len(mydata)):
-#        if fr:
-#            fr.write("Tree " + str(i+1) + "\n")
+'''
         if fg:
-#            fg.write("Tree " + str(i+1) + "\n")
             for d in mydata[i]:
                 fg.write(str(d) + "\t")
             fg.write("\n")
-        
+'''        
         opt_k = find_k(mydata[i],opt_t)
         fTree = myfilters[i].filterOut(d=opt_k,fout=fr)
         fr.write("\n")
         if outtree:
             outtree.write(fTree.as_string("newick"))
-    if fr:
-        fr.close()
-    if fg:
-        fg.close()
+if fr is not stdout:
+    fr.close()
+if fg:
+    fg.close()
+if fd:
+    fd.close()
 if outtree:
     outtree.close()
 remove(datafile)    

@@ -217,6 +217,8 @@ class TreeFilter:
     def optFilter(self,d=None):
         d = self.__default_d__() if d is None else d
 
+        print("Solving k-shrink with k = " + str(d));
+
         first_entry = Entry(bestLCA=self.bestLCA)
         #print(self.__get_anchor1__(first_entry).taxon.label,self.__get_anchor2__(first_entry).taxon.label)
         self.myQueue.put(first_entry)
@@ -278,6 +280,7 @@ class TreeFilter:
             curr_entry.info = None
         self.min_diams.append(min_diam)
         self.best_entries.append(best_entry)
+
 
         #print(self.min_diams)
 
