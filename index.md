@@ -13,8 +13,8 @@ Github page for [the python code](https://github.com/uym2/TreeShrink) for TreeSh
 - Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-S1N6TjJkSWx4cGs) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Tjdidl8tZUtZd28)
 - Filtered trees 
   + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-eUVtRWpwaEg0ZG8)
-  + RogueNarok(https://drive.google.com/open?id=0B6VQuQbxaAq-cHJnOVVJQTJNdm8)
-  + RootedPrunning(https://drive.google.com/open?id=0B6VQuQbxaAq-SFJyMXJmdjlpenM)
+  + [RogueNarok](https://drive.google.com/open?id=0B6VQuQbxaAq-cHJnOVVJQTJNdm8)
+  + [RootedPrunning](https://drive.google.com/open?id=0B6VQuQbxaAq-SFJyMXJmdjlpenM)
 
 #### The insects dataset 
 - Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Z001dEZHZ0dXTlk) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Q25melRDZmNGLTQ)
