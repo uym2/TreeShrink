@@ -2,7 +2,40 @@
 Github page for [the python code](https://github.com/uym2/TreeShrink) for TreeShrink. 
 
 ### Datasets
-To be uploaded
+#### The plants dataset 
+- Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-ZEQ3X1hkRThteUk) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-MGVyY0phaDFIR3M)
+- Filtered trees 
+  + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-VXZwdGZxVEYzc1E)
+  + [RogueNarok](https://drive.google.com/open?id=0B6VQuQbxaAq-czJkaFpzTzZ0Tnc)
+  + [RootedPrunning](https://drive.google.com/open?id=0B6VQuQbxaAq-b2w0TUFIelRmRE0)
+
+#### The mammals dataset 
+- Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-S1N6TjJkSWx4cGs) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Tjdidl8tZUtZd28)
+- Filtered trees 
+  + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-eUVtRWpwaEg0ZG8)
+  + RogueNarok(https://drive.google.com/open?id=0B6VQuQbxaAq-cHJnOVVJQTJNdm8)
+  + RootedPrunning(https://drive.google.com/open?id=0B6VQuQbxaAq-SFJyMXJmdjlpenM)
+
+#### The insects dataset 
+- Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Z001dEZHZ0dXTlk) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-Q25melRDZmNGLTQ)
+- Filtered trees 
+  + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-eUhJblYweGpjZ00)
+  + [RogueNarok](https://drive.google.com/open?id=0B6VQuQbxaAq-TjBoTkY1SzgyY1U)
+  + [RootedPrunning](https://drive.google.com/open?id=0B6VQuQbxaAq-Y3Vzek1JVmVVbk0)
+
+#### The Xenoturbella Cannon dataset 
+- Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-cEhWSHF5aENiV0E) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-OUJVNUp5TGRVSXM)
+- Filtered trees 
+  + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-ODNWUGRoQko2Q0U)
+  + [RogueNarok](https://drive.google.com/open?id=0B6VQuQbxaAq-SHRXenk0WXBpZVU) 
+  + [RootedPrunning](https://drive.google.com/open?id=0B6VQuQbxaAq-ZWZNbmo3Y3JiVGc)
+
+#### The Xenoturbella Rouse dataset 
+- Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-bGFMYjBCN0g0SkU) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-R1NnT3ZuMkpiWTg)
+- Filtered trees 
+  + [TreeShrink](https://drive.google.com/open?id=0B6VQuQbxaAq-M2tFOGk1aDFvSEE)
+  + [RogueNarok](https://drive.google.com/open?id=0B6VQuQbxaAq-Ymt5anZzaHVjcEE)
+  + [RootedPrunning](https://drive.google.com/open?id=0B6VQuQbxaAq-bXhxMllUWTdLZXc)
 
 ### Contact
 Uyen Mai    
