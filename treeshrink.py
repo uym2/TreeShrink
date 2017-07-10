@@ -53,7 +53,7 @@ fd = open(args["diameter"],'w') if args["diameter"] else None
 with open(intree,"r") as f:
     i = 1
     for line in f:
-        a_tree = Tree.get(data=line,schema="newick")
+        a_tree = Tree.get(data=line,schema="newick",preserve_underscores=True)
         a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
         a_filter.optFilter()
 
