@@ -3,7 +3,8 @@
 ## Usage:
 
 ```python
-treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT] [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]
+treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT] 
+              [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]
 ```
 
 optional arguments:
