@@ -41,7 +41,7 @@ fa = open(args["ratio"],'w') if args["ratio"] else None
 
 with open(intree,"r") as f:
     for line in f:
-        a_tree = Tree.get(data=line,schema="newick")
+        a_tree = Tree.get(data=line,schema="newick",preserve_underscores=True)
         a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
         a_filter.optFilter(d=k)
 
