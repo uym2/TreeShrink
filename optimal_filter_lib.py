@@ -316,6 +316,6 @@ class TreeFilter:
         def __list__(entry):
             if entry.backtrack is not None:
                 __list__(entry.backtrack)
-                fout.write(entry.removed.taxon.label + " removed\n")
+                fout.write(entry.removed.taxon.label + " ")
 
         __list__(last_entry)
