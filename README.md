@@ -1,12 +1,15 @@
 # TreeShrink: efficient detection of outlier tree leaves
 
 ## Usage:
+
 treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT]
                      [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]
 
 optional arguments:
 
-  -h, --help            show this help message and exit
+  -h, --help            
+                      
+                        show this help message and exit
   
   -i INPUT, --input INPUT
   
