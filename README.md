@@ -2,8 +2,10 @@
 
 ## Usage:
 
-### treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT]
-                     [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]
+```python
+s = "treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT] [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]"
+print s
+```
 
 optional arguments:
 
