@@ -1,0 +1,15 @@
+./lbf_analysis.sh kp.c1c2 med lkernel 0.01 med &
+./lbf_analysis.sh kp.c1c2 med lkernel 0.025 med &
+./lbf_analysis.sh kp.c1c2 med lkernel 0.05 med &
+./lbf_analysis.sh kp.c1c2 med lkernel 0.075 med &
+./lbf_analysis.sh kp.c1c2 med lkernel 0.1 med &
+./lbf_analysis.sh mm med lkernel 0.01 med &
+./lbf_analysis.sh mm med lkernel 0.025 med &
+./lbf_analysis.sh mm med lkernel 0.05 med &
+./lbf_analysis.sh mm med lkernel 0.075 med &
+./lbf_analysis.sh mm med lkernel 0.1 med &
+./lbf_analysis.sh is.poly med lkernel 0.01 med &
+./lbf_analysis.sh is.poly med lkernel 0.025 med &
+./lbf_analysis.sh is.poly med lkernel 0.05 med &
+./lbf_analysis.sh is.poly med lkernel 0.075 med &
+./lbf_analysis.sh is.poly med lkernel 0.1 med &

@@ -1,0 +1,3 @@
+#! /bin/bash
+
+reroot.py $1 Salpingoeca_rosetta+Monosiga_brevicollis,Mnemiopsis_leidyi+Pleurobrachia_bachei+Euplokamis_dunlapae,Amphimedon_queenslandica+Aphrocallistes_vastus+Cliona_varians+Sycon_ciliatum+Leucosolenia_complicata+Oscarella_carmela,Trichoplax_adhaerens,Agalma_elegans+Craspedacusta_sowerby+Stomolophus_meleagris+Acropora_digitifera+Nematostella_vectensis+Eunicella_cavolinii -mrca $2 -igerr
