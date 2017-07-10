@@ -1,6 +1,6 @@
 # TreeShrink: efficient detection of outlier tree leaves
 
-## Usage:
+## Usage
 
 ```python
 treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT] 
