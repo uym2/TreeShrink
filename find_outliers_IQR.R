@@ -6,7 +6,7 @@ genNum = as.numeric(args[3])
 k = as.numeric(args[4])
 
 data = read.table(datafile)
-rep = scan("samples.txt")
+rep = scan("samples.first.txt")
 d = c(data[data$V2==species,3],sample(rep,genNum-length(data[data$V2==species,1]),replace=TRUE))
 #d = data[data$V2==species,3]
 
