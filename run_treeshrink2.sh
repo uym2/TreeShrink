@@ -10,22 +10,19 @@ end=$5
 q=$(seq $start $inc $end)
 python treeshrink2.py -i $intrees -q "$q" -d $outdir
 
-orgMS=`mktemp`
-orgOCC=`mktemp`
-nw_stats -fl $intrees | awk '{print $3;}' | numlist -sum > $orgOCC
-java -jar $treecmp -i $intrees -o $orgMS -d ms -m -P
+orgMS=`dirname $intrees`/`basename $intrees .trees`.MS
+orgOCC=`dirname $intrees`/`basename $intrees .trees`.occ
 
-cd $outdir
+[ -s $orgOCC ] || nw_stats -fl $intrees | awk '{print $3;}' | numlist -sum > $orgOCC
+[ -s $orgMS ] || java -jar $treecmp -i $intrees -o $orgMS -d ms -m -P
 
-for t in *trees; do echo $t; java -jar $treecmp -i $t -o `basename $t .trees`.MS -d ms -m -P; done
-for t in *.MS; do paste $orgMS $t | awk '{print $7-$14}' > `basename $t .MS`.dMS; done
-for t in *trees; do nw_stats -fl $t | awk '{print $3;}' | numlist -sum > `basename $t .trees`.occ; done
-for t in *occ; do paste $orgOCC $t | awk '{print $2/$1;}' > `basename $t .occ`.occ_norm; done
 
-grep . *occ_norm | sed -e "s/.occ_norm:/ /g" > occ.dat
-grep . *dMS | sed -e "s/.dMS:/ /g" > dMS.dat
+for t in $outdir/*trees; do echo $t; java -jar $treecmp -i $t -o $outdir/`basename $t .trees`.MS -d ms -m -P; done
+for t in $outdir/*.MS; do paste $orgMS $t | awk '{print $7-$14}' > $outdir/`basename $t .MS`.dMS; done
+for t in $outdir/*trees; do nw_stats -fl $t | awk '{print $3;}' | numlist -sum > $outdir/`basename $t .trees`.occ; done
+for t in $outdir/*occ; do paste $orgOCC $t | awk '{print $2/$1;}' > $outdir/`basename $t .occ`.occ_norm; done
 
-join occ.dat dMS.dat | sed "s/^.*shrinked_/TreeShrink2 q/g" > occ_dMS.dat
+grep . $outdir/*occ_norm | sed -e "s/.occ_norm:/ /g" > $outdir/occ.dat
+grep . $outdir/*dMS | sed -e "s/.dMS:/ /g" > $outdir/dMS.dat
 
-rm $orgMS $orgOCC
-
+join $outdir/occ.dat $outdir/dMS.dat | sed "s/^.*shrinked_/TreeShrink2 q/g" > $outdir/occ_dMS.dat
