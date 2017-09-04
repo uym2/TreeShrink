@@ -310,12 +310,16 @@ class TreeFilter:
 
         return self.ddpTree
 
-    def list_removals(self,d=None,fout=stdout): 
+    def list_removals(self,d=None,fout=None): 
         d = self.__default_d__() if d is None else d
         last_entry = self.best_entries[d]
+        rm_list = []
         def __list__(entry):
             if entry.backtrack is not None:
                 __list__(entry.backtrack)
-                fout.write(entry.removed.taxon.label + " ")
+                if fout:
+                    fout.write(entry.removed.taxon.label + " ")
+                rm_list.append(entry.removed.taxon.label)
 
         __list__(last_entry)
+        return rm_list
