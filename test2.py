@@ -10,6 +10,9 @@ from dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext
 from os import mkdir
 from copy import deepcopy
+import numpy as np
+from sklearn.neighbors import KernelDensity
+
 
 parser = argparse.ArgumentParser()
 
@@ -39,7 +42,7 @@ k = int(args["k"]) if args["k"] else None
 outdir = args["outdir"] if args["outdir"] else splitext(intrees)[0] + "_kshrink"
 mkdir(outdir)
 
-trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
+trees = TreeList.get_from_path(intrees,'newick')
 gene_list = [[] for i in range(len(trees))]
 species_map = {}
 occ = {}
@@ -66,14 +69,19 @@ for s in species_map:
     l = len(species_map[s])
     for i in range(occ[s]-l):
         species_map[s].append(1)
+    '''
     filename = outdir+"/" + s + ".dat"
     with open(filename,'w') as f:
         for v in species_map[s]:
             f.write(str(v))
             f.write("\n")
+    '''            
     thresholds = [ 0 for i in range(len(quantiles)) ]        
     for i,q in enumerate(quantiles): 
-        thresholds[i] = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+        #thresholds[i] = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_kernel.R",filename,q]).lstrip().rstrip()[5:])
+        X = np.array(species_map[s])[:, np.newaxis]
+        kde = KernelDensity().fit(X)
+        thresholds[i] = np.exp(np.percentile(kde.score_samples(X),1-float(q)))
     species_map[s] = (species_map[s],thresholds)
 #print(occ)
 #print(gene_list)
@@ -94,23 +102,11 @@ for t,gene in enumerate(gene_list):
 
 #trees.write_to_path(outtrees,'newick')
 
-'''
 treeName,treeExt = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
     trees_shrinked = deepcopy(trees)
     for t,tree in enumerate(trees_shrinked):
         filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
-        tree.filter_leaf_nodes(filt,update_bipartitions=True)
+        tree.filter_leaf_nodes(filt)
     trees_shrinked.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
 #print(removing_sets)
-'''    
-fName,ext = splitext(outtrees)
-for i,RS in enumerate(removing_sets):
-    outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
-    with open(outfile,'w') as f:
-        for item in RS:
-            for s in item:
-                f.write(s + "\t")
-            f.write("\n")
-    trees_shrinked =  outdir + "/" + fName + "_" + quantiles[i] + ext
-    call(["prune_trees.sh",intrees,outfile,trees_shrinked]) 
