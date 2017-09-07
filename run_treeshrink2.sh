@@ -2,13 +2,14 @@
 
 intrees=$1
 outdir=$2
-start=$3
-inc=$4
-end=$5
+mode=$3
+start=$4
+inc=$5
+end=$6
 
 
 q=$(seq $start $inc $end)
-python treeshrink2.py -i $intrees -q "$q" -d $outdir
+python treeshrink2.py -i $intrees -q "$q" -d $outdir -m $mode
 
 orgMS=`dirname $intrees`/`basename $intrees .trees`.MS
 orgOCC=`dirname $intrees`/`basename $intrees .trees`.occ
