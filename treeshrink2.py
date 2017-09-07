@@ -21,6 +21,8 @@ parser.add_argument("-k","--k",required=False,help="The maximum number of leaves
 parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold")
 parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
 
+wdir = "/Users/uym2/my_gits/TreeShrink/" 
+
 
 args = vars(parser.parse_args())
 
@@ -79,7 +81,7 @@ for t,a_tree in enumerate(trees):
                 f.write(str(mapping[s]))
                 f.write("\n")
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
+            threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
             print(threshold)
             for s in mapping:
                 if mapping[s] > threshold: 
@@ -99,7 +101,7 @@ if mode == 'per-species':
                 f.write("\n")
         thresholds = [ 0 for i in range(len(quantiles)) ]        
         for i,q in enumerate(quantiles): 
-            thresholds[i] = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+            thresholds[i] = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
         species_map[s] = (species_map[s],thresholds)
 
     for t,gene in enumerate(gene_list):
@@ -117,7 +119,7 @@ if mode == 'all-genes':
                 f.write(str(r))
                 f.write("\n")
     for i,q in enumerate(quantiles):
-        threshold = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+        threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
         for t,gene in enumerate(gene_list):
             for s,r in gene:
                 if r > threshold:
