@@ -13,26 +13,27 @@ from copy import deepcopy
 
 parser = argparse.ArgumentParser()
 
-parser.add_argument("-i","--input",required=True,help="input trees")
-parser.add_argument("-d","--outdir",required=False,help="output directory")
-parser.add_argument("-o","--output",required=False,help="output trees")
-#parser.add_argument("-r","--removal",required=False,help="the optimal removing sets by level")
-#parser.add_argument("-d","--diameter",required=False,help="list of the optimal diameters by level")
-#parser.add_argument("-a","--ratio",required=False,help="list of the ratios of the diameter by level")
-parser.add_argument("-c","--centroid",required=False,action='store_true',help="do centroid reroot in preprocessing")
-parser.add_argument("-k","--k",required=False,help="the maximum number of leaves that can be removed")
-parser.add_argument("-q","--quantiles",required=False,help="the quantile(s) to set threshold")
+parser.add_argument("-i","--input",required=True,help="Input trees")
+parser.add_argument("-d","--outdir",required=False,help="Output directory")
+parser.add_argument("-o","--output",required=False,help="Output trees")
+parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing")
+parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed")
+parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold")
+parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
 
 
 args = vars(parser.parse_args())
 
 quantiles = [ q for q in args["quantiles"].split()]
-print(quantiles)
+#print(quantiles)
 
 intrees = args["input"]
 treeName,treeExt = splitext(basename(intrees))
 outtrees = args["output"] if args["output"] else treeName + "_shrinked" + treeExt
 
+mode = args["mode"] if args["mode"] else 'per-species'
+
+print(mode)
 
 k = int(args["k"]) if args["k"] else None
 
@@ -43,57 +44,88 @@ trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
 gene_list = [[] for i in range(len(trees))]
 species_map = {}
 occ = {}
+removing_sets = [ [ [ ] for i in range(len(trees)) ] for j in range(len(quantiles)) ]
+
 for t,a_tree in enumerate(trees):
+    # update taxon occupancy
     for n in a_tree.leaf_node_iter():
         s = n.taxon.label
         occ[s] = 1 if not s in occ else occ[s]+1
 
+    # solve k-shrink
     a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
     a_filter.optFilter(d=k)
 
+    # compute species feature (i.e. the max ratio associated with each species for this gene tree)
     mapping = {}
     for i in range(1,len(a_filter.min_diams)):
         r = a_filter.min_diams[i-1]/a_filter.min_diams[i]
         removals = a_filter.list_removals(d=i)
         for s in removals:
             mapping[s] = r if s not in mapping else max(mapping[s],r)
-
+    
+    # gather per-species distributions and per-gene species features
     for s in mapping:
-        species_map[s] = [mapping[s]] if s not in species_map else species_map[s]+[mapping[s]]
-        gene_list[t].append((s,mapping[s]))
+        if mode == 'per-species':
+            species_map[s] = [mapping[s]] if s not in species_map else species_map[s]+[mapping[s]]
+        if mode == 'per-species' or mode == 'all-genes':
+            gene_list[t].append((s,mapping[s]))
+    
+    # fit kernel density to this gene's species features (per-gene mode)
+    if mode == 'per-gene':
+        filename = outdir + "/" + "gene_" + str(t) + ".dat"
+        with open(filename,'w') as f:
+            for s in mapping:
+                f.write(str(mapping[s]))
+                f.write("\n")
+        for i,q in enumerate(quantiles):
+            threshold = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
+            print(threshold)
+            for s in mapping:
+                if mapping[s] > threshold: 
+                    removing_sets[i][t].append(s)
 
-for s in species_map:
-    l = len(species_map[s])
-    for i in range(occ[s]-l):
-        species_map[s].append(1)
-    filename = outdir+"/" + s + ".dat"
+
+# fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
+if mode == 'per-species':
+    for s in species_map:
+        l = len(species_map[s])
+        for i in range(occ[s]-l):
+            species_map[s].append(1)
+        filename = outdir+"/" + s + ".dat"
+        with open(filename,'w') as f:
+            for v in species_map[s]:
+                f.write(str(v))
+                f.write("\n")
+        thresholds = [ 0 for i in range(len(quantiles)) ]        
+        for i,q in enumerate(quantiles): 
+            thresholds[i] = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+        species_map[s] = (species_map[s],thresholds)
+
+    for t,gene in enumerate(gene_list):
+        for s,r in gene:
+            for i,threshold in enumerate(species_map[s][1]):
+                if r > threshold:
+                    removing_sets[i][t].append(s)
+
+# fit kernel density to all the species features across all genes and compute the global threshold (all-gene mode) 
+if mode == 'all-genes':
+    filename = outdir + "/" + "all_genes" + ".dat"
     with open(filename,'w') as f:
-        for v in species_map[s]:
-            f.write(str(v))
-            f.write("\n")
-    thresholds = [ 0 for i in range(len(quantiles)) ]        
-    for i,q in enumerate(quantiles): 
-        thresholds[i] = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
-    species_map[s] = (species_map[s],thresholds)
-#print(occ)
-#print(gene_list)
-#print(species_map)
-removing_sets = [ [ [ ] for i in range(len(trees)) ] for j in range(len(quantiles)) ]
+        for gene in gene_list:
+            for s,r in gene:
+                f.write(str(r))
+                f.write("\n")
+    for i,q in enumerate(quantiles):
+        threshold = float(check_output(["Rscript","/Users/uym2/my_gits/TreeShrink/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+        for t,gene in enumerate(gene_list):
+            for s,r in gene:
+                if r > threshold:
+                    removing_sets[i][t].append(s)
 
-#with open(outdir + "/removing_sets.txt",'w') as f:
-for t,gene in enumerate(gene_list):
-    #f.write(str(t) + ": ")
-    for s,r in gene:
-        for i,threshold in enumerate(species_map[s][1]):
-            if r > threshold:
-                removing_sets[i][t].append(s)
-                #f.write(s + " ")        
-    #filt = lambda node: False if (node.taxon is not None and node.taxon.label in removing_sets[t]) else True
-    #trees[t].filter_leaf_nodes(filt)
-    #f.write("\n")
 
-#trees.write_to_path(outtrees,'newick')
-
+# the below code is locked now because Dendropy's filter_leaf_nodes() seems to have problem
+# i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
 '''
 treeName,treeExt = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
@@ -103,7 +135,10 @@ for i,RS in enumerate(removing_sets):
         tree.filter_leaf_nodes(filt,update_bipartitions=True)
     trees_shrinked.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
 #print(removing_sets)
-'''    
+''' 
+
+# prune trees according to the removing sets. 
+# calling nw_prune here as a (terrible) temporary sollution, because Dendropy's filter_leaf_nodes() seems to have problems
 fName,ext = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
     outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
