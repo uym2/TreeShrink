@@ -21,7 +21,7 @@ parser.add_argument("-k","--k",required=False,help="The maximum number of leaves
 parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold")
 parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
 
-wdir = "/Users/uym2/my_gits/TreeShrink/" 
+wdir = "/Users/uym2/my_gits/TreeShrink" 
 
 
 args = vars(parser.parse_args())
@@ -75,17 +75,17 @@ for t,a_tree in enumerate(trees):
     
     # fit kernel density to this gene's species features (per-gene mode)
     if mode == 'per-gene':
-        filename = outdir + "/" + "gene_" + str(t) + ".dat"
-        with open(filename,'w') as f:
-            for s in mapping:
-                f.write(str(mapping[s]))
-                f.write("\n")
-        for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
-            print(threshold)
-            for s in mapping:
-                if mapping[s] > threshold: 
-                    removing_sets[i][t].append(s)
+	filename = outdir + "/" + "gene_" + str(t) + ".dat"
+	with open(filename,'w') as f:
+	    for s in mapping:
+		f.write(str(mapping[s]))
+		f.write("\n")
+    	if len(mapping) > 1:
+	    for i,q in enumerate(quantiles):
+	        threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
+	        for s in mapping:
+		    if mapping[s] > threshold: 
+		        removing_sets[i][t].append(s)
 
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
