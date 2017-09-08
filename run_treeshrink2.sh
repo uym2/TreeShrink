@@ -9,7 +9,7 @@ end=$6
 
 
 q=$(seq $start $inc $end)
-python treeshrink2.py -i $intrees -q "$q" -d $outdir -m $mode
+treeshrink2.py -i $intrees -q "$q" -d $outdir -m $mode
 
 orgMS=`dirname $intrees`/`basename $intrees .trees`.MS
 orgOCC=`dirname $intrees`/`basename $intrees .trees`.occ
