@@ -10,7 +10,7 @@ d = {}
 with open(filein,'r') as fin:
     for line in fin:
         method, condition, occ, dMS = line.rstrip().split()
-        key = method + "_" + condition
+        key = method + "#" + condition
         occ = float(occ)
         dMS = float(dMS)
         if key not in d:
@@ -22,7 +22,7 @@ with open(filein,'r') as fin:
 with open(fileout,'w') as fout:
     for key in d:
         occ,dMS,count = d[key]
-        method,condition = key.split("_")
+        method,condition = key.split("#")
         occ = occ/count
         dMS = dMS/count
         fout.write(method + " " + condition + " " + str(occ) + " " + str(dMS) + "\n")
