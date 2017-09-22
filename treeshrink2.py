@@ -49,11 +49,6 @@ occ = {}
 removing_sets = [ [ [ ] for i in range(len(trees)) ] for j in range(len(quantiles)) ]
 
 for t,a_tree in enumerate(trees):
-    # update taxon occupancy
-    for n in a_tree.leaf_node_iter():
-        s = n.taxon.label
-        occ[s] = 1 if not s in occ else occ[s]+1
-
     # solve k-shrink
     a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
     a_filter.optFilter(d=k)
@@ -75,17 +70,22 @@ for t,a_tree in enumerate(trees):
     
     # fit kernel density to this gene's species features (per-gene mode)
     if mode == 'per-gene':
-	filename = outdir + "/" + "gene_" + str(t) + ".dat"
-	with open(filename,'w') as f:
-	    for s in mapping:
-		f.write(str(mapping[s]))
-		f.write("\n")
-    	if len(mapping) > 1:
-	    for i,q in enumerate(quantiles):
-	        threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
-	        for s in mapping:
-		    if mapping[s] > threshold: 
-		        removing_sets[i][t].append(s)
+    	filename = outdir + "/" + "gene_" + str(t) + ".dat"
+        with open(filename,'w') as f:
+            for s in mapping:
+                f.write(str(mapping[s]))
+                f.write("\n")
+            if len(mapping) > 1:
+                for i,q in enumerate(quantiles):
+                    threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
+                    for s in mapping:
+                        if mapping[s] > threshold: 
+                            removing_sets[i][t].append(s)
+    # update taxon occupancy (only for per-species mode)
+    if mode == 'per-species':
+        for n in a_tree.leaf_node_iter():
+            s = n.taxon.label
+            occ[s] = 1 if not s in occ else occ[s]+1
 
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
