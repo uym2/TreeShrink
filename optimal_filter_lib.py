@@ -211,8 +211,8 @@ class TreeFilter:
         return node_record
     
 
-    def __default_d__(self,DEFAULT_MIN=20):
-        return min(self.nleaf/4,max(DEFAULT_MIN,int(sqrt(self.nleaf))))
+    def __default_d__(self,DEFAULT_MIN=0,SCALE_FACTOR=5):
+        return min(self.nleaf/4,max(DEFAULT_MIN,int(SCALE_FACTOR*sqrt(self.nleaf))))
 
     def optFilter(self,d=None):
         d = self.__default_d__() if d is None else d
