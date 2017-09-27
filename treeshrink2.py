@@ -75,10 +75,10 @@ for t,a_tree in enumerate(trees):
             for s in mapping:
                 f.write(str(mapping[s]))
                 f.write("\n")
-            n_missing = len(list(a_tree.leaf_node_iter())) - len(mapping)
-            for i in range(n_missing):
-                f.write("1.0")
-                f.write("\n")
+            #n_missing = len(list(a_tree.leaf_node_iter())) - len(mapping)
+            #for i in range(n_missing):
+            #    f.write("1.0")
+            #    f.write("\n")
         if len(mapping) > 1:
             for i,q in enumerate(quantiles):
                 threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
