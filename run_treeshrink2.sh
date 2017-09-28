@@ -6,7 +6,7 @@ mode=$3
 start=$4
 inc=$5
 end=$6
-
+name=$7
 
 q=$(seq $start $inc $end)
 treeshrink2.py -i $intrees -q "$q" -d $outdir -m $mode
@@ -26,4 +26,4 @@ for t in $outdir/*occ; do paste $orgOCC $t | awk '{print $2/$1;}' > $outdir/`bas
 grep . $outdir/*occ_norm | sed -e "s/.occ_norm:/ /g" > $outdir/occ.dat
 grep . $outdir/*dMS | sed -e "s/.dMS:/ /g" > $outdir/dMS.dat
 
-join $outdir/occ.dat $outdir/dMS.dat | sed "s/^.*shrinked_/TreeShrink2 q/g" > $outdir/occ_dMS.dat
+join $outdir/occ.dat $outdir/dMS.dat | sed "s/^.*shrinked_/TreeShrink_$name q/g" > $outdir/occ_dMS.dat
