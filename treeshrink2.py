@@ -81,7 +81,7 @@ for t,a_tree in enumerate(trees):
             #    f.write("\n")
         if len(mapping) > 1:
             for i,q in enumerate(quantiles):
-                threshold = float(check_output(["Rscript",wdir + "/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:]) 
+                threshold = float(check_output(["Rscript",wdir + "/find_threshold_hnorm.R",filename,q]).lstrip().rstrip()[4:]) 
                 for s in mapping:
                     if mapping[s] > threshold: 
                         removing_sets[i][t].append(s)
