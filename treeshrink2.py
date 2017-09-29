@@ -81,7 +81,7 @@ for t,a_tree in enumerate(trees):
             #    f.write("\n")
         if len(mapping) > 1:
             for i,q in enumerate(quantiles):
-                threshold = float(check_output(["Rscript",wdir + "/find_threshold_IQR.R",filename,q]).lstrip().rstrip()[4:]) 
+                threshold = float(check_output(["Rscript",wdir + "/find_threshold_loglnorm.R",filename,q]).lstrip().rstrip()[4:]) 
                 print("Threshold: ", threshold)
                 for s in mapping:
                     if mapping[s] > threshold: 
