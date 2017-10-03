@@ -10,6 +10,7 @@ from dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext
 from os import mkdir
 from copy import deepcopy
+from tree_lib import prune_tree
 
 parser = argparse.ArgumentParser()
 
@@ -131,21 +132,30 @@ if mode == 'all-genes':
                     removing_sets[i][t].append(s)
 
 
-# the below code is locked now because Dendropy's filter_leaf_nodes() seems to have problem
+# Dendropy's filter_leaf_nodes() seems to have problem
 # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
-'''
+# use home-made code to prune the tree instead
+
 treeName,treeExt = splitext(outtrees)
+fName,ext = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
     trees_shrinked = deepcopy(trees)
+    outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
+    with open(outfile,'w') as f:
+        for item in RS:
+            for s in item:
+                f.write(s + "\t")
+            f.write("\n")
     for t,tree in enumerate(trees_shrinked):
-        filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
-        tree.filter_leaf_nodes(filt,update_bipartitions=True)
+        #filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
+        #tree.filter_leaf_nodes(filt,update_bipartitions=True)
+        prune_tree(tree,RS[t])
     trees_shrinked.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
-#print(removing_sets)
-''' 
-
+ 
+'''
 # prune trees according to the removing sets. 
 # calling nw_prune here as a (terrible) temporary sollution, because Dendropy's filter_leaf_nodes() seems to have problems
+
 fName,ext = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
     outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
@@ -156,3 +166,4 @@ for i,RS in enumerate(removing_sets):
             f.write("\n")
     trees_shrinked =  outdir + "/" + fName + "_" + quantiles[i] + ext
     call(["prune_trees.sh",intrees,outfile,trees_shrinked]) 
+'''    
