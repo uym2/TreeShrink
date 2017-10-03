@@ -211,8 +211,8 @@ class TreeFilter:
         return node_record
     
 
-    def __default_d__(self):
-        return 2*int(sqrt(self.nleaf))
+    def __default_d__(self,DEFAULT_MIN=0,SCALE_FACTOR=5):
+        return min(self.nleaf/4,max(DEFAULT_MIN,int(SCALE_FACTOR*sqrt(self.nleaf))))
 
     def optFilter(self,d=None):
         d = self.__default_d__() if d is None else d
@@ -310,12 +310,28 @@ class TreeFilter:
 
         return self.ddpTree
 
-    def list_removals(self,d=None,fout=stdout): 
+    def list_removals_reverse(self,d=None,fout=None): 
         d = self.__default_d__() if d is None else d
         last_entry = self.best_entries[d]
+        rm_list = []
         def __list__(entry):
             if entry.backtrack is not None:
                 __list__(entry.backtrack)
-                fout.write(entry.removed.taxon.label + " removed\n")
+                if fout:
+                    fout.write(entry.removed.taxon.label + " ")
+                rm_list.append(entry.removed.taxon.label)
 
         __list__(last_entry)
+        return rm_list
+
+    def list_removals(self,d=None,fout=None):
+        d = self.__default_d__() if d is None else d
+        entry = self.best_entries[d]
+        rm_list = []
+        while entry.backtrack is not None:
+            if fout:
+                fout.write(entry.removed.taxon.label + " ")
+            rm_list.append(entry.removed.taxon.label)
+            entry = entry.backtrack
+
+        return rm_list

@@ -1,0 +1,56 @@
+filtering ...
+Loading required package: BMS
+28.68041
+done
+sed: -e: No such file or directory
+computing MS ...
+TreeCmp version 1.0-b291
+
+Active options:
+Type of the analysis:  one-to-all comparison mode (-r)
+Metrics:
+  1. MatchingSplit (ms)
+Input file: ../gene_trees/LBF/kp.c1c2.gt.LBF.0.015.trees
+Output file: ../results/kp.c1c2.0.015.MS.dat
+Additional options:
+P - Prune compared trees if needed (trees can have different leaf sets).
+-----
+2017-06-20 18:18:06: Start of scanning input file: ../gene_trees/LBF/kp.c1c2.gt.LBF.0.015.trees
+pal.tree.TreeParseException: Missing closing bracket
+	at pal.tree.ReadTree.readNH(ReadTree.java:97)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:139)
+	at pal.tree.ReadTree.<init>(ReadTree.java:42)
+	at treecmp.io.TreeReader.readNextTree(TreeReader.java:169)
+	at treecmp.io.TreeReader.scan(TreeReader.java:194)
+	at treecmp.Main.main(Main.java:98)
+2017-06-20 18:18:06: End of scanning input file: ../gene_trees/LBF/kp.c1c2.gt.LBF.0.015.trees
+2017-06-20 18:18:06: 0 valid trees found in file: ../gene_trees/LBF/kp.c1c2.gt.LBF.0.015.trees
+2017-06-20 18:18:06: Start of calculation...please wait...
+2017-06-20 18:18:06: 0.00% completed...
+pal.tree.TreeParseException: Missing closing bracket
+	at pal.tree.ReadTree.readNH(ReadTree.java:97)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:89)
+	at pal.tree.ReadTree.readNH(ReadTree.java:139)
+	at pal.tree.ReadTree.<init>(ReadTree.java:42)
+	at treecmp.io.TreeReader.readNextTree(TreeReader.java:169)
+	at treecmp.command.RunRCommand.refTreeCompareEx(RunRCommand.java:104)
+	at treecmp.command.RunRCommand.refTreeCompareExecute(RunRCommand.java:69)
+	at treecmp.command.RunRCommand.run(RunRCommand.java:53)
+	at treecmp.Main.main(Main.java:111)
+done
+computing RF ...
+done
+All done!

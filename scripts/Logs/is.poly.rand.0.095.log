@@ -1,0 +1,197 @@
+computing MSdone
+computing MS ...
+TreeCmp version 1.0-b291
+
+Active options:
+Type of the analysis:  one-to-all comparison mode (-r)
+Metrics:
+  1. MatchingSplit (ms)
+Input file: ../gene_trees/randprune/is.poly.gt.randprune.0.095.trees
+Output file: ../results/is.poly.randprune.0.095.MS.dat
+Additional options:
+P - Prune compared trees if needed (trees can have different leaf sets).
+-----
+2017-06-19 22:54:45: Start of scanning input file: ../gene_trees/randprune/is.poly.gt.randprune.0.095.trees
+2017-06-19 22:54:56: End of scanning input file: ../gene_trees/randprune/is.poly.gt.randprune.0.095.trees
+2017-06-19 22:54:56: 1478 valid trees found in file: ../gene_trees/randprune/is.poly.gt.randprune.0.095.trees
+2017-06-19 22:54:56: Start of calculation...please wait...
+2017-06-19 22:54:56: 0.00% completed...
+2017-06-19 22:55:01: 5.01% completed...
+2017-06-19 22:55:03: 10.01% completed...
+2017-06-19 22:55:05: 15.02% completed...
+2017-06-19 22:55:08: 20.03% completed...
+2017-06-19 22:55:10: 25.03% completed...
+2017-06-19 22:55:12: 30.04% completed...
+2017-06-19 22:55:14: 35.05% completed...
+2017-06-19 22:55:16: 40.05% completed...
+2017-06-19 22:55:19: 45.06% completed...
+2017-06-19 22:55:21: 50.07% completed...
+2017-06-19 22:55:23: 55.07% completed...
+2017-06-19 22:55:25: 60.08% completed...
+2017-06-19 22:55:27: 65.09% completed...
+2017-06-19 22:55:29: 70.09% completed...
+2017-06-19 22:55:31: 75.10% completed...
+2017-06-19 22:55:32: 80.11% completed...
+2017-06-19 22:55:34: 85.12% completed...
+2017-06-19 22:55:36: 90.12% completed...
+2017-06-19 22:55:38: 95.13% completed...
+2017-06-19 22:55:40: 100.00% completed.
+2017-06-19 22:55:40: End of calculation.
+2017-06-19 22:55:40: Total calculation time: 43765 ms.
+done
+computing RF ...
+done
+All done!
+9:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38241 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38245 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38333 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38334 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38429 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38434 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38498 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38577 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38587 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38686 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38690 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38789 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38794 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38813 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38816 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38963 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 38966 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 39038 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:53: Total calculation time: 39130 ms.
+2017-06-19 22:49:53: 100.00% completed.
+2017-06-19 22:49:53: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39135 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39192 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39304 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39308 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39361 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39364 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39455 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39519 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39529 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39532 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39656 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39704 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39786 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39792 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39793 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39855 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39902 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39961 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 39972 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 40056 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 40091 ms.
+2017-06-19 22:49:54: 100.00% completed.
+2017-06-19 22:49:54: End of calculation.
+2017-06-19 22:49:54: Total calculation time: 40151 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40217 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40309 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40312 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40384 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40456 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40507 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40541 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40544 ms.
+2017-06-19 22:49:55: 100.00% completed.
+2017-06-19 22:49:55: End of calculation.
+2017-06-19 22:49:55: Total calculation time: 40548 ms.
+done
+computing RF ...
+done
+All done!
