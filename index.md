@@ -1,7 +1,15 @@
 ## TreeShrink: efficient detection of outlier tree leaves
-Github page for [the python code](https://github.com/uym2/TreeShrink) for TreeShrink. 
+Github page for [the python code](https://github.com/uym2/TreeShrink) of TreeShrink.
 
 ### Datasets
+All data used in the journal version of TreeShrink can be found [here](https://drive.google.com/drive/folders/0B6VQuQbxaAq-c0VuZGxBUUVKazg?usp=sharing)
+
+
+TreeShrink was previously published in the RECOMB-CG 2017 proceedings 
+Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. doi:10.1007/978-3-319-67979-2_7.
+
+Below you can find the data used in the RECOMB-CG version
+
 #### The plants dataset 
 - Unfiltered trees [unrooted](https://drive.google.com/open?id=0B6VQuQbxaAq-ZEQ3X1hkRThteUk) and [rooted](https://drive.google.com/open?id=0B6VQuQbxaAq-MGVyY0phaDFIR3M)
 - Filtered trees 
