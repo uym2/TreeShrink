@@ -18,8 +18,8 @@ parser.add_argument("-i","--input",required=True,help="Input trees")
 parser.add_argument("-d","--outdir",required=False,help="Output directory")
 parser.add_argument("-o","--output",required=False,help="Output trees")
 parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing")
-parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed")
-parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold")
+parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
+parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
 parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
 
 wdir = "/Users/uym2/my_gits/TreeShrink" 
@@ -27,7 +27,7 @@ wdir = "/Users/uym2/my_gits/TreeShrink"
 
 args = vars(parser.parse_args())
 
-quantiles = [ q for q in args["quantiles"].split()]
+quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
 #print(quantiles)
 
 intrees = args["input"]
