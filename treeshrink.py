@@ -7,8 +7,8 @@ from subprocess import check_output,call
 import argparse
 from sys import stdout
 from dendropy import Tree, TreeList
-from os.path import basename, dirname, splitext
-from os import mkdir
+from os.path import basename, dirname, splitext,realpath
+from os import mkdir,getcwd
 from copy import deepcopy
 from tree_lib import prune_tree
 
@@ -22,7 +22,7 @@ parser.add_argument("-k","--k",required=False,help="The maximum number of leaves
 parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
 parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
 
-wdir = "/Users/uym2/my_gits/TreeShrink" 
+wdir = dirname(realpath(__file__))
 
 
 args = vars(parser.parse_args())
