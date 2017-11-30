@@ -18,14 +18,16 @@ optional arguments:
   -i INPUT, --input INPUT
                         Input trees
   -d OUTDIR, --outdir OUTDIR
-                        Output directory
+                        Output directory. Default: inferred from the input
+                        trees
   -t TEMPDIR, --tempdir TEMPDIR
                         Directory to keep temporary files. If specified, the
                         temp files will be kept
   -o OUTPUT, --output OUTPUT
-                        Output trees
+                        The name of the output trees. Default: inferred from
+                        the input trees
   -c, --centroid        Do centroid reroot in preprocessing. Highly
-                        recommended for large trees
+                        recommended for large trees. Default: NO
   -k K, --k K           The maximum number of leaves that can be removed.
                         Default: auto-select based on the data
   -q QUANTILES, --quantiles QUANTILES
