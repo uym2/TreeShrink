@@ -4,7 +4,10 @@ Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tr
 
 ### Dependencies:
 - Python and Dendropy library (version 4.2.0 recommended)
-- R and BMS package in R
+- R and the BMS package in R
+```
+install.packages("BMS")
+```
 
 
 ### Usage: 
