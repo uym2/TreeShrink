@@ -5,7 +5,7 @@ For a given `k`, TreeShrink finds the set of species to be removed to maximally 
 
 An earlier version of TreeShrink is described in the following paper:
 
-* Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. doi:10.1007/978-3-319-67979-2_7.
+* Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. [doi:10.1007/978-3-319-67979-2_7](https://doi.org/10.1007/978-3-319-67979-2_7).
 
 A journal version is currently under review. 
 
