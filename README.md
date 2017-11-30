@@ -39,9 +39,25 @@ optional arguments:
 ### Examples:
 The TreeShrink package comes with several testing trees that can be found in the test_data folder.
 
-The following command will produce the shrinked trees and the corresponding removing sets at alpha = 0.05 (default)
+The following command will produce the shrinked trees and the corresponding removing sets at false positive error rate alpha = 0.05 (default)
 ```bash
 python treeshrink.py -i test_data/mm10.trees
 ```
 
 After running the command, the program will generate the folder test_data/mm10_kshrink/, inside which you will find the shrinked trees (mm10_shrinked_0.05.trees) and the removing sets (mm10_shrinked_RS_0.05).
+
+The alpha threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-d```. Note that you can run TreeShrink with multiple alpha thresholds, as follow
+
+```bash
+ python treeshrink.py -i test_data/mm10.trees -q "0.03 0.07" -d test_data/mm10_kshrink_multi
+ ```
+ 
+ The program will generate the folder test_data/mm10_kshrink_mulity/ inside which there are two sets of shrinked trees and removing sets at alpha = 0.03 and alpha = 0.07.
+ 
+ The default mode of TreeShrink is "per-species", which is designed to find outliers for a collection of phylogenetic trees. In this mode, the statistical tests are performed for each species. We reccommend switching to the "all-genes" mode if there are rare species in the dataset. Besides, if the input trees are not phylogenetically dependent, one should use the "per-gene" mode instead. Use ```-m``` to change the mode.
+ 
+```bash
+python treeshrink.py -i test_data/mm10.trees -m per-gene
+python treeshrink.py -i test_data/mm10.trees -m all-genes
+```
+ 
