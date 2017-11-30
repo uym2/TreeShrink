@@ -35,3 +35,13 @@ optional arguments:
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
                         genes'. Default: 'per-species'
 ```
+
+### Examples:
+The TreeShrink package comes with several testing trees that can be found in the test_data folder.
+
+The following command will produce the shrinked trees and the corresponding removing sets at alpha = 0.05 (default)
+```bash
+python treeshrink.py -i test_data/mm10.trees
+```
+
+After running the command, the program will generate the folder test_data/mm10_kshrink/, inside which you will find the shrinked trees (mm10_shrinked_0.05.trees) and the removing sets (mm10_shrinked_RS_0.05).
