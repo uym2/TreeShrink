@@ -1,50 +1,22 @@
-# TreeShrink: efficient detection of outlier tree leaves
+usage: treeshrink.py [-h] -i INPUT [-d OUTDIR] [-t TEMPDIR] [-o OUTPUT] [-c]
+                     [-k K] [-q QUANTILES] [-m MODE]
 
-## Usage
-
-```python
-treeshrink.py [-h] -i INPUT [-m METHOD] [-f FUNCTION] [-o OUTPUT] 
-              [-r REMOVAL] [-q QUANTILE] [-d DIAMETER] [-g GRADIENT] [-c]
-```
-```
-  -h, --help            
-                      
-                        show this help message and exit
-  
+optional arguments:
+  -h, --help            show this help message and exit
   -i INPUT, --input INPUT
-  
-                        input trees
-                        
-  -m METHOD, --method METHOD
-  
-                        method: ind,med,sts. Default: med
-                        
-  -f FUNCTION, --function FUNCTION
-  
-                        a function to fit to data: lnorm, kernel,lkernel. Default: lkernel
-                        
+                        Input trees
+  -d OUTDIR, --outdir OUTDIR
+                        Output directory
+  -t TEMPDIR, --tempdir TEMPDIR
+                        Directory to keep temporary files. If specified, the
+                        temp files will be kept
   -o OUTPUT, --output OUTPUT
-  
-                        output trees
-                        
-  -r REMOVAL, --removal REMOVAL
-  
-                        the removing set
-                        
-  -q QUANTILE, --quantile QUANTILE
-  
-                        the cut-off quantile of the gradient to be used as threshold
-                        
-  -d DIAMETER, --diameter DIAMETER
-  
-                        list of the optimal diameter by level
-                        
-  -g GRADIENT, --gradient GRADIENT
-  
-                        list of the gradient of the diameter by level
-                        
-  -c, --centroid        
-  
-                        do centroid reroot in preprocessing
-```                        
-                        
+                        Output trees
+  -c, --centroid        Do centroid reroot in preprocessing. Highly
+                        recommended for large trees
+  -k K, --k K           The maximum number of leaves that can be removed.
+                        Default: auto-select based on the data
+  -q QUANTILES, --quantiles QUANTILES
+                        The quantile(s) to set threshold. Default is 0.05
+  -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
+                        genes'. Default: 'per-species'

@@ -16,8 +16,9 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument("-i","--input",required=True,help="Input trees")
 parser.add_argument("-d","--outdir",required=False,help="Output directory")
+parser.add_argument("-t","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
 parser.add_argument("-o","--output",required=False,help="Output trees")
-parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing")
+parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees")
 parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
 parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
 parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
@@ -42,6 +43,11 @@ k = int(args["k"]) if args["k"] else None
 
 outdir = args["outdir"] if args["outdir"] else splitext(intrees)[0] + "_kshrink"
 mkdir(outdir)
+if args["tempdir"]:
+    tempdir = args["tempdir"]
+    mkdir(tempdir)
+else:
+    tempdir = check_output(["mktemp","-d"]).rstrip()
 
 trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
 gene_list = [[] for i in range(len(trees))]
@@ -71,7 +77,7 @@ for t,a_tree in enumerate(trees):
     
     # fit kernel density to this gene's species features (per-gene mode)
     if mode == 'per-gene':
-    	filename = outdir + "/" + "gene_" + str(t) + ".dat"
+    	filename = tempdir + "/" + "gene_" + str(t) + ".dat"
         with open(filename,'w') as f:
             for s in mapping:
                 f.write(str(mapping[s]))
@@ -83,7 +89,7 @@ for t,a_tree in enumerate(trees):
         if len(mapping) > 1:
             for i,q in enumerate(quantiles):
                 threshold = float(check_output(["Rscript",wdir + "/find_threshold_loglnorm.R",filename,q]).lstrip().rstrip()[4:]) 
-                print("Threshold: ", threshold)
+                #print("Threshold: ", threshold)
                 for s in mapping:
                     if mapping[s] > threshold: 
                         removing_sets[i][t].append(s)
@@ -100,7 +106,7 @@ if mode == 'per-species':
         l = len(species_map[s])
         for i in range(occ[s]-l):
             species_map[s].append(1)
-        filename = outdir+"/" + s + ".dat"
+        filename = tempdir+"/" + s + ".dat"
         with open(filename,'w') as f:
             for v in species_map[s]:
                 f.write(str(v))
@@ -118,7 +124,7 @@ if mode == 'per-species':
 
 # fit kernel density to all the species features across all genes and compute the global threshold (all-gene mode) 
 if mode == 'all-genes':
-    filename = outdir + "/" + "all_genes" + ".dat"
+    filename = tempdir + "/" + "all_genes" + ".dat"
     with open(filename,'w') as f:
         for gene in gene_list:
             for s,r in gene:
@@ -151,6 +157,9 @@ for i,RS in enumerate(removing_sets):
         #tree.filter_leaf_nodes(filt,update_bipartitions=True)
         prune_tree(tree,RS[t])
     trees_shrinked.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
+
+if not args["tempdir"]:
+    call(["rm","-r",tempdir])
  
 '''
 # prune trees according to the removing sets. 
