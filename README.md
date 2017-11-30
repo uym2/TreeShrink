@@ -4,6 +4,7 @@ treeshrink.py [-h] -i INPUT [-d OUTDIR] [-t TEMPDIR] [-o OUTPUT] [-c]
                      [-k K] [-q QUANTILES] [-m MODE]
 ```
 optional arguments:
+```
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
                         Input trees
@@ -22,3 +23,4 @@ optional arguments:
                         The quantile(s) to set threshold. Default is 0.05
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
                         genes'. Default: 'per-species'
+```
