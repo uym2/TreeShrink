@@ -1,6 +1,8 @@
-usage: treeshrink.py [-h] -i INPUT [-d OUTDIR] [-t TEMPDIR] [-o OUTPUT] [-c]
+## Usage: 
+```bash
+treeshrink.py [-h] -i INPUT [-d OUTDIR] [-t TEMPDIR] [-o OUTPUT] [-c]
                      [-k K] [-q QUANTILES] [-m MODE]
-
+```
 optional arguments:
   -h, --help            show this help message and exit
   -i INPUT, --input INPUT
