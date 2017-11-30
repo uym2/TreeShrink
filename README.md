@@ -1,4 +1,13 @@
-## Usage: 
+
+### If you find TreeShrink helpful for your research, please cite the following paper
+Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. doi:10.1007/978-3-319-67979-2_7.
+
+### Dependencies:
+- Python and Dendropy library (version 4.2.0 recommended)
+- R and BMS package in R
+
+
+### Usage: 
 ```bash
 treeshrink.py [-h] -i INPUT [-d OUTDIR] [-t TEMPDIR] [-o OUTPUT] [-c]
                      [-k K] [-q QUANTILES] [-m MODE]
