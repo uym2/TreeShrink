@@ -3,11 +3,8 @@
 Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. doi:10.1007/978-3-319-67979-2_7.
 
 ### Dependencies:
-- Python and Dendropy library (version 4.2.0 recommended)
-- R and the BMS package in R
-```
-install.packages("BMS")
-```
+- Python and [https://pythonhosted.org/DendroPy/downloading.html](Dendropy library) (version 4.2.0 recommended)
+- R and the [http://bms.zeugner.eu/getBMS/](BMS package)
 
 
 ### Usage: 
