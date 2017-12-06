@@ -1,4 +1,3 @@
-import numpy as np
 import operator
 from dendropy import Tree
 from copy import deepcopy
