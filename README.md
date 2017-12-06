@@ -69,7 +69,7 @@ The following command will produce the shrunk trees and the corresponding removi
 python treeshrink.py -i test_data/mm10.trees
 ```
 
-After running the command, the program will generate the folder test_data/mm10_kshrink/, inside which you will find the shrunk trees (mm10_shrinked_0.05.trees) and the removing sets (mm10_shrinked_RS_0.05).
+After running the command, the program will generate the folder `test_data/mm10_kshrink/`, inside which you will find the shrunk trees (`mm10_shrinked_0.05.trees`) and the removing sets (`mm10_shrinked_RS_0.05`).
 
 The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-d```. Note that you can run TreeShrink with multiple α thresholds, as follow
 
