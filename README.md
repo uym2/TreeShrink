@@ -1,7 +1,17 @@
 
 TreeShrink is an algorithm for detecting abnormally long branches in one or more phylogenetic trees. 
 
-For a given `k`, TreeShrink finds the set of species to be removed to maximally reduce the tree diameter for the removal size of 1, 2, ..., k. On top of this, TreeShrink uses statiscal tests of outlier detection to suggest what exact set of taxa should be removed. When multiple trees are available (e.g., gene trees), the statistical tests can use the information from all genes to decide what branches are too long. 
+- **Input**: The inputs are:
+    - One or more phylogenetic trees with branch lenghts. If more than one, the trees should be on overlapping sets of species. 
+    - Optional: A number `k` ≤ the total number of species 
+    - Optional: a selection of one of the three implemented algorithms for outlier detection
+- **Output**:
+    - The set of species to be removed to maximally reduce the tree diameter for the removal size of 1, 2, ..., k. 
+    - A suggested list of species to remove from each input tree, based on the selected statistical test. 
+    
+Note that the tree diameter is the maximum distance between any two leaves of the tree. When multiple trees are available (e.g., gene trees), the statistical tests can use the information from all genes to decide what branches are too long. 
+
+#### Publications:
 
 An earlier version of TreeShrink is described in the following paper:
 
