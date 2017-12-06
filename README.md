@@ -1,13 +1,14 @@
 
 TreeShrink is an algorithm for detecting abnormally long branches in one or more phylogenetic trees. 
 
-- **Input**: The inputs are:
-    - One or more phylogenetic trees with branch lenghts. If more than one, the trees should be on overlapping sets of species. 
-    - Optional: A number `k` ≤ the total number of species 
-    - Optional: a selection of one of the three implemented algorithms for outlier detection
-- **Output**:
-    - The set of species to be removed to maximally reduce the tree diameter for the removal size of 1, 2, ..., k. 
-    - A suggested list of species to remove from each input tree, based on the selected statistical test. 
+- **Inputs**: 
+    - One or more phylogenetic trees with branch lengths. If more than one, the trees should be on overlapping sets of species. 
+    - Optional: A number `k` ≤ the total number of species.
+    - Optional: a selection of one of the three implemented algorithms for outlier detection.
+- **Outputs**:
+    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. 
+    - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
+    - The shrunk trees: the input trees with the suggested leaves removed. 
     
 Note that the tree diameter is the maximum distance between any two leaves of the tree. When multiple trees are available (e.g., gene trees), the statistical tests can use the information from all genes to decide what branches are too long. 
 
@@ -62,7 +63,7 @@ optional arguments:
 ### Examples:
 The TreeShrink package comes with several testing trees that can be found in the test_data folder.
 
-The following command will produce the shrinked trees and the corresponding removing sets at false positive error rate alpha = 0.05 (default)
+The following command will produce the shrunk trees and the corresponding removing sets at false positive error rate alpha = 0.05 (default)
 ```bash
 python treeshrink.py -i test_data/mm10.trees
 ```
@@ -75,9 +76,9 @@ The alpha threshold can be adjusted using ```-q``` option. The output folder can
  python treeshrink.py -i test_data/mm10.trees -q "0.03 0.07" -d test_data/mm10_kshrink_multi
  ```
  
- The program will generate the folder test_data/mm10_kshrink_mulity/ inside which there are two sets of shrinked trees and removing sets at alpha = 0.03 and alpha = 0.07.
+ The program will generate the folder test_data/mm10_kshrink_mulity/ inside which there are two sets of shrunk trees and removing sets at alpha = 0.03 and alpha = 0.07.
  
- The default mode of TreeShrink is "per-species", which is designed to find outliers for a collection of phylogenetic trees. In this mode, the statistical tests are performed for each species. We reccommend switching to the "all-genes" mode if there are rare species in the dataset. Besides, if the input trees are not phylogenetically dependent, one should use the "per-gene" mode instead. Use ```-m``` to change the mode.
+ The default mode of TreeShrink is "per-species", which is designed to find outliers for a collection of phylogenetic trees. In this mode, the statistical tests are performed for each species. We recommend switching to the "all-genes" mode if there are rare species in the dataset. Besides, if the input trees are not phylogenetically dependent, one should use the "per-gene" mode instead. Use ```-m``` to change the mode.
  
 ```bash
 python treeshrink.py -i test_data/mm10.trees -m per-gene
