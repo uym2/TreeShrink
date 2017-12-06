@@ -11,6 +11,8 @@ from os.path import basename, dirname, splitext,realpath
 from os import mkdir,getcwd
 from copy import deepcopy
 from tree_lib import prune_tree
+from tempfile import mkdtemp
+
 
 parser = argparse.ArgumentParser()
 
@@ -47,7 +49,7 @@ if args["tempdir"]:
     tempdir = args["tempdir"]
     mkdir(tempdir)
 else:
-    tempdir = check_output(["mktemp","-d"]).rstrip()
+    tempdir = mkdtemp() #check_output(["mktemp","-d"]).rstrip()
 
 trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
 gene_list = [[] for i in range(len(trees))]
