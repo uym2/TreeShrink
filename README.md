@@ -22,6 +22,7 @@ An earlier version of TreeShrink is described in the following paper:
 A journal version is currently under review. 
 
 ### Installation:
+(TO BE UPDATED)
 
 To be able to use TreeShrink, you need to first install the following packages. 
 
