@@ -1,0 +1,85 @@
+#NEXUS
+
+[ID: None Available]
+begin taxa;
+	dimensions ntax=33;
+	taxlabels
+		Xenopeltis_unicolor
+		Loxocemus_bicolor
+		Morelia_spilota
+		Morelia_bredli
+		Morelia_carinata
+		Morelia_amethistina
+		Morelia_oenpelliensis
+		Morelia_boeleni
+		Morelia_viridisS
+		Morelia_viridisN
+		Liasis_olivaceus
+		Liasis_mackloti
+		Liasis_fuscus
+		Liasis_albertisii
+		Apodora_papuana
+		Bothrochilus_boa
+		Antaresia_maculosa
+		Antaresia_stimsoni
+		Antaresia_childreni
+		Antaresia_perthensis
+		Antaresia_melanocephalus
+		Antaresia_ramsayi
+		Python_reticulatus
+		Python_timoriensis
+		Python_sebae
+		Python_molurus
+		Python_curtus
+		Python_regius
+		Candoia_aspera
+		Morelia_nauta
+		Morelia_clastolepis
+		Morelia_tracyae
+		Morelia_kinghorni
+		;end;
+begin trees;
+	translate
+		1	Xenopeltis_unicolor,
+		2	Loxocemus_bicolor,
+		3	Morelia_spilota,
+		4	Morelia_bredli,
+		5	Morelia_carinata,
+		6	Morelia_amethistina,
+		7	Morelia_oenpelliensis,
+		8	Morelia_boeleni,
+		9	Morelia_viridisS,
+		10	Morelia_viridisN,
+		11	Liasis_olivaceus,
+		12	Liasis_mackloti,
+		13	Liasis_fuscus,
+		14	Liasis_albertisii,
+		15	Apodora_papuana,
+		16	Bothrochilus_boa,
+		17	Antaresia_maculosa,
+		18	Antaresia_stimsoni,
+		19	Antaresia_childreni,
+		20	Antaresia_perthensis,
+		21	Antaresia_melanocephalus,
+		22	Antaresia_ramsayi,
+		23	Python_reticulatus,
+		24	Python_timoriensis,
+		25	Python_sebae,
+		26	Python_molurus,
+		27	Python_curtus,
+		28	Python_regius,
+		29	Candoia_aspera,
+		30	Morelia_nauta,
+		31	Morelia_clastolepis,
+		32	Morelia_tracyae,
+		33	Morelia_kinghorni
+		;
+   [Note: This tree contains information on the topology, 
+          branch lengths (if present), and the probability
+          of the partition indicated by the branch.]
+   tree con_50_majrule = (1:0.222616,29:0.447561,(2:0.277421,((((((3:0.025799,4:0.029289)1.00:0.032127,(((6:0.024544,((30:0.007361,33:0.008005)0.63:0.004949,31:0.006609)1.00:0.015993)0.62:0.008382,32:0.040798)1.00:0.034770,7:0.063897)0.96:0.006481)1.00:0.024918,8:0.083531)0.62:0.006093,((5:0.064617,(9:0.049144,10:0.034638)1.00:0.023740)1.00:0.013343,(17:0.068936,((18:0.015974,19:0.024150)1.00:0.036284,20:0.067585)1.00:0.012486)1.00:0.009102)1.00:0.017369,((((11:0.037696,(12:0.012321,13:0.020567)1.00:0.047603)0.65:0.012131,15:0.062359)1.00:0.017776,(21:0.040449,22:0.029450)1.00:0.049857)0.90:0.008771,(14:0.051319,16:0.061160)1.00:0.034234)0.67:0.005251)1.00:0.029891,(23:0.058993,24:0.069640)1.00:0.063613)1.00:0.031080,(((25:0.078154,26:0.039344)1.00:0.017684,27:0.101208)1.00:0.021282,28:0.121501)1.00:0.041588)1.00:0.073281)0.79:0.054354);
+
+   [Note: This tree contains information only on the topology
+          and branch lengths (mean of the posterior probability density).]
+   tree con_50_majrule = (1:0.222616,29:0.447561,(2:0.277421,((((((3:0.025799,4:0.029289):0.032127,(((6:0.024544,((30:0.007361,33:0.008005):0.004949,31:0.006609):0.015993):0.008382,32:0.040798):0.034770,7:0.063897):0.006481):0.024918,8:0.083531):0.006093,((5:0.064617,(9:0.049144,10:0.034638):0.023740):0.013343,(17:0.068936,((18:0.015974,19:0.024150):0.036284,20:0.067585):0.012486):0.009102):0.017369,((((11:0.037696,(12:0.012321,13:0.020567):0.047603):0.012131,15:0.062359):0.017776,(21:0.040449,22:0.029450):0.049857):0.008771,(14:0.051319,16:0.061160):0.034234):0.005251):0.029891,(23:0.058993,24:0.069640):0.063613):0.031080,(((25:0.078154,26:0.039344):0.017684,27:0.101208):0.021282,28:0.121501):0.041588):0.073281):0.054354);
+end;
