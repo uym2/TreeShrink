@@ -35,7 +35,7 @@ quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["
 
 intrees = args["input"]
 treeName,treeExt = splitext(basename(intrees))
-outtrees = args["output"] if args["output"] else treeName + "_shrinked" + treeExt
+outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
 
 mode = args["mode"] if args["mode"] else 'per-species'
 
@@ -147,18 +147,18 @@ if mode == 'all-genes':
 treeName,treeExt = splitext(outtrees)
 fName,ext = splitext(outtrees)
 for i,RS in enumerate(removing_sets):
-    trees_shrinked = deepcopy(trees)
-    outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
+    trees_shrunk = deepcopy(trees)
+    outfile = outdir + "/" + fName + "_RS_" + quantiles[i] + ".txt"
     with open(outfile,'w') as f:
         for item in RS:
             for s in item:
                 f.write(s + "\t")
             f.write("\n")
-    for t,tree in enumerate(trees_shrinked):
+    for t,tree in enumerate(trees_shrunk):
         #filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
         #tree.filter_leaf_nodes(filt,update_bipartitions=True)
         prune_tree(tree,RS[t])
-    trees_shrinked.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
+    trees_shrunk.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
 
 if not args["tempdir"]:
     call(["rm","-r",tempdir])
@@ -175,6 +175,6 @@ for i,RS in enumerate(removing_sets):
             for s in item:
                 f.write(s + "\t")
             f.write("\n")
-    trees_shrinked =  outdir + "/" + fName + "_" + quantiles[i] + ext
-    call(["prune_trees.sh",intrees,outfile,trees_shrinked]) 
+    trees_shrunk =  outdir + "/" + fName + "_" + quantiles[i] + ext
+    call(["prune_trees.sh",intrees,outfile,trees_shrunk]) 
 '''    
