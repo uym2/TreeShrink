@@ -4,7 +4,7 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
 - **Inputs**: 
     - One or more phylogenetic trees with branch lengths. If more than one, the trees should be on overlapping sets of species. 
     - Optional: A number `k` ≤ the total number of species.
-    - Optional: a selection of one of the three implemented algorithms for outlier     detection.
+    - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
 - **Outputs**:
     - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. 
@@ -70,7 +70,7 @@ The following command will produce the shrunk trees and the corresponding removi
 python treeshrink.py -i test_data/mm10.trees
 ```
 
-After running the command, the program will generate the folder `test_data/mm10_kshrink/`, inside which you will find the shrunk trees (`mm10_shrinked_0.05.trees`) and the removing sets (`mm10_shrinked_RS_0.05`).
+After running the command, the program will generate the folder `test_data/mm10_kshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removing sets (`mm10_shrunk _RS_0.05`).
 
 The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-d```. Note that you can run TreeShrink with multiple α thresholds, as follow
 
