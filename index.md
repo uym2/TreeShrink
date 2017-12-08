@@ -1,4 +1,4 @@
-## TreeShrink: efficient detection of outlier tree leaves
+## TreeShrink: Fast and accurate detection of outlier long branches in collections of phylogenetic trees
 Github page for [the python code](https://github.com/uym2/TreeShrink) of TreeShrink.
 
 ### Datasets
