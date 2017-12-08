@@ -8,11 +8,11 @@ import argparse
 from sys import stdout
 from dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext,realpath
-from os import mkdir,getcwd
+from os import mkdir,getcwd,rmdir
 from copy import deepcopy
 from tree_lib import prune_tree
 from tempfile import mkdtemp
-
+from shutil import rmtree
 
 parser = argparse.ArgumentParser()
 
@@ -39,11 +39,9 @@ outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
 
 mode = args["mode"] if args["mode"] else 'per-species'
 
-print(mode)
-
 k = int(args["k"]) if args["k"] else None
 
-outdir = args["outdir"] if args["outdir"] else splitext(intrees)[0] + "_kshrink"
+outdir = args["outdir"] if args["outdir"] else splitext(intrees)[0] + "_treeshrink"
 mkdir(outdir)
 if args["tempdir"]:
     tempdir = args["tempdir"]
@@ -161,7 +159,11 @@ for i,RS in enumerate(removing_sets):
     trees_shrunk.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
 
 if not args["tempdir"]:
-    call(["rm","-r",tempdir])
+    rmtree(tempdir)
+#    call(["rm","-r",tempdir])
+
+print("Output files written to " + outdir)
+
  
 '''
 # prune trees according to the removing sets. 

@@ -1,4 +1,4 @@
-require(BMS)
+suppressMessages(require(BMS))
 
 threshold <- function(y,e=0.05) {x=y[y>0];exp(quantile(density(log(x),adjust=1),p=1-e));}
 
