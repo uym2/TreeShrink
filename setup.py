@@ -41,4 +41,12 @@ param = {
     'scripts' : [script_name],
     'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
+    'long_description': treeshrink.PROGRAM_DESCRIPTION,
+    'classifiers': ["Environment :: Console",
+                    "Intended Audience :: Developers",
+                    "Intended Audience :: Science/Research",
+                    "Natural Language :: English",
+                   "Operating System :: OS Independent",                                                     "Programming Language :: Python",                                                         "Topic :: Scientific/Engineering :: Bio-Informatics",                                                                                                                                                               ],
     }
+
+setup(**param)    

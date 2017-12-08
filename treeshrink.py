@@ -18,7 +18,7 @@ if __name__ == "__main__":
 
 
 
-    print("Launching " + treeshrink.PROGRAM_NAME + ", version " + treeshrink.PROGRAM_VERSION)
+    print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
 
     parser = argparse.ArgumentParser()
 
