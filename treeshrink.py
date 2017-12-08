@@ -2,6 +2,7 @@
 
 
 if __name__ == "__main__":
+    import treeshrink
     from treeshrink.optimal_filter_lib import TreeFilter
     from treeshrink.tree_lib import prune_tree
     from sys import argv, stdout
@@ -14,6 +15,10 @@ if __name__ == "__main__":
     from copy import deepcopy
     from tempfile import mkdtemp
     from shutil import rmtree
+
+
+
+    print("Launching " + treeshrink.PROGRAM_NAME + ", version " + treeshrink.PROGRAM_VERSION)
 
     parser = argparse.ArgumentParser()
 
