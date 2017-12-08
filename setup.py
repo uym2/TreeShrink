@@ -37,7 +37,7 @@ param = {
     'package_dir': {'treeshrink': 'treeshrink'},
     'test_suite': "treeshrink.test",
     'include_package_data': True,
-    'install_requires': ['dendropy>=4.00'],
+    'install_requires': ['dendropy==4.3.0'],
     'scripts' : [script_name],
     'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
