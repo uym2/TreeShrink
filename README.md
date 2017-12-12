@@ -59,7 +59,7 @@ Arguments:
   -q QUANTILES, --quantiles QUANTILES
                         The quantile(s) to set threshold. Default is 0.05
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
-                        genes'. Default: 'per-species'
+                        genes','auto'. Default: 'auto'
 ```
 
 ### Examples:
@@ -80,7 +80,8 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
- The default mode of TreeShrink is "per-species", which is designed to find outliers for a collection of phylogenetic trees. In this mode, the statistical tests are performed for each species. We recommend switching to the "all-genes" mode if there are rare species in the dataset. Besides, if the input trees are not phylogenetically dependent, one should use the "per-gene" mode instead. Use ```-m``` to change the mode.
+ There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
+ Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
 python treeshrink.py -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
