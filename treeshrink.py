@@ -10,6 +10,7 @@ if __name__ == "__main__":
     from subprocess import check_output,call
     import argparse
     from dendropy import Tree, TreeList
+    #from dendropy.datamodel.treemodel import Tree, TreeList
     from os.path import basename, dirname, splitext,realpath
     from os import mkdir,getcwd,rmdir
     from copy import deepcopy
