@@ -1,4 +1,5 @@
-from dendropy import Tree
+#from dendropy import Tree
+from dendropy.datamodel.treemodel import Tree
 from math import sqrt
 try:
     from queue import Queue # python 3
@@ -6,7 +7,7 @@ except:
     from Queue import Queue # python 2
 from copy import deepcopy
 from sys import stdout
-from Tree_extend import Centroid_Tree, MPR_Tree
+from treeshrink.Tree_extend import Centroid_Tree, MPR_Tree
 
 
 class TreeInduced:
@@ -212,7 +213,7 @@ class TreeFilter:
     
 
     def __default_d__(self,DEFAULT_MIN=0,SCALE_FACTOR=5):
-        return min(self.nleaf/4,max(DEFAULT_MIN,int(SCALE_FACTOR*sqrt(self.nleaf))))
+        return min(self.nleaf//4,max(DEFAULT_MIN,int(SCALE_FACTOR*sqrt(self.nleaf))))
 
     def optFilter(self,d=None):
         d = self.__default_d__() if d is None else d

@@ -29,12 +29,17 @@ if __name__ == "__main__":
     parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees. Default: NO")
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
-    parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes'. Default: 'per-species'")
+    parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
 
     wdir = dirname(realpath(__file__))
 
 
     args = vars(parser.parse_args())
+
+
+    MIN_OCC = 20
+    MIN_TREE_NUM = 20
+
 
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
 #print(quantiles)
@@ -43,7 +48,7 @@ if __name__ == "__main__":
     treeName,treeExt = splitext(basename(intrees))
     outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
 
-    mode = args["mode"] if args["mode"] else 'per-species'
+    mode = args["mode"] if args["mode"] else 'auto'
 
     k = int(args["k"]) if args["k"] else None
 
@@ -56,6 +61,11 @@ if __name__ == "__main__":
         tempdir = mkdtemp() #check_output(["mktemp","-d"]).rstrip()
 
     trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
+    if mode=='auto' and len(trees) < MIN_TREE_NUM:
+        print("There are only " + str(len(trees)) + " gene trees in the dataset.")
+        print("TreeShrink will run in 'All-genes' mode")
+        mode='all-genes'
+
     gene_list = [[] for i in range(len(trees))]
     species_map = {}
     occ = {}
@@ -76,9 +86,9 @@ if __name__ == "__main__":
         
         # gather per-species distributions and per-gene species features
         for s in mapping:
-            if mode == 'per-species':
+            if mode == 'per-species' or mode == 'auto':
                 species_map[s] = [mapping[s]] if s not in species_map else species_map[s]+[mapping[s]]
-            if mode == 'per-species' or mode == 'all-genes':
+            if mode == 'per-species' or mode == 'all-genes' or mode == 'auto':
                 gene_list[t].append((s,mapping[s]))
         
         # fit kernel density to this gene's species features (per-gene mode)
@@ -100,11 +110,26 @@ if __name__ == "__main__":
                         if mapping[s] > threshold: 
                             removing_sets[i][t].append(s)
         # update taxon occupancy (only for per-species mode)
-        if mode == 'per-species':
+        if mode == 'per-species' or mode == 'auto':
             for n in a_tree.leaf_node_iter():
                 s = n.taxon.label
                 occ[s] = 1 if not s in occ else occ[s]+1
-
+    
+    if mode == 'auto' or mode == 'per-species':
+        flag = False
+        for s in occ:
+            if occ[s] < MIN_OCC:
+                print ("Species " + s + " only exists in " + str(occ[s]) + " gene trees")
+                flag = True
+        if flag:
+            if mode == 'auto':
+                mode = 'all-genes'
+                print ("There are species with low occupancy in the dataset. TreeShrink will run in 'All-genes' mode")
+            else:
+                print ("WARNING: 'Per-species' mode was selected for a dataset having low occupancy species. Consider switching to 'All-genes' mode")
+        elif mode == 'auto':
+            mode = 'per-species'
+            print("Finish preprocessing. TreeShrink will run in 'Per-species' mode")
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
     if mode == 'per-species':

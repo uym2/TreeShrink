@@ -7,7 +7,7 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
 - **Outputs**:
-    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. 
+    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. (TO BE UPDATED)
     - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
     - The shrunk trees: the input trees with the suggested leaves removed. 
     
@@ -59,18 +59,18 @@ Arguments:
   -q QUANTILES, --quantiles QUANTILES
                         The quantile(s) to set threshold. Default is 0.05
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
-                        genes'. Default: 'per-species'
+                        genes','auto'. Default: 'auto'
 ```
 
 ### Examples:
 The TreeShrink package comes with several testing trees that can be found in the `test_data` folder.
 
-The following command will produce the shrunk trees and the corresponding removing sets at false positive error rate `α = 0.05` (default)
+The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
 ```bash
 python treeshrink.py -i test_data/mm10.trees
 ```
 
-After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removing sets (`mm10_shrunk _RS_0.05.txt`).
+After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removed species (`mm10_shrunk _RS_0.05.txt`). You should see 10 trees in `mm10_shrunk_0.05.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `mm10_shrunk _RS_0.05.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
 
 The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-d```. Note that you can run TreeShrink with multiple α thresholds, as follow
 
@@ -80,10 +80,11 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
- The default mode of TreeShrink is "per-species", which is designed to find outliers for a collection of phylogenetic trees. In this mode, the statistical tests are performed for each species. We recommend switching to the "all-genes" mode if there are rare species in the dataset. Besides, if the input trees are not phylogenetically dependent, one should use the "per-gene" mode instead. Use ```-m``` to change the mode.
+ There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
+ Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
-python treeshrink.py -i test_data/mm10.trees -m per-gene
-python treeshrink.py -i test_data/mm10.trees -m all-genes
+python treeshrink.py -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
+python treeshrink.py -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
  
