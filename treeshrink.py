@@ -15,8 +15,7 @@ if __name__ == "__main__":
     from copy import deepcopy
     from tempfile import mkdtemp
     from shutil import rmtree
-
-
+    import dendropy
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
 
@@ -144,7 +143,7 @@ if __name__ == "__main__":
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
-                thresholds[i] = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+                thresholds[i] = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",wdir,filename,q]).lstrip().rstrip()[5:])
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):
@@ -162,7 +161,7 @@ if __name__ == "__main__":
                     f.write(str(r))
                     f.write("\n")
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",filename,q]).lstrip().rstrip()[5:])
+            threshold = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",wdir,filename,q]).lstrip().rstrip()[5:])
             for t,gene in enumerate(gene_list):
                 for s,r in gene:
                     if r > threshold:
