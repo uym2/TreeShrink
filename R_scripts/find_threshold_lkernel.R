@@ -4,7 +4,8 @@ threshold <- function(y,e=0.05) {x=y[y>0];exp(quantile(density(log(x),adjust=1),
 
 args = commandArgs(TRUE)
 
-libpath = paste(args[1],"/Rlib",sep="")
+#libpath = paste(args[1],"/Rlib",sep="")
+libpath = file.path(args[1],"Rlib")
 datafile = args[2]
 e = as.numeric(args[3])
 
