@@ -10,7 +10,7 @@ if __name__ == "__main__":
     from subprocess import check_output,call
     import argparse
     from dendropy import Tree, TreeList
-    from os.path import basename, dirname, splitext,realpath
+    from os.path import basename, dirname, splitext,realpath,join,normpath
     from os import mkdir,getcwd,rmdir
     from copy import deepcopy
     from tempfile import mkdtemp
@@ -92,7 +92,7 @@ if __name__ == "__main__":
         
         # fit kernel density to this gene's species features (per-gene mode)
         if mode == 'per-gene':
-            filename = tempdir + "/" + "gene_" + str(t) + ".dat"
+            filename = normpath(join(tempdir,"gene_"+str(t)+".dat"))
             with open(filename,'w') as f:
                 for s in mapping:
                     f.write(str(mapping[s]))
@@ -103,7 +103,7 @@ if __name__ == "__main__":
                 #    f.write("\n")
             if len(mapping) > 1:
                 for i,q in enumerate(quantiles):
-                    threshold = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_loglnorm.R",filename,q]).lstrip().rstrip()[4:]) 
+                    threshold = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_loglnorm.R")),filename,q]).lstrip().rstrip()[4:]) 
                     #print("Threshold: ", threshold)
                     for s in mapping:
                         if mapping[s] > threshold: 
@@ -136,14 +136,14 @@ if __name__ == "__main__":
             l = len(species_map[s])
             for i in range(occ[s]-l):
                 species_map[s].append(1)
-            filename = tempdir+"/" + s + ".dat"
+            filename = normpath(join(tempdir,s + ".dat"))
             with open(filename,'w') as f:
                 for v in species_map[s]:
                     f.write(str(v))
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
-                thresholds[i] = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",wdir,filename,q]).lstrip().rstrip()[5:])
+                thresholds[i] = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_lkernel.R")),wdir,filename,q]).lstrip().rstrip()[5:])
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):
@@ -154,14 +154,14 @@ if __name__ == "__main__":
 
 # fit kernel density to all the species features across all genes and compute the global threshold (all-gene mode) 
     if mode == 'all-genes':
-        filename = tempdir + "/" + "all_genes" + ".dat"
+        filename = normpath(join(tempdir,"all_genes" + ".dat"))
         with open(filename,'w') as f:
             for gene in gene_list:
                 for s,r in gene:
                     f.write(str(r))
                     f.write("\n")
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",wdir + "/R_scripts/find_threshold_lkernel.R",wdir,filename,q]).lstrip().rstrip()[5:])
+            threshold = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_lkernel.R")),wdir,filename,q]).lstrip().rstrip()[5:])
             for t,gene in enumerate(gene_list):
                 for s,r in gene:
                     if r > threshold:
@@ -176,7 +176,7 @@ if __name__ == "__main__":
     fName,ext = splitext(outtrees)
     for i,RS in enumerate(removing_sets):
         trees_shrunk = deepcopy(trees)
-        outfile = outdir + "/" + fName + "_RS_" + quantiles[i] + ".txt"
+        outfile = normpath(join(outdir,fName + "_RS_" + quantiles[i] + ".txt"))
         with open(outfile,'w') as f:
             for item in RS:
                 for s in item:
@@ -186,27 +186,10 @@ if __name__ == "__main__":
             #filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
             #tree.filter_leaf_nodes(filt,update_bipartitions=True)
             prune_tree(tree,RS[t])
-        trees_shrunk.write_to_path(outdir + "/" + treeName + "_" + quantiles[i] + treeExt,'newick')   
+        trees_shrunk.write_to_path(normpath(join(outdir,treeName + "_" + quantiles[i] + treeExt)),'newick')   
 
     if not args["tempdir"]:
         rmtree(tempdir)
 #    call(["rm","-r",tempdir])
 
-    print("Output files written to " + outdir)
-
-     
-    '''
-# prune trees according to the removing sets. 
-# calling nw_prune here as a (terrible) temporary sollution, because Dendropy's filter_leaf_nodes() seems to have problems
-
-    fName,ext = splitext(outtrees)
-    for i,RS in enumerate(removing_sets):
-        outfile = outdir + "/" + fName + "_RS_" + quantiles[i]
-        with open(outfile,'w') as f:
-            for item in RS:
-                for s in item:
-                    f.write(s + "\t")
-                f.write("\n")
-        trees_shrunk =  outdir + "/" + fName + "_" + quantiles[i] + ext
-        call(["prune_trees.sh",intrees,outfile,trees_shrunk]) 
-    '''    
+    print("Output files written to " + outdir) 
