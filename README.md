@@ -36,7 +36,7 @@ All dependencies were built and included with the software deployment. If you ha
 
 If you cannot run TreeShrink right the way, probably the included packages are incompatible with your system. Below are the clues to help you troubleshooting the problems:
 1. First, please make sure that both Python and R are properly installed and are in your PATH. Type ```python``` or ```R``` to check. 
-2. If you use an ```R``` version before 3.4, you probably see TreeShrink run with a warning message. Although we have not observed any problem running TreeShrink with an old ```R``` version, we recommend you upgrade ```R``` to an up-to-date version. If you do not want to change your ```R``` version, we recommend rebuilding the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
+2. If you use an ```R``` version before 3.4, you probably see TreeShrink run with a warning message. Although we have not observed any problem running TreeShrink with an old ```R``` version, we recommend upgrading ```R``` to an up-to-date version. If you do not want to change your ```R``` version, we recommend rebuilding the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
 - On a Linux/Mac OS machine, go to the TreeShrink directory and type ```bash install_BMS.sh```.
 - On a Windows machine, after going to the TreeShrink directory, double click to the file ```install_BMS.cmd```. If you use command prompt, type ```install.BMS.cmd```.
 
