@@ -32,7 +32,7 @@ After you obtained a copy of TreeShrink, go to the TreeShrink directory. You sho
 Type ```python treeshrink.py -h``` to test that TreeShrink can run on your machine.
 
 ### Installation:
-All dependencies were built and included with the software deployment. If you have Python and R installed and in your PATH, no further installation is required. 
+All dependencies were built and included with the software. If you have Python and R installed and in your PATH, no further installation is required. 
 
 To run TreeShrink in a different location, simply add the TreeShrink directory to your PATH.
 
