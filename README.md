@@ -22,7 +22,7 @@ An earlier version of TreeShrink is described in the following paper:
 A journal version is currently under review. 
 
 ### Software:
-The tool TreeShrink is written in Python and R. You need to have Python (either 2 or 3) and R. The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
+The tool TreeShrink is written in Python and R. You need to have Python (either 2 or 3) and R installed in your machine. The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
 
 ### Download:
 If you have ```git```, you can simply clone the TreeShrink repository to your machine ```git clone https://github.com/uym2/TreeShrink.git```. Otherwise, you can download the zip file to your machine. 
