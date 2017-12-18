@@ -93,6 +93,7 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
  Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
+python treeshrink.py -i test_data/mm10.trees -m per-species -d test_data/mm10_treeshrink_perspecies
 python treeshrink.py -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
 python treeshrink.py -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
