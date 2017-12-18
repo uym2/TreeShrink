@@ -7,7 +7,7 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
 - **Outputs**:
-    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. (TO BE UPDATED)
+    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k.
     - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
     - The shrunk trees: the input trees with the suggested leaves removed. 
     
@@ -36,11 +36,11 @@ All dependencies were built and included with the software. If you have Python a
 
 To run TreeShrink in a different location, simply add the TreeShrink directory to your PATH.
 
-If you cannot run TreeShrink right the way, probably the included packages are incompatible with your system. Below are the clues to help you troubleshooting the problems:
+If you cannot run TreeShrink right the way, probably the included packages are incompatible with your system. Below are some clues to help you troubleshooting the problems:
 1. First, please make sure that both Python and R are properly installed and are in your PATH. Type ```python``` or ```R``` to check. 
-2. If you use an ```R``` version before 3.4, you probably see TreeShrink run with a warning message. Although we have not observed any problem running TreeShrink with an old ```R``` version, we recommend upgrading ```R``` to an up-to-date version. If you do not want to change your ```R``` version, we recommend rebuilding the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
+2. If you use an ```R``` version before 3.4.0, you probably see TreeShrink run with a warning message **"package ‘BMS’ was built under R version 3.4.0"**. Although we have not observed any problem with this warning, we recommend upgrading ```R``` to version 3.4.0 or later. Alternatively, you can rebuild the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
 - On a Linux/Mac OS machine, go to the TreeShrink directory and type ```bash install_BMS.sh```.
-- On a Windows machine, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install.BMS.cmd```.
+- On a Winows machine, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install.BMS.cmd```.
 
 ### Usage: 
 ```bash
