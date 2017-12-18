@@ -87,7 +87,7 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
- There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
+ There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless you have too few gene trees (i.e. less than 20 trees) or there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
  Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
