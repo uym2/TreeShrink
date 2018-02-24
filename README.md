@@ -7,7 +7,7 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
 - **Outputs**:
-    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k. (TO BE UPDATED)
+    - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k.
     - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
     - The shrunk trees: the input trees with the suggested leaves removed. 
     
@@ -21,17 +21,26 @@ An earlier version of TreeShrink is described in the following paper:
 
 A journal version is currently under review. 
 
+### Software:
+The tool TreeShrink is written in Python and R. You need to have Python (either 2 or 3) and R installed in your machine. The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
+
+### Download:
+If you have ```git```, you can simply clone the TreeShrink repository to your machine ```git clone https://github.com/uym2/TreeShrink.git```. Otherwise, you can download the zip file to your machine. 
+
+After you obtained a copy of TreeShrink, go to the TreeShrink directory. You should see the Python script ```treeshrink.py```. 
+
+Type ```python treeshrink.py -h``` to test that TreeShrink can run on your machine.
+
 ### Installation:
-(TO BE UPDATED)
+All dependencies were built and included with the software. If you have Python and R installed and in your PATH, no further installation is required. 
 
-To be able to use TreeShrink, you need to first install the following packages. 
+To run TreeShrink in a different location, simply add the TreeShrink directory to your PATH.
 
-**Dependencies:**
-
-- Python and [Dendropy (version 4.2.0 recommended)](https://pythonhosted.org/DendroPy/downloading.html)
-- R and the [BMS package](http://bms.zeugner.eu/getBMS/)
-
-After installing these, you need to [TO BE UPDATED]. 
+If you cannot run TreeShrink right the way, probably the included packages are incompatible with your system. Below are some clues to help you troubleshooting the problems:
+1. First, please make sure that both Python and R are properly installed and are in your PATH. Type ```python``` or ```R``` to check. 
+2. If you use an ```R``` version before 3.4.0, you probably see TreeShrink run with a warning message **"package ‘BMS’ was built under R version 3.4.0"**. Although we have not observed any problem with this warning, we recommend upgrading ```R``` to version 3.4.0 or later. Alternatively, you can rebuild the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
+- On a Linux/Mac OS machine, go to the TreeShrink directory and type ```bash install_BMS.sh```.
+- On a Winows machine, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install_BMS.cmd```.
 
 ### Usage: 
 ```bash
@@ -80,10 +89,11 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
- There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
+ There are three modes in TreeShrink: 'per-gene', 'all-genes', and 'per-species'. By default TreeShrink will automatically select an appropriate mode, with highest priority to 'per-species' unless you have too few gene trees (i.e. less than 20 trees) or there are rare species (i.e. a species that occurs in less than 20 gene trees) in the dataset.
  Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
+python treeshrink.py -i test_data/mm10.trees -m per-species -d test_data/mm10_treeshrink_perspecies
 python treeshrink.py -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
 python treeshrink.py -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
