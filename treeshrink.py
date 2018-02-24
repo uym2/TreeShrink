@@ -1,7 +1,6 @@
 #! /usr/bin/env python
 
-
-if __name__ == "__main__":
+def main():
     import treeshrink
     from treeshrink.optimal_filter_lib import TreeFilter
     from treeshrink.tree_lib import prune_tree
@@ -193,3 +192,7 @@ if __name__ == "__main__":
 #    call(["rm","-r",tempdir])
 
     print("Output files written to " + outdir) 
+
+    
+if __name__ == "__main__":
+    main()
