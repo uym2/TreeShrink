@@ -58,7 +58,7 @@ def main():
     else:
         tempdir = mkdtemp() #check_output(["mktemp","-d"]).rstrip()
 
-    trees = TreeList.get_from_path(intrees,'newick',preserve_underscores=True)
+    trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
     if mode=='auto' and len(trees) < MIN_TREE_NUM:
         print("There are only " + str(len(trees)) + " gene trees in the dataset.")
         print("TreeShrink will run in 'All-genes' mode")
