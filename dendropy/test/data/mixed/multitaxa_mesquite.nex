@@ -1,0 +1,148 @@
+#NEXUS
+
+
+BEGIN TAXA;
+	TITLE X1; DIMENSIONS NTAX=5; TAXLABELS x1.1 x1.2 x1.3 x1.4 x1.5;
+END;
+
+BEGIN TAXA;
+	TITLE X2; DIMENSIONS NTAX=4; TAXLABELS x2.1 x2.2 x2.3 x2.4;
+END;
+
+BEGIN TAXA;
+	TITLE X3; DIMENSIONS NTAX=6; TAXLABELS x3.1 x3.2 x3.3 x3.4 x3.5 x3.6;
+END;
+
+BEGIN CHARACTERS;
+	TITLE x2.chars1;
+	LINK TAXA = X2;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x2.1 A
+	   x2.2 A
+	   x2.3 A
+	   x2.4 A
+	   ;
+END;
+
+BEGIN CHARACTERS;
+	TITLE x2.chars2;
+	LINK TAXA = X2;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x2.1 A
+	   x2.2 A
+	   x2.3 A
+	   x2.4 A
+	   ;
+END;
+
+BEGIN TREES;
+	TITLE x2.trees1;
+	LINK Taxa = x2;
+	TRANSLATE
+	    1 x2.1,
+	    2 x2.2,
+	    3 x2.3,
+	    4 x2.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN TREES;
+	TITLE x2.trees2;
+	LINK Taxa = X2;
+	TRANSLATE
+	    1 x2.1,
+	    2 x2.2,
+	    3 x2.3,
+	    4 x2.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN TREES;
+	TITLE x1.trees1;
+	LINK Taxa = x1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars1;
+	LINK TAXA = X1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
+END;
+
+BEGIN TREES;
+	TITLE x1.trees2;
+	LINK Taxa = x1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars2;
+	LINK TAXA = x1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
+END;
+
+BEGIN TREES;
+	TITLE x1.trees3;
+	LINK Taxa = X1;
+	TRANSLATE
+	    1 x1.1,
+	    2 x1.2,
+	    3 x1.3,
+	    4 x1.4
+	    ;
+    TREE 1 = (1,(2,(3,4)));
+    TREE 2 = (1,(2,(3,4)));
+END;
+
+BEGIN CHARACTERS;
+	TITLE x1.chars2;
+	LINK TAXA = X1;
+	DIMENSIONS NCHAR=1;
+	FORMAT DATATYPE = DNA GAP = - MISSING = ?;
+	MATRIX
+	   x1.1 A
+	   x1.2 A
+	   x1.3 A
+	   x1.4 A
+	   ;
+END;
+
+
+
+
