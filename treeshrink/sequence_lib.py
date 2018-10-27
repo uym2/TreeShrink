@@ -43,18 +43,19 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
         if not line:
             break
         if line[0] == '>':
-            if line[1:-1] in count:
-                c = count[line[1:-1]]
+            seqName = line.rstrip().split()[0][1:]
+            if seqName in count:
+                c = count[seqName]
                 p = float(c)/(c+1)
                 r = random()
                 #print(r)
-                count[line[1:-1]] += 1   
+                count[seqName] += 1   
                 if r <= p:
                     continue    
             else:
-                count[line[1:-1]] = 1
+                count[seqName] = 1
                     
-            seq_pointers[line[1:-1]] = fp
+            seq_pointers[seqName] = fp
         fp = f.tell()
 
     if not store_index_file:

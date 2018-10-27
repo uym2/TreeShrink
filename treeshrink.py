@@ -13,9 +13,10 @@ def main():
     from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile
     from os import mkdir,getcwd,rmdir,listdir
     from copy import deepcopy
-    from tempfile import mkdtemp
+    from tempfile import mkdtemp,mktemp
     from shutil import rmtree, copyfile
     import dendropy
+    from treeshrink.alignment import CompactAlignment
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
 
@@ -37,6 +38,8 @@ def main():
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
+    wdir = dirname(realpath(__file__))
+
     if args["tempdir"]:
         tempdir = args["tempdir"]
         mkdir(tempdir)
@@ -48,7 +51,7 @@ def main():
     if args["indir"]:
         subdirs = [d for d in listdir(args["indir"]) if isdir(join(args["indir"],d))]
         treename = splitext(args["tree"])[0] if args["tree"] else "input"
-        intrees = normpath(join(args["tempdir"],treename + ".trees"))
+        intrees = normpath(join(tempdir,treename + ".trees"))
         with open(intrees,'w') as fout:
             for d in subdirs:
                 treename = args["tree"] if args["tree"] else "input.tre"
@@ -68,7 +71,7 @@ def main():
     elif args["indir"]:
         outdir = args["indir"]
     else:
-        splitext(intrees)[0] + "_treeshrink"
+        outdir = splitext(intrees)[0] + "_treeshrink"
         mkdir(outdir)
 
     trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
@@ -205,9 +208,9 @@ def main():
         else:
             for sd,item in zip(subdirs,RS):
                 outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
-                for s in item:
-                    f.write(s + "\t")
-                f.write("\n")
+                with open(outfile,'w') as f:
+                    for s in item:
+                        f.write(s + "\t")
                         
             for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
                 prune_tree(tree,rs)
@@ -215,13 +218,18 @@ def main():
                 treefile = normpath(join(outdir,sd, treeName + "_shrunk_" + quantiles[i] + treeExt))
                 tree.write_to_path(treefile,'newick')
                 
-                aln_name = args["alignment"] if args["alignment"] else "input.fasta"
-                input_aln = normpath(join(indir,sd,aln_name))
+                aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
+                alnName,alnExt = splitext(aln_filename)
+                input_aln = normpath(join(args["indir"],sd,aln_filename))
                 if isfile(input_aln): 
-                    output_aln = normpath(join(outdir,sd,aln_name))
+                    output_aln = normpath(join(outdir,sd,alnName+"_shrunk"+quantiles[i]+alnExt))
                     taxa_list = get_taxa(treefile)
-                    sample_from_list(input_aln,taxa_list,output_aln)
-
+                    temp_aln = mktemp()
+                    sample_from_list(input_aln,taxa_list,temp_aln)
+                    alg = CompactAlignment()
+                    alg.read_file_object(temp_aln,'fasta')
+                    alg.mask_gapy_sites(1)
+                    alg.write(output_aln,'fasta')
 
     if not args["tempdir"]:
         rmtree(tempdir)
