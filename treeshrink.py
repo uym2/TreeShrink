@@ -14,7 +14,6 @@ def main():
     from copy import deepcopy
     from tempfile import mkdtemp
     from shutil import rmtree
-    import dendropy
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
 
