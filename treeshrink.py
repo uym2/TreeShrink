@@ -1,36 +1,36 @@
 #! /usr/bin/env python
 
 def main():
+    from treeshrink.sequence_lib import sample_from_list
     import treeshrink
     from treeshrink.optimal_filter_lib import TreeFilter
-    from treeshrink.tree_lib import prune_tree
+    from treeshrink.tree_lib import prune_tree, get_taxa
     from sys import argv, stdout
     from math import sqrt
     from subprocess import check_output,call
     import argparse
     from dendropy import Tree, TreeList
-    from os.path import basename, dirname, splitext,realpath,join,normpath
-    from os import mkdir,getcwd,rmdir
+    from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile
+    from os import mkdir,getcwd,rmdir,listdir
     from copy import deepcopy
-    from tempfile import mkdtemp
-    from shutil import rmtree
+    from tempfile import mkdtemp,mktemp
+    from shutil import rmtree, copyfile
     import dendropy
+    from treeshrink.alignment import CompactAlignment
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
 
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-i","--input",required=True,help="Input trees")
-    parser.add_argument("-d","--outdir",required=False,help="Output directory. Default: inferred from the input trees")
-    parser.add_argument("-t","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
-    parser.add_argument("-o","--output",required=False,help="The name of the output trees. Default: inferred from the input trees")
+    parser.add_argument("-i","--indir",required=False,help="The parent input directory where the trees (and alignments) can be found")
+    parser.add_argument("-t","--tree",required=False,help="The name of the input tree/trees. If the input directory is specified (see -i option), each subdirectory under it must contain a tree with this name. Otherwise, all the trees can be included in this one file. Default: input.tre")
+    parser.add_argument("-a","--alignment",required=False,help="The name of the input alignment; can only be used when the input directory is specified (see -i option). Each subdirectory under it must contain an alignment with this name. Default: input.fasta")
     parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees. Default: NO")
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
-
-    wdir = dirname(realpath(__file__))
-
+    parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: the same as input directory (if it is specified) or the same as the input trees")
+    parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
 
     args = vars(parser.parse_args())
 
@@ -38,27 +38,44 @@ def main():
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
+    wdir = dirname(realpath(__file__))
 
+    if args["tempdir"]:
+        tempdir = args["tempdir"]
+        mkdir(tempdir)
+    else:
+        tempdir = mkdtemp()    
+    
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
-#print(quantiles)
 
-    intrees = args["input"]
-    treeName,treeExt = splitext(basename(intrees))
-    outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
+    if args["indir"]:
+        subdirs = [d for d in listdir(args["indir"]) if isdir(join(args["indir"],d))]
+        treename = splitext(args["tree"])[0] if args["tree"] else "input"
+        intrees = normpath(join(tempdir,treename + ".trees"))
+        with open(intrees,'w') as fout:
+            for d in subdirs:
+                treename = args["tree"] if args["tree"] else "input.tre"
+                treefile = normpath(join(args["indir"],d,treename))
+                fout.write(open(treefile,'r').read())                
+    else:
+        intrees = args["tree"]
+
 
     mode = args["mode"] if args["mode"] else 'auto'
 
     k = int(args["k"]) if args["k"] else None
 
-    outdir = args["outdir"] if args["outdir"] else splitext(intrees)[0] + "_treeshrink"
-    mkdir(outdir)
-    if args["tempdir"]:
-        tempdir = args["tempdir"]
-        mkdir(tempdir)
+    if args["outdir"]:
+        outdir = args["outdir"] 
+        mkdir(outdir)
+    elif args["indir"]:
+        outdir = args["indir"]
     else:
-        tempdir = mkdtemp() #check_output(["mktemp","-d"]).rstrip()
+        outdir = splitext(intrees)[0] + "_treeshrink"
+        mkdir(outdir)
 
     trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
+
     if mode=='auto' and len(trees) < MIN_TREE_NUM:
         print("There are only " + str(len(trees)) + " gene trees in the dataset.")
         print("TreeShrink will run in 'All-genes' mode")
@@ -171,21 +188,48 @@ def main():
 # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
 # use home-made code to prune the tree instead
 
-    treeName,treeExt = splitext(outtrees)
-    fName,ext = splitext(outtrees)
+    #treeName,treeExt = splitext(basename(intrees))
+    #outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
+    fName,ext = splitext(basename(intrees))
+    
     for i,RS in enumerate(removing_sets):
         trees_shrunk = deepcopy(trees)
-        outfile = normpath(join(outdir,fName + "_RS_" + quantiles[i] + ".txt"))
-        with open(outfile,'w') as f:
-            for item in RS:
-                for s in item:
-                    f.write(s + "\t")
-                f.write("\n")
-        for t,tree in enumerate(trees_shrunk):
-            #filt = lambda node: False if (node.taxon is not None and node.taxon.label in RS[t]) else True 
-            #tree.filter_leaf_nodes(filt,update_bipartitions=True)
-            prune_tree(tree,RS[t])
-        trees_shrunk.write_to_path(normpath(join(outdir,treeName + "_" + quantiles[i] + treeExt)),'newick')   
+        
+        if args["indir"] is None:
+            outfile = normpath(join(outdir,fName + "_RS_" + quantiles[i] + ".txt"))
+            with open(outfile,'w') as f:
+                for item in RS:
+                    for s in item:
+                        f.write(s + "\t")
+                    f.write("\n")
+            for tree,rs in zip(trees_shrunk,RS):
+                prune_tree(tree,rs)
+            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick')   
+        else:
+            for sd,item in zip(subdirs,RS):
+                outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
+                with open(outfile,'w') as f:
+                    for s in item:
+                        f.write(s + "\t")
+                        
+            for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
+                prune_tree(tree,rs)
+                treeName,treeExt = splitext(args["tree"])
+                treefile = normpath(join(outdir,sd, treeName + "_shrunk_" + quantiles[i] + treeExt))
+                tree.write_to_path(treefile,'newick')
+                
+                aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
+                alnName,alnExt = splitext(aln_filename)
+                input_aln = normpath(join(args["indir"],sd,aln_filename))
+                if isfile(input_aln): 
+                    output_aln = normpath(join(outdir,sd,alnName+"_shrunk"+quantiles[i]+alnExt))
+                    taxa_list = get_taxa(treefile)
+                    temp_aln = mktemp()
+                    sample_from_list(input_aln,taxa_list,temp_aln)
+                    alg = CompactAlignment()
+                    alg.read_file_object(temp_aln,'fasta')
+                    alg.mask_gapy_sites(1)
+                    alg.write(output_aln,'fasta')
 
     if not args["tempdir"]:
         rmtree(tempdir)
