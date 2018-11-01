@@ -29,7 +29,7 @@ Simple classes for reading and manipulating sequence data matrices
 
 import re, os
 #from pasta import get_logger, log_exception, MESSENGER, TIMING_LOG
-from treeshrink.filemgr import open_with_intermediates
+from filemgr import open_with_intermediates
 
 from dendropy.dataio import register_reader       
 

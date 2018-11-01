@@ -5,7 +5,7 @@
 ##  see "license.txt" for terms and conditions of usage.
 #############################################################################
 
-PROGRAM_NAME = "TreeShrink"
+PROGRAM_NAME = "TREESHRINK"
 PROGRAM_AUTHOR = ["Uyen Mai","Siavash Mirarab"]
 PROGRAM_LICENSE = "GNU General Public License, version 3"
 PROGRAM_VERSION = "1.1.0"

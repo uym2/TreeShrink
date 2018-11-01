@@ -7,7 +7,7 @@ except:
     from Queue import Queue # python 2
 from copy import deepcopy
 from sys import stdout
-from treeshrink.Tree_extend import Centroid_Tree, MPR_Tree
+from Tree_extend import Centroid_Tree, MPR_Tree
 
 
 class TreeInduced:

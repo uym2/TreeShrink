@@ -2,6 +2,22 @@ from ez_setup import use_setuptools
 use_setuptools()
 from setuptools import setup, find_packages
 import treeshrink
+from os import walk, listdir
+from os.path import join,normpath,isfile
+
+def recursive_list_dir(path):
+    listing=[]
+    for x in walk(path):
+        if isfile(x[0]):
+            listing.append(x[0].split(path+'/')[1])
+        for y in listdir(x[0]):
+            z = normpath(join(x[0],y))
+            if isfile(z):
+                listing.append(z.split(path+'/')[1])
+    return listing
+
+print(recursive_list_dir('Rlib'))
+
 param = {
     'name': treeshrink.PROGRAM_NAME,
     'version': treeshrink.PROGRAM_VERSION,
@@ -10,11 +26,10 @@ param = {
     'author_email': ['treeshrink-users@googlegroups.com'],
     'url': treeshrink.PROGRAM_WEBSITE,
     'license': treeshrink.PROGRAM_LICENSE,
-    'packages': find_packages(),
-    'package_dir': {'treeshrink': 'treeshrink'},
+    'packages': find_packages()+['Rlib','R_scripts'],
+    'package_data':{'':recursive_list_dir('Rlib')+recursive_list_dir('R_scripts')},
     'include_package_data': True,
-    'install_requires': ['dendropy>=4.00'],
-    'scripts' : ['treeshrink.py'],
+    'scripts' : ['run_treeshrink.py'],
     #'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
     'long_description': """A Python implementation of the Practical Alignment using SATe and Transitivity. 
