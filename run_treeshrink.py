@@ -30,6 +30,7 @@ def main():
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: the same as input directory (if it is specified) or the same as the input trees")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
+    parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 3 layers above the current directory")
 
     args = vars(parser.parse_args())
 
@@ -37,8 +38,8 @@ def main():
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
-    wdir = dirname(dirname(dirname(realpath(__file__))))
-    print(wdir)
+    libdir = args["libdir"] if args["libdir"] else dirname(dirname(dirname(realpath(__file__))))
+    print(libdir)
 
     if args["tempdir"]:
         tempdir = args["tempdir"]
@@ -119,7 +120,7 @@ def main():
                 #    f.write("\n")
             if len(mapping) > 1:
                 for i,q in enumerate(quantiles):
-                    threshold = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_loglnorm.R")),filename,q]).lstrip().rstrip()[4:]) 
+                    threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_loglnorm.R")),filename,q]).lstrip().rstrip()[4:]) 
                     #print("Threshold: ", threshold)
                     for s in mapping:
                         if mapping[s] > threshold: 
@@ -159,7 +160,7 @@ def main():
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
-                thresholds[i] = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_lkernel.R")),wdir,filename,q]).lstrip().rstrip()[5:])
+                thresholds[i] = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):
@@ -177,7 +178,7 @@ def main():
                     f.write(str(r))
                     f.write("\n")
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",normpath(join(wdir,"R_scripts","find_threshold_lkernel.R")),wdir,filename,q]).lstrip().rstrip()[5:])
+            threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
             for t,gene in enumerate(gene_list):
                 for s,r in gene:
                     if r > threshold:

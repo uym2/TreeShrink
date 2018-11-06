@@ -1,0 +1,23 @@
+package:
+  name: treeshrink
+  version: 1.1.0
+
+source:
+  git_rev: master
+  git_url: https://github.com/uym2/TreeShrink.git
+requirements:
+  host:
+    - python
+    - setuptools
+
+  run:
+    - python
+
+test:
+  imports:
+    - treeshrink
+
+about:
+  home: https://github.com/uym2/TreeShrink
+  license: GNU GENERAL PUBLIC LICENSE
+  license_file: LICENSE

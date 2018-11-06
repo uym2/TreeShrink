@@ -30,7 +30,7 @@ param = {
     'package_data':{'':recursive_list_dir('Rlib')+recursive_list_dir('R_scripts')},
     'include_package_data': True,
     'scripts' : ['run_treeshrink.py'],
-    #'zip_safe': True,
+    'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
     'long_description': """A Python implementation of the Practical Alignment using SATe and Transitivity. 
     The package requires configuration to refer to third-party tools such as ClustalW2, MAFFT, MUCLE, OPAL, Prank, and RAxML, HMMMER,
