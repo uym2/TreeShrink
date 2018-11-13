@@ -43,7 +43,7 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
         if not line:
             break
         if line[0] == '>':
-            seqName = line.rstrip().split()[0][1:]
+            seqName = line.rstrip()[1:]
             if seqName in count:
                 c = count[seqName]
                 p = float(c)/(c+1)
