@@ -3,7 +3,7 @@
 from os.path import isfile
 from os import remove
 from random import random
-
+from copy import copy
 try:
     import cPickle as pickle
 except:
@@ -129,12 +129,18 @@ def count_gaps(seq_aln):
 def read_fasta(fas_file):
     taxon_names = []
     seq_aln = []
+    is_first_seq = True
     with open(fas_file,'r') as f:
         for line in f:
             if line[0] == '>':
                 taxon_names.append(line[1:].rstrip())
+                if not is_first_seq:
+                    seq_aln.append(new_seq)
+                is_first_seq = False
+                new_seq = ''
             else:
-                seq_aln.append(line.upper().rstrip())
+                new_seq += line.upper().rstrip()
+    seq_aln.append(new_seq)
     return taxon_names, seq_aln    
 
 def sort_aln(taxon_names,seq_aln):
@@ -214,3 +220,40 @@ def p_distance(seq1,seq2):
         elif x != y:
             d = d+1
     return float(d)/count
+
+def replace(from_letter, to_letter, aln):
+    # replace all of the 'from_letter' to the 'to_letter' in aln
+    locations = []
+    new_aln = []
+    for i,s in enumerate(aln):
+        j_nongap = 0
+        new_s = ''
+        for x in s:
+            if x == from_letter:
+                new_s += to_letter 
+                locations.append((i,j_nongap))
+            else:
+                new_s += x    
+            j_nongap += (x != '-')
+        new_aln.append(new_s)
+    return new_aln,locations
+
+def replace_back(letter, aln, locations):
+    # replace the positions listed in 'locations' with the specified letter
+    for i,j_nongap in locations:
+        new_s = ''
+        for x in aln[i]:
+            if j_nongap == 0:
+                new_s += letter
+            else:
+                new_s += x    
+            j_nongap -= (x != '-')
+        aln[i] = new_s        
+            
+def merge_rep_locations(rep_locations1,len1,rep_locations2):
+    rep_locations = copy(rep_locations1)
+
+    for i,j in rep_locations2:
+        rep_locations.append((i+len1,j))
+
+    return rep_locations
