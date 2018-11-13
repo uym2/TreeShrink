@@ -10,7 +10,7 @@ def main():
     from subprocess import check_output,call
     import argparse
     from dendropy import Tree, TreeList
-    from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile
+    from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
     from os import mkdir,getcwd,rmdir,listdir
     from copy import deepcopy
     from tempfile import mkdtemp,mktemp
@@ -39,7 +39,6 @@ def main():
     MIN_TREE_NUM = 20
 
     libdir = args["libdir"] if args["libdir"] else dirname(dirname(dirname(realpath(__file__))))
-    print(libdir)
 
     if args["tempdir"]:
         tempdir = args["tempdir"]
@@ -50,14 +49,15 @@ def main():
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
 
     if args["indir"]:
-        subdirs = [d for d in listdir(args["indir"]) if isdir(join(args["indir"],d))]
         treename = splitext(args["tree"])[0] if args["tree"] else "input"
+        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"] if args["tree"] else "input.tre")))]
         intrees = normpath(join(tempdir,treename + ".trees"))
         with open(intrees,'w') as fout:
             for d in subdirs:
                 treename = args["tree"] if args["tree"] else "input.tre"
                 treefile = normpath(join(args["indir"],d,treename))
-                fout.write(open(treefile,'r').read())                
+                if exists(treefile):
+                    fout.write(open(treefile,'r').read())                
     else:
         intrees = args["tree"]
 
