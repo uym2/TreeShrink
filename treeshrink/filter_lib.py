@@ -1,7 +1,7 @@
 import operator
 from dendropy import Tree
 from copy import deepcopy
-from Tree_extend import MPR_Tree, MV00_Tree,MVDF_Tree
+from treeshrink.Tree_extend import MPR_Tree, MV00_Tree,MVDF_Tree
 
 def filter_branch(a_tree,root_method=None,unit_length=None,low_percentile=0,high_percentile=1,factor=1):
     a_tree.deroot()

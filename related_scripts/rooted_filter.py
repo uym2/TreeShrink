@@ -2,7 +2,7 @@
 
 # usage: python filter_branch.py <tree_file>
 
-from Tree_extend import MVR_Tree
+from treeshrink.Tree_extend import MVR_Tree
 from sys import argv
 from os.path import splitext
 

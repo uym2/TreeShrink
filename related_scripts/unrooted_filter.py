@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-from filter_lib import filter_branch
+from treeshrink.filter_lib import filter_branch
 from sys import argv
 from dendropy import Tree
 
