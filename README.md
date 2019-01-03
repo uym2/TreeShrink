@@ -131,7 +131,7 @@ The α threshold can be adjusted using ```-q``` option. The output folder can be
 
 ```bash
 run_treeshrink.py  -i test_data/mm10.trees -q "0.05 0.10" -d test_data/mm10_treeshrink_multi
- ```
+```
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
@@ -147,4 +147,4 @@ run_treeshrink.py  -i test_data/mm10.trees -m all-genes -d test_data/mm10_treesh
 Finally, the input can be a folder with many folders in it, one per gene. Each folder has to have a file for trees and optionally a file for the alignment. The alignment and tree files should have the same name in all folders.  
 - You give the name of the folder than includes all the genes using `-i`. 
 - You give the name of the gene tree files using `-t` and the name of the alignment files using `-a`.
-- After running, tree shrink will add filtered trees and alignments to each folder.  
+ 

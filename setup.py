@@ -32,9 +32,7 @@ param = {
     'scripts' : ['run_treeshrink.py'],
     #'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
-    'long_description': """A Python implementation of the Practical Alignment using SATe and Transitivity. 
-    The package requires configuration to refer to third-party tools such as ClustalW2, MAFFT, MUCLE, OPAL, Prank, and RAxML, HMMMER,
-    and the code is heavily based on SATe""",
+    'long_description': """A Python implementation of the TreeShrink algorithm (Mai, Genome Biology, 2018)""",
     'classifiers': ["Environment :: Console",
                     "Intended Audience :: Developers",
                     "Intended Audience :: Science/Research",
