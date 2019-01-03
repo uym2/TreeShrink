@@ -64,10 +64,9 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
     if not file_out:
         file_extension = file_in.split('.')[-1]
         file_out = file_in[:-(len(file_extension)+1)]+'.idx'
-    fout = open(file_out,'w')
-    pickle.dump(seq_pointers,fout)
+    with open(file_out,'wb') as fout:
+        pickle.dump(seq_pointers,fout)
     f.close()
-    fout.close()
 
     return seq_pointers
 
@@ -80,7 +79,7 @@ def load_index(file_in,store_index_file=True,renew_index_file=False):
             remove(file_idx)
         seq_pointers = index_fasta(file_in,store_index_file=store_index_file)
     else:
-        with open(file_idx) as f:
+        with open(file_idx,'rb') as f:
             seq_pointers = pickle.load(f)
 
     return seq_pointers
@@ -100,8 +99,9 @@ def sample_from_list(file_in,taxa_list,file_out,store_index_file=True,renew_inde
                         if not L:
                             break
                     fout.write('\n')        
-                except:
-                    print ('taxon inconsistent in query and input files')
+                except KeyError as e:
+                    print ('taxon inconsistent in alignment and tree files: %s' %file_in )
+                    raise e
 
 def filter_out_by_list(file_in,removing_list,file_out,store_index_file=True,renew_index_file=False):
     seq_pointers = load_index(file_in,store_index_file=store_index_file,renew_index_file=renew_index_file)
@@ -114,8 +114,9 @@ def filter_out_by_list(file_in,removing_list,file_out,store_index_file=True,rene
                     fin.seek(seq_pointers[taxon])
                     fout.write(fin.readline())
                     fout.write(fin.readline())
-                except:
-                    print ('taxon inconsistent in query and input files')
+                except KeyError as e:
+                    print ('taxon inconsistent in alignment and tree files: %s' %file_in)
+                    raise e
 
 
 def count_gaps(seq_aln):

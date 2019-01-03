@@ -29,6 +29,7 @@ def main():
     parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees. Default: NO")
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
+    parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than MINIPACT%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: the same as input directory (if it is specified) or the same as the input trees")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
@@ -49,6 +50,8 @@ def main():
         tempdir = mkdtemp()    
     
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
+    
+    minimpact = (float(args["minimpact"])/100)+1 if args["minimpact"] else 1.05
 
     if args["indir"]:
         treename = splitext(args["tree"])[0] if args["tree"] else "input"
@@ -147,7 +150,7 @@ def main():
                 print ("WARNING: 'Per-species' mode was selected for a dataset having low occupancy species. Consider switching to 'All-genes' mode")
         elif mode == 'auto':
             mode = 'per-species'
-            print("Finish preprocessing. TreeShrink will run in 'Per-species' mode")
+            print("Finish preprocessing. TreeShrink will run in 'Per-species' mode ...    ")
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
     if mode == 'per-species':
@@ -162,7 +165,8 @@ def main():
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
-                thresholds[i] = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
+                thresholds[i] = max(minimpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                print("%s:\t will be cut when impact above \t %f for quantile\t %s" %(s,thresholds[i],q))
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):
@@ -186,7 +190,7 @@ def main():
                     if r > threshold:
                         removing_sets[i][t].append(s)
 
-
+    print("Writing output ...")
 # Dendropy's filter_leaf_nodes() seems to have problem
 # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
 # use home-made code to prune the tree instead
