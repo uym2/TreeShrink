@@ -1,8 +1,9 @@
 package:
   name: treeshrink
-  version: 1.2.0
+  version: 1.2.1
 
 source:
+  #path: ../../
   git_rev: master
   git_url: https://github.com/uym2/TreeShrink.git
 requirements:
