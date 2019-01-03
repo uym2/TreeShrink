@@ -5,7 +5,7 @@ def main():
     import treeshrink
     from treeshrink.optimal_filter_lib import TreeFilter
     from treeshrink.tree_lib import prune_tree, get_taxa
-    from sys import argv, stdout
+    from sys import argv, stdout, setrecursionlimit
     from math import sqrt
     from subprocess import check_output,call
     import argparse
@@ -17,7 +17,9 @@ def main():
     from shutil import rmtree, copyfile
     from treeshrink.alignment import CompactAlignment
 
+    setrecursionlimit(5000)
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
+    
 
     parser = argparse.ArgumentParser()
 
