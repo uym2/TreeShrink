@@ -2,14 +2,16 @@
 TreeShrink is an algorithm for detecting abnormally long branches in one or more phylogenetic trees. 
 
 - **Inputs**: 
-    - One or more phylogenetic trees with branch lengths. If more than one, the trees should be on overlapping sets of species. 
+    - One or more phylogenetic trees with branch lengths. If more than one, the trees should be on overlapping sets of species (though missing data are allowed). 
     - Optional: A number `k` ≤ the total number of species.
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
+    - Optiona: A set of alignments, from which, shrunk sequences will be removed
 - **Outputs**:
     - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k.
     - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
     - The shrunk trees: the input trees with the suggested leaves removed. 
+    - If alignments provided, the filtered alignments with suggested leaves removed. 
     
 Note that the tree diameter is the maximum distance between any two leaves of the tree. When multiple trees are available (e.g., gene trees), the statistical tests can use the information from all genes to decide what branches are too long. 
 
@@ -23,7 +25,10 @@ An earlier version of TreeShrink is described in the following paper:
 
 * Mai, Uyen, and Siavash Mirarab. “TreeShrink: Efficient Detection of Outlier Tree Leaves.” In RECOMB-CG 2017, Proceedings, 116–40. 2017. [doi:10.1007/978-3-319-67979-2_7](https://doi.org/10.1007/978-3-319-67979-2_7).
 
-### Installation:
+
+Since publications, the only new algorithmic addition is the option `-b`.
+
+## Installation:
 
 
 #### Prerequisites:
@@ -38,7 +43,7 @@ The tool uses the Dendropy package in Python for tree manipulation and the BMS p
 All dependencies were built and included with the software. If you have Python and R installed and in your `PATH`, no further installation is required. 
 
 #### Download
-If you have ```git```, you can simply clone the TreeShrink repository to your machine ```git clone https://github.com/uym2/TreeShrink.git```. Otherwise, you can download the zip file to your machine. 
+If you have `git`, you can simply clone the TreeShrink repository to your machine `git clone https://github.com/uym2/TreeShrink.git`. Otherwise, you can download the zip file to your machine. 
 
 #### Steps:
 After downloading TreeShrink, to install, run:
@@ -66,7 +71,9 @@ If you cannot run TreeShrink right the way, probably the included packages are i
 	- On Linux/Mac OS machines, go to the TreeShrink directory and type ```bash install_BMS.sh```.
 	- On Windows machine, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install_BMS.cmd```.
 
-### Usage: 
+
+
+## Usage: 
 
 ```bash
 run_treeshrink.py [-h] [-i INDIR] [-t TREE] [-a ALIGNMENT] [-c] [-k K]
@@ -136,4 +143,8 @@ run_treeshrink.py  -i test_data/mm10.trees -m per-species -d test_data/mm10_tree
 run_treeshrink.py  -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
 run_treeshrink.py  -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
- 
+
+Finally, the input can be a folder with many folders in it, one per gene. Each folder has to have a file for trees and optionally a file for the alignment. The alignment and tree files should have the same name in all folders.  
+- You give the name of the folder than includes all the genes using `-i`. 
+- You give the name of the gene tree files using `-t` and the name of the alignment files using `-a`.
+- After running, tree shrink will add filtered trees and alignments to each folder.  
