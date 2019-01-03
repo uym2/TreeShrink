@@ -33,7 +33,7 @@ def main():
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: the same as input directory (if it is specified) or the same as the input trees")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
-    parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 3 layers above the current directory")
+    parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 2 layers above the treeshrink package")
 
     args = vars(parser.parse_args())
 
@@ -41,7 +41,7 @@ def main():
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
-    libdir = args["libdir"] if args["libdir"] else dirname(dirname(dirname(realpath(__file__))))
+    libdir = args["libdir"] if args["libdir"] else dirname(dirname(realpath(treeshrink.__file__)))
 
     if args["tempdir"]:
         tempdir = args["tempdir"]
