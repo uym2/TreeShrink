@@ -465,6 +465,12 @@ class Alignment(dict, object):
             if key in self:
                 new_alignment[key] = self[key]
         return new_alignment
+    
+    def retain_all(self, keep_sequences):
+        "removes taxa not in keep_sequences."
+        for key in self.keys():
+            if key not in keep_sequences:
+                self.pop(key)
 
     def is_empty(self):
         return self.__len__() < 1
@@ -1144,16 +1150,12 @@ class CompactAlignment(dict,object):
     def __init__(self):
         self.colcount = 0
         self.datatype = None
-    
-    
-    def sub_alignment(self, sub_keys):
-        "Creates an new alignment with a subset of the taxa."
-        new_alignment = CompactAlignment()
-        new_alignment.datatype = self.datatype
-        for key in sub_keys:
-            if key in self:
-                new_alignment[key] = self[key]
-        return new_alignment
+        
+    def remove_all(self, rem_sequences):
+        "removes taxa  in keep_sequences."
+        for key in list(self.keys()):
+            if key in rem_sequences:
+                self.pop(key)
    
     def is_aligned(self):
         return True
@@ -1172,7 +1174,6 @@ class CompactAlignment(dict,object):
     def iter_column_character_count(self, seqsubset = None):
         if seqsubset is None:
             seqsubset = list(self.keys())
-        
         counts = [0] * self.colcount
         for k in seqsubset:
             for pos in self[k].pos:

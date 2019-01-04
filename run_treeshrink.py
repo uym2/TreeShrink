@@ -1,11 +1,12 @@
 #! /usr/bin/env python
+from multiprocessing.util import get_temp_dir
 
 def main():
     from treeshrink.sequence_lib import sample_from_list
     import treeshrink
     from treeshrink.optimal_filter_lib import TreeFilter
     from treeshrink.tree_lib import prune_tree, get_taxa
-    from sys import argv, stdout, setrecursionlimit
+    from sys import argv, stdout
     from math import sqrt
     from subprocess import check_output,call
     import argparse
@@ -13,11 +14,10 @@ def main():
     from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
     from os import mkdir,getcwd,rmdir,listdir
     from copy import deepcopy
-    from tempfile import mkdtemp,mktemp
     from shutil import rmtree, copyfile
     from treeshrink.alignment import CompactAlignment
+    from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 
-    setrecursionlimit(5000)
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
     
 
@@ -43,11 +43,7 @@ def main():
 
     libdir = args["libdir"] if args["libdir"] else dirname(dirname(realpath(treeshrink.__file__)))
 
-    if args["tempdir"]:
-        tempdir = args["tempdir"]
-        mkdir(tempdir)
-    else:
-        tempdir = mkdtemp()    
+    tempdir = set_tmp_dir(args["tempdir"])  
     
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
@@ -56,7 +52,7 @@ def main():
     if args["indir"]:
         treename = splitext(args["tree"])[0] if args["tree"] else "input"
         subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"] if args["tree"] else "input.tre")))]
-        intrees = normpath(join(tempdir,treename + ".trees"))
+        intrees = get_tmp_file(treename + ".trees")
         with open(intrees,'w') as fout:
             for d in subdirs:
                 treename = args["tree"] if args["tree"] else "input.tre"
@@ -114,7 +110,7 @@ def main():
         
         # fit kernel density to this gene's species features (per-gene mode)
         if mode == 'per-gene':
-            filename = normpath(join(tempdir,"gene_"+str(t)+".dat"))
+            filename = get_tmp_file("gene_%s.dat" %str(t))
             with open(filename,'w') as f:
                 for s in mapping:
                     f.write(str(mapping[s]))
@@ -158,7 +154,7 @@ def main():
             l = len(species_map[s])
             for i in range(occ[s]-l):
                 species_map[s].append(1)
-            filename = normpath(join(tempdir,s + ".dat"))
+            filename = get_tmp_file(s + ".dat")
             with open(filename,'w') as f:
                 for v in species_map[s]:
                     f.write(str(v))
@@ -166,7 +162,7 @@ def main():
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
                 thresholds[i] = max(minimpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
-                print("%s:\t will be cut when impact above \t %f for quantile\t %s" %(s,thresholds[i],q))
+                print("%s:\n\t will be cut in %d tree where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):
@@ -174,10 +170,11 @@ def main():
                 for i,threshold in enumerate(species_map[s][1]):
                     if r > threshold:
                         removing_sets[i][t].append(s)
+                    
 
 # fit kernel density to all the species features across all genes and compute the global threshold (all-gene mode) 
     if mode == 'all-genes':
-        filename = normpath(join(tempdir,"all_genes" + ".dat"))
+        filename = get_tmp_file("all_genes" + ".dat")
         with open(filename,'w') as f:
             for gene in gene_list:
                 for s,r in gene:
@@ -190,7 +187,7 @@ def main():
                     if r > threshold:
                         removing_sets[i][t].append(s)
 
-    print("Writing output ...")
+    print("Writing output ...\nNumber of sequences cut from each tree: ")
 # Dendropy's filter_leaf_nodes() seems to have problem
 # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
 # use home-made code to prune the tree instead
@@ -211,32 +208,38 @@ def main():
                     f.write("\n")
             for tree,rs in zip(trees_shrunk,RS):
                 prune_tree(tree,rs)
-            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick')   
+                print(len(rs),end="\t")
+            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick')  
+            print() 
         else:
             for sd,item in zip(subdirs,RS):
                 outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
+                print("%s: %s" %(sd,len(item)),end="\t")
                 with open(outfile,'w') as f:
                     for s in item:
                         f.write(s + "\t")
-                        
+            print()            
             for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
+                L = set(x.taxon.label for x in tree.leaf_node_iter())
                 prune_tree(tree,rs)
                 treeName,treeExt = splitext(args["tree"])
                 treefile = normpath(join(outdir,sd, treeName + "_shrunk_" + quantiles[i] + treeExt))
-                tree.write_to_path(treefile,'newick')
+                tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
                 alnName,alnExt = splitext(aln_filename)
                 input_aln = normpath(join(args["indir"],sd,aln_filename))
                 if isfile(input_aln): 
                     output_aln = normpath(join(outdir,sd,alnName+"_shrunk"+quantiles[i]+alnExt))
-                    taxa_list = get_taxa(treefile)
-                    temp_aln = mktemp()
-                    sample_from_list(input_aln,taxa_list,temp_aln)
                     alg = CompactAlignment()
-                    alg.read_file_object(temp_aln,'fasta')
-                    alg.mask_gapy_sites(1)
-                    alg.write(output_aln,'fasta')
+                    alg.read_file_object(input_aln,'fasta')
+                    S=set(alg.keys())
+                    if (L.difference(alg.keys())) or S.difference(L):
+                        print("ERROR: For gene %s, alignment names don't match tree names. Will skip it.\n\tonly in tree:\t%s\n\tonly in alignment:\t%s"%(sd,str(L.difference(S)),str(S.difference(L))))
+                    else:
+                        alg.remove_all(rs)
+                        alg.mask_gapy_sites(1)
+                        alg.write(output_aln,'fasta')
 
     if not args["tempdir"]:
         rmtree(tempdir)

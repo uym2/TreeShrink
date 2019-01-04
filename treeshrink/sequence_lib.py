@@ -4,10 +4,13 @@ from os.path import isfile
 from os import remove
 from random import random
 from copy import copy
+from treeshrink import get_tmp_file
+
 try:
     import cPickle as pickle
 except:
     import pickle
+
 
 def get_taxon_list(filename):
     taxon_list = []
@@ -31,6 +34,16 @@ def gap_rm(str0,gap='-'):
         if c != gap:
             str1 =  str1 + c
     return str1
+
+
+indexfiles = {}
+def get_index_file_name(file_in):
+    try:
+        return indexfiles [file_in]
+    except KeyError:
+        tmp = get_tmp_file()
+        indexfiles[file_in] = tmp
+        return tmp
 
 def index_fasta(file_in,file_out=None,store_index_file=True):
     # only work for fasta format
@@ -60,10 +73,9 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
 
     if not store_index_file:
         return seq_pointers
-
+    
     if not file_out:
-        file_extension = file_in.split('.')[-1]
-        file_out = file_in[:-(len(file_extension)+1)]+'.idx'
+        file_out = get_index_file_name(file_in)
     with open(file_out,'wb') as fout:
         pickle.dump(seq_pointers,fout)
     f.close()
@@ -71,8 +83,7 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
     return seq_pointers
 
 def load_index(file_in,store_index_file=True,renew_index_file=False):
-    file_extension = file_in.split('.')[-1]
-    file_idx = file_in[:-(len(file_extension)+1)] + '.idx'
+    file_idx = get_index_file_name(file_in)
 
     if renew_index_file or not isfile(file_idx):
         if renew_index_file:
