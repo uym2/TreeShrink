@@ -45,7 +45,7 @@ All dependencies were built and included with the software. If you have Python a
 If you use anaconda, try:
 
 ~~~bash
-conda install smirarab treeshrink
+conda install -c smirarab treeshrink
 ~~~
 
 this should work in most platforms. Let us know if it doesn't in the issues section. 
