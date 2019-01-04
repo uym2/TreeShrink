@@ -1,4 +1,3 @@
-
 TreeShrink is an algorithm for detecting abnormally long branches in one or more phylogenetic trees. 
 
 - **Inputs**: 
@@ -144,7 +143,89 @@ run_treeshrink.py  -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshr
 run_treeshrink.py  -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
 
-Finally, the input can be a folder with many folders in it, one per gene. Each folder has to have a file for trees and optionally a file for the alignment. The alignment and tree files should have the same name in all folders.  
-- You give the name of the folder than includes all the genes using `-i`. 
-- You give the name of the gene tree files using `-t` and the name of the alignment files using `-a`.
+#### Using `-i` to input alignments
+
+The input can also be a set of alignments and trees. Alignments will no impact the outlier detection. The only way in which they are used is the following. After TreeShrink detects (based on trees) what sequences are outliers, it then removes those sequences from both the tree and the alignment and produces a new filtered alignment and tree.  
+
+To provide alignment and trees, your data need to follow a certain structure, as shown in the example below. 
+
+- You need to a top folder (e.g., `allgenes` below). 
+- Inside that folder, you need to put one directory per input gene tree/alignment. In our example, these are `4048`, `4103`, `4218`, `4234`, and `4308`. 
+- Inside each of these gene folders, you have a file for the gene tree and all the tree files should have the same exact name. In this case, the name is `RAxML_bipartitions.final `. 
+- Inside each of these gene folders, you can have a file for the gene alignment and all the alignment files should have the same exact name. In this case, the name is `alignment.fasta`.
+- Then, you can run TreeShrink and simply give it the name of the top folder using `-i`, the name of the gene tree files using `-t` and the name of the alignment files (if present) using `-a`. In this example, you will exectue:
+
+~~~ bash
+run_treeshrink.py -i allgenes -t RAxML_bipartitions.final -a alignment.fasta
+~~~
+
+- This will produce the removing sets, in addition to a filtered alignment and a filtered tree, as shown in the second list below. Note the addition of files for the shrunk tree (`RAxML_bipartitions_shrunk_0.05.final`) and the shrunk alignment (`alignment_shrunk0.05.fasta`) in addition to the files that give the name of filtered sequences (`RAxML_bipartitions_shrunk_RS_0.05.txt`).
+
+Example input:
+
+~~~bash
+> ls allgenes/*
+
+allgenes/4048:
+RAxML_bipartitions.final
+alignment.fasta
+
+allgenes/4103:
+RAxML_bipartitions.final
+alignment.fasta
+
+allgenes/4218:
+RAxML_bipartitions.final
+alignment.fasta
+
+allgenes/4234:
+RAxML_bipartitions.final
+alignment.fasta
+
+allgenes/4308:
+RAxML_bipartitions.final
+alignment.fasta
+
+~~~
+
+
+Example after running TreeShrink:
+
+~~~ bash
+allgenes/4048:
+RAxML_bipartitions.final
+RAxML_bipartitions_shrunk_0.05.final
+RAxML_bipartitions_shrunk_RS_0.05.txt
+alignment.fasta
+alignment_shrunk0.05.fasta
+
+allgenes/4103:
+RAxML_bipartitions.final
+RAxML_bipartitions_shrunk_0.05.final
+RAxML_bipartitions_shrunk_RS_0.05.txt
+alignment.fasta
+alignment_shrunk0.05.fasta
+
+allgenes/4218:
+RAxML_bipartitions.final
+RAxML_bipartitions_shrunk_0.05.final
+RAxML_bipartitions_shrunk_RS_0.05.txt
+alignment.fasta
+alignment_shrunk0.05.fasta
+
+allgenes/4234:
+RAxML_bipartitions.final
+RAxML_bipartitions_shrunk_0.05.final
+RAxML_bipartitions_shrunk_RS_0.05.txt
+alignment.fasta
+alignment_shrunk0.05.fasta
+
+allgenes/4308:
+RAxML_bipartitions.final
+RAxML_bipartitions_shrunk_0.05.final
+RAxML_bipartitions_shrunk_RS_0.05.txt
+alignment.fasta
+alignment_shrunk0.05.fasta
+
+~~~
  
