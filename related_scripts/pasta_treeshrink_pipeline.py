@@ -22,7 +22,7 @@ def main():
     parser.add_argument("-2","--tsargs",required=False,help="A set of arguments passed to tree shrink; e.g., '-q 0.01 -b 33'")
     parser.add_argument("-3","--ptargs2",required=False,help="A set of arguments passed to first PASTA run; e.g., '--iter-limit 3 --mask-gappy-sites=3 -d Protein'")
     parser.add_argument("-n","--ns",required=False,help="Number of species'")
-    parser.add_argument("-p","--protein",required=False,action='store_true',help="Cleanup the directories")
+    parser.add_argument("-p","--protein",required=False,action='store_true',help="Add if inputs are proteins")
     parser.add_argument("-c","--cleanup",required=False,action='store_true',help="Cleanup the directories")
  
 

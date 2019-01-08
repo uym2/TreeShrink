@@ -1,3 +1,5 @@
+* Version 1.2.3:
+	* Minor bug fix: make sure zero diameter doesn't cause error; just a warning. 
 * Version 1.2.2:
 	* Made sure .idx files are not created in the target directory. Instead, they reside in temp dir
 	* Don't write alignments to temp files. 

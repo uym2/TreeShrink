@@ -95,7 +95,11 @@ def main():
 
         # compute species feature (i.e. the max ratio associated with each species for this gene tree)
         mapping = {}
+        #print(a_filter.min_diams)
         for i in range(1,len(a_filter.min_diams)):
+            if a_filter.min_diams[i] == 0:
+                print("Warning: tree %d has has no-diameter (has only zero branch lengths) after removing %d sequences." %(t,i))
+                break
             r = a_filter.min_diams[i-1]/a_filter.min_diams[i]
             removals = a_filter.list_removals(d=i)
             for s in removals:
