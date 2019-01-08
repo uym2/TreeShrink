@@ -27,7 +27,8 @@ def main():
     parser.add_argument("-t","--tree",required=False,help="The name of the input tree/trees. If the input directory is specified (see -i option), each subdirectory under it must contain a tree with this name. Otherwise, all the trees can be included in this one file. Default: input.tre")
     parser.add_argument("-a","--alignment",required=False,help="The name of the input alignment; can only be used when the input directory is specified (see -i option). Each subdirectory under it must contain an alignment with this name. Default: input.fasta")
     parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees. Default: NO")
-    parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data")
+    parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data; see also -s")
+    parser.add_argument("-s","--kscaling",required=False,help="If -k not given, we use k=min(n/a,b*sqrt(n)) by default; using this option, you can set the a,b constants; Default: '5,2'")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
     parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than MINIPACT%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
@@ -48,6 +49,8 @@ def main():
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
     minimpact = (float(args["minimpact"])/100)+1 if args["minimpact"] else 1.05
+    
+    scaling = [int(x) for x in args["kscaling"].split(",")] if  args["kscaling"] else [5,2]
 
     if args["indir"]:
         treename = splitext(args["tree"])[0] if args["tree"] else "input"
@@ -76,6 +79,16 @@ def main():
         outdir = splitext(intrees)[0] + "_treeshrink"
         mkdir(outdir)
 
+    ''' Check to make sure output can be written'''
+    if args["indir"]:
+        i = 0
+        fName,ext = splitext(basename(intrees))
+        for sd in subdirs:
+            outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
+            with open(outfile,'w') as f:
+                pass
+
+
     trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
 
     if mode=='auto' and len(trees) < MIN_TREE_NUM:
@@ -90,7 +103,7 @@ def main():
 
     for t,a_tree in enumerate(trees):
         # solve k-shrink
-        a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"])
+        a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"],scaling=scaling)
         a_filter.optFilter(d=k)
 
         # compute species feature (i.e. the max ratio associated with each species for this gene tree)
@@ -98,7 +111,7 @@ def main():
         #print(a_filter.min_diams)
         for i in range(1,len(a_filter.min_diams)):
             if a_filter.min_diams[i] == 0:
-                print("Warning: tree %d has has no-diameter (has only zero branch lengths) after removing %d sequences." %(t,i))
+                print("Warning: tree %d has no diameter (has only zero branch lengths) after removing %d sequences." %(t+1,i))
                 break
             r = a_filter.min_diams[i-1]/a_filter.min_diams[i]
             removals = a_filter.list_removals(d=i)
@@ -154,7 +167,7 @@ def main():
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
     if mode == 'per-species':
-        for s in species_map:
+        for s in sorted(species_map):
             l = len(species_map[s])
             for i in range(occ[s]-l):
                 species_map[s].append(1)

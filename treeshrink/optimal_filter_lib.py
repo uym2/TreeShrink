@@ -24,7 +24,7 @@ class Entry:
         self.retained = None
 
 class TreeFilter:       
-    def __init__(self, ddpTree = None, tree_file = None, schema = "newick", centroid_reroot = False):
+    def __init__(self, ddpTree = None, tree_file = None, scaling = None,  schema = "newick", centroid_reroot = False):
         a_tree = Centroid_Tree(ddpTree=ddpTree,tree_file=tree_file,schema=schema)
 
         if centroid_reroot:
@@ -40,6 +40,9 @@ class TreeFilter:
         self.bestLCA = None
         self.nleaf = 0
         self.records = {}
+        self.a = scaling[0]
+        self.b = scaling[1]
+        #print("Using a= %d , b= %d" %(self.a, self.b))
 
         diam = -1
 
@@ -212,8 +215,8 @@ class TreeFilter:
         return node_record
     
 
-    def __default_d__(self,DEFAULT_MIN=0,SCALE_FACTOR=5):
-        return min(self.nleaf//4,max(DEFAULT_MIN,int(SCALE_FACTOR*sqrt(self.nleaf))))
+    def __default_d__(self,DEFAULT_MIN=0):
+        return min(self.nleaf//self.a,max(DEFAULT_MIN,int(self.b*sqrt(self.nleaf))))
 
     def optFilter(self,d=None):
         d = self.__default_d__() if d is None else d

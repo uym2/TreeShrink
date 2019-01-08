@@ -1,3 +1,9 @@
+* Version 1.3.0:
+	* **Major change**: Make -s 2,5 the default. Default k was too big for many datasets. 
+* Version 1.2.4:
+	* Add ability to adjust default k foruma (`-s`)
+	* Output species sorted, to help comparisons
+	*  New early fail checks
 * Version 1.2.3:
 	* Minor bug fix: make sure zero diameter doesn't cause error; just a warning. 
 * Version 1.2.2:
