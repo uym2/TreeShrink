@@ -9,7 +9,7 @@ from copy import deepcopy
 from shutil import rmtree, copyfile
 
 def eprint(s):
-    stderr.write(str(s))
+    stderr.write(str(s)+"\n")
 
 
 def main():
@@ -36,7 +36,7 @@ def main():
     
     subdirs = [d for d in listdir(bd) if exists(normpath(join(bd,d,fn)))]
     
-    print(subdirs)
+    eprint("Found %d folders with %s" %(len(subdirs),fn))
     
     if (args["cleanup"]):
         for dir in subdirs:
@@ -54,15 +54,15 @@ def main():
             p.extend(['--num-cpus' , '1'] if a1.find("--num-cpus") == -1 else [])
             p.extend(["--max-mem-mb", "2048"]  if a1.find("--max-mem") == -1 else [])
             p.extend(["-d","Protein"] if args["protein"] else [])
-            p.extend(["2>%s-error.log"%join(bd,dir,"firstround-pasta"%q)])  
+            p.extend(["2>%s-error.log"%join(bd,dir,"firstround-pasta")])  
             print(" ".join(p), file=f)
 
     p = ["run_treeshrink.py -i", bd,"-t firstround.tre -a firstround.marker001.input.faa.aln", a2] 
     p.extend(['-b' ,'10'] if a2.find("-b") == -1 else []) 
-    p.extend(['-c' ,'10'] if a2.find("-b") == -1 else []) 
+    p.extend(['-s' ,'2,b'] if a2.find("-s") == -1 else []) 
     p.extend(['-p', "treeshrinktemps"] if a2.find("-b") == -1 else [])
     q = "0.05" if a2.find("-q") == -1 else a2.split(" ")[a2.split(" ").index("-q")+1]
-    p.extend(['-q', str(q)])
+    p.extend(['-q', q])
     p.extend(["|tee" ,"treeshrink-log.txt"])
     with open('secondstep.sh','w') as f:
         print(" ".join(p),file=f)
@@ -77,7 +77,7 @@ def main():
             p.extend(['--num-cpus' , '1']  if a3.find("--num-cpus") == -1 else [])
             p.extend(["--max-mem-mb", "2048"]  if a3.find("--max-mem") == -1 else [])
             p.extend(["-d","Protein"] if args["protein"] else [])
-            p.extend(["2>%s-error.log"%join(bd,dir,"filtered-pasta"%q)])    
+            p.extend(["2>%s-error.log"%join(bd,dir,"filtered-pasta")])    
             print(" ".join(p), file=f)
     
 if __name__ == "__main__":
