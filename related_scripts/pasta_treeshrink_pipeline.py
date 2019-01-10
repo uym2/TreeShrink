@@ -59,7 +59,7 @@ def main():
 
     p = ["run_treeshrink.py -i", bd,"-t firstround.tre -a firstround.marker001.input.faa.aln", a2] 
     p.extend(['-b' ,'10'] if a2.find("-b") == -1 else []) 
-    p.extend(['-s' ,'2,b'] if a2.find("-s") == -1 else []) 
+    p.extend(['-s' ,'2,5'] if a2.find("-s") == -1 else []) 
     p.extend(['-p', "treeshrinktemps"] if a2.find("-b") == -1 else [])
     q = "0.05" if a2.find("-q") == -1 else a2.split(" ")[a2.split(" ").index("-q")+1]
     p.extend(['-q', q])
