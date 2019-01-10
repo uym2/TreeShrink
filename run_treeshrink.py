@@ -1,22 +1,28 @@
 #! /usr/bin/env python
-from multiprocessing.util import get_temp_dir
+
+from treeshrink.sequence_lib import sample_from_list
+import treeshrink
+from treeshrink.optimal_filter_lib import TreeFilter
+from treeshrink.tree_lib import prune_tree, get_taxa
+from sys import argv, stdout
+from math import sqrt
+from subprocess import check_output,call
+import argparse
+from dendropy import Tree, TreeList
+from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
+from os import mkdir,getcwd,rmdir,listdir
+from copy import deepcopy
+from shutil import rmtree, copyfile
+from treeshrink.alignment import CompactAlignment
+from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
+    
+def check_dir(dirName):
+    if exists(dirName) and isdir(dirName) and not listdir(dirName):
+        return
+    mkdir(dirName)
+    
 
 def main():
-    from treeshrink.sequence_lib import sample_from_list
-    import treeshrink
-    from treeshrink.optimal_filter_lib import TreeFilter
-    from treeshrink.tree_lib import prune_tree, get_taxa
-    from sys import argv, stdout
-    from math import sqrt
-    from subprocess import check_output,call
-    import argparse
-    from dendropy import Tree, TreeList
-    from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
-    from os import mkdir,getcwd,rmdir,listdir
-    from copy import deepcopy
-    from shutil import rmtree, copyfile
-    from treeshrink.alignment import CompactAlignment
-    from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
     
@@ -72,7 +78,7 @@ def main():
 
     if args["outdir"]:
         outdir = args["outdir"] 
-        mkdir(outdir)
+        check_dir(outdir)
     elif args["indir"]:
         outdir = args["indir"]
     else:
@@ -179,7 +185,7 @@ def main():
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
                 thresholds[i] = max(minimpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
-                print("%s:\n\t will be cut in %d tree where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
+                print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
 
         for t,gene in enumerate(gene_list):

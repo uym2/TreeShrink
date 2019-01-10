@@ -1,3 +1,5 @@
+* Version 1.3.1:
+	* If output directory is empty, do not complain 
 * Version 1.3.0:
 	* **Major change**: Make -s 2,5 the default. Default k was too big for many datasets. 
 * Version 1.2.4:
