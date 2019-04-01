@@ -2,15 +2,15 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
 
 - **Inputs**: 
     - One or more phylogenetic trees with branch lengths. If more than one, the trees should be on overlapping sets of species (though missing data are allowed). 
-    - Optional: A number `k` ≤ the total number of species.
+    - Optional: a number `k` ≤ the total number of species.
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
-    - Optiona: A set of alignments, from which, shrunk sequences will be removed
+    - Optiona: a set of alignments, from which, shrunk sequences will be removed
 - **Outputs**:
     - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k.
-    - A final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
+    - The removing list: the final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
     - The shrunk trees: the input trees with the suggested leaves removed. 
-    - If alignments provided, the filtered alignments with suggested leaves removed. 
+    - The filtered alignments: the input alignments (if provided) with suggested leaves removed. 
     
 Note that the tree diameter is the maximum distance between any two leaves of the tree. When multiple trees are available (e.g., gene trees), the statistical tests can use the information from all genes to decide what branches are too long. 
 
@@ -115,12 +115,12 @@ Arguments include:
   -k K, --k K           The maximum number of leaves that can be removed.
                         Default: auto-select based on the data
   -q QUANTILES, --quantiles QUANTILES
-                        The quantile(s) to set threshold. Default is 0.05
+                        The quantile(s) to set threshold (false positive tolerance rate). Default is 0.05
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
                         genes','auto'. Default: auto
   -o OUTDIR, --outdir OUTDIR
                         Output directory. Default: the same as input directory
-                        (if it is specified) or the same as the input trees
+                        (if it is specified) or in the same directory with the input trees
   -p TEMPDIR, --tempdir TEMPDIR
                         Directory to keep temporary files. If specified, the
                         temp files will be kept
@@ -135,7 +135,7 @@ The TreeShrink package comes with several testing trees that can be found in the
 The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
 
 ~~~bash
-run_treeshrink.py  -i test_data/mm10.trees
+run_treeshrink.py  -t test_data/mm10.trees
 ~~~
 
 After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removed species (`mm10_shrunk _RS_0.05.txt`). You should see 10 trees in `mm10_shrunk_0.05.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `mm10_shrunk _RS_0.05.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
