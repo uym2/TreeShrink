@@ -140,10 +140,10 @@ run_treeshrink.py  -t test_data/mm10.trees
 
 After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removed species (`mm10_shrunk _RS_0.05.txt`). You should see 10 trees in `mm10_shrunk_0.05.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `mm10_shrunk _RS_0.05.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
 
-The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-d```. Note that you can run TreeShrink with multiple α thresholds, as follow
+The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-o```. Note that you can run TreeShrink with multiple α thresholds, as follow
 
 ~~~bash
-run_treeshrink.py  -i test_data/mm10.trees -q "0.05 0.10" -d test_data/mm10_treeshrink_multi
+run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_treeshrink_multi
 ~~~
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
@@ -171,13 +171,13 @@ run_treeshrink.py  -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshr
 run_treeshrink.py  -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
 ```
 
-#### Using `-i` to input alignments
+#### Using `-i` to include alignments
 
-The input can also be a set of alignments and trees. Alignments will no impact the outlier detection. The only way in which they are used is the following. After TreeShrink detects (based on trees) what sequences are outliers, it then removes those sequences from both the tree and the alignment and produces a new filtered alignment and tree.  
+The input can also be a set of alignments and trees. Alignments does not impact the outlier detection and are included only if one wishes to filter outliers from both trees and alignments. After TreeShrink detects outliers (based solely on trees), it  produces a new alignment and a new tree by removing the corresponding sequences.
 
-To provide alignment and trees, your data need to follow a certain structure, as shown in the example below. 
+To provide alignment and trees, your data need to follow a certain structure as follow: 
 
-- You need to a top folder (e.g., `allgenes` below). 
+- You need to have a top folder (e.g., `allgenes` below). 
 - Inside that folder, you need to put one directory per input gene tree/alignment. In our example, these are `4048`, `4103`, `4218`, `4234`, and `4308`. 
 - Inside each of these gene folders, you have a file for the gene tree and all the tree files should have the same exact name. In this case, the name is `RAxML_bipartitions.final `. 
 - Inside each of these gene folders, you can have a file for the gene alignment and all the alignment files should have the same exact name. In this case, the name is `alignment.fasta`.
