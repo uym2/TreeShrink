@@ -210,7 +210,7 @@ def main():
                     if r > threshold:
                         removing_sets[i][t].append(s)
 
-    print("Writing output ...\nNumber of sequences cut from each tree: ")
+    print("Writing output ...\n")
 # Dendropy's filter_leaf_nodes() seems to have problem
 # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
 # use home-made code to prune the tree instead
@@ -231,17 +231,13 @@ def main():
                     f.write("\n")
             for tree,rs in zip(trees_shrunk,RS):
                 prune_tree(tree,rs)
-                print(len(rs),end="\t")
             trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick')  
-            print() 
         else:
             for sd,item in zip(subdirs,RS):
                 outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
-                print("%s: %s" %(sd,len(item)),end="\t")
                 with open(outfile,'w') as f:
                     for s in item:
                         f.write(s + "\t")
-            print()            
             for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
                 prune_tree(tree,rs)
