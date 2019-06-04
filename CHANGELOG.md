@@ -3,7 +3,7 @@
 * Version 1.3.0:
 	* **Major change**: Make -s 2,5 the default. Default k was too big for many datasets. 
 * Version 1.2.4:
-	* Add ability to adjust default k foruma (`-s`)
+	* Add ability to adjust default k formula (`-s`)
 	* Output species sorted, to help comparisons
 	*  New early fail checks
 * Version 1.2.3:
