@@ -231,7 +231,7 @@ def main():
                     f.write("\n")
             for tree,rs in zip(trees_shrunk,RS):
                 prune_tree(tree,rs)
-            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick')  
+            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
         else:
             for sd,item in zip(subdirs,RS):
                 outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
