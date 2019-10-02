@@ -1,3 +1,5 @@
+* Version 1.3.2:
+    * Suppress quotes around underscores in the output trees
 * Version 1.3.1:
 	* If output directory is empty, do not complain 
 * Version 1.3.0:
