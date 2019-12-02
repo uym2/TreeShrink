@@ -3,7 +3,7 @@
 from treeshrink.sequence_lib import sample_from_list
 import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
-from treeshrink.tree_lib import prune_tree, get_taxa
+from treeshrink.tree_lib import prune_tree, get_taxa,tree_as_newick
 from sys import argv, stdout
 from math import sqrt
 from subprocess import check_output,call
@@ -231,7 +231,9 @@ def main():
                     f.write("\n")
             for tree,rs in zip(trees_shrunk,RS):
                 prune_tree(tree,rs)
-            trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
+                tree_as_newick(tree,outfile=normpath(join(outdir,fName + "_" + quantiles[i] + ext)),append=True)
+
+            #trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
         else:
             for sd,item in zip(subdirs,RS):
                 outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
@@ -243,7 +245,8 @@ def main():
                 prune_tree(tree,rs)
                 treeName,treeExt = splitext(args["tree"])
                 treefile = normpath(join(outdir,sd, treeName + "_shrunk_" + quantiles[i] + treeExt))
-                tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
+                #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
+                tree_as_newick(tree,outfile=treefile,append=False)
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
                 alnName,alnExt = splitext(aln_filename)
