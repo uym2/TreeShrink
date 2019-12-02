@@ -1,5 +1,5 @@
 * Version 1.3.3:
-    	* Suppress quotes around dashes in the output trees
+	* Suppress quotes around dashes in the output trees
 * Version 1.3.2:
     	* Suppress quotes around underscores in the output trees
 * Version 1.3.1:
