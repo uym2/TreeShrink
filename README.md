@@ -5,7 +5,7 @@ TreeShrink is an algorithm for detecting abnormally long branches in one or more
     - Optional: a number `k` ≤ the total number of species.
     - Optional: a selection of one of the three implemented algorithms for outlier detection.
     - Optional: a false positive tolerance rate, α
-    - Optiona: a set of alignments, from which, shrunk sequences will be removed
+    - Optional: a set of alignments, from which, shrunk sequences will be removed
 - **Outputs**:
     - The removing sets: the set of species to be removed from each input tree to maximally reduce its diameter for each of the removal sizes 1, 2, ..., k.
     - The removing list: the final suggested list of species to be removed from each input tree, computed based on the selected statistical test. 
