@@ -147,7 +147,7 @@ run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_tree
 As TreeShrink is running, it will output a bunch of messages to the console. We suggest saving these in a text log file:
 
 ~~~bash
-run_treeshrink.py  -i test_data/mm10.trees > test_data/mm10.trees.treeshrinklog.txt
+run_treeshrink.py  -t test_data/mm10.trees > test_data/mm10.trees.treeshrinklog.txt
 ~~~
  
 ### Modes
@@ -162,9 +162,9 @@ By default, TreeShrink will automatically select an appropriate mode, with highe
  Note that the 'auto' mode of TreeShrink never selects 'per-gene', which is only useful if the input trees are phylogenetically independent. The user has to manually select the `per-gene` mode in such a case. Use ```-m``` to change the mode.
  
 ```bash
-run_treeshrink.py  -i test_data/mm10.trees -m per-species -d test_data/mm10_treeshrink_perspecies
-run_treeshrink.py  -i test_data/mm10.trees -m per-gene -d test_data/mm10_treeshrink_pergene
-run_treeshrink.py  -i test_data/mm10.trees -m all-genes -d test_data/mm10_treeshrink_allgenes
+run_treeshrink.py  -t test_data/mm10.trees -m per-species -o test_data/mm10_treeshrink_perspecies
+run_treeshrink.py  -t test_data/mm10.trees -m per-gene -o test_data/mm10_treeshrink_pergene
+run_treeshrink.py  -t test_data/mm10.trees -m all-genes -o test_data/mm10_treeshrink_allgenes
 ```
 
 #### Using `-i` to include alignments
