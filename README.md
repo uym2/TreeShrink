@@ -92,7 +92,7 @@ run_treeshrink.py [-h] [-i INDIR] [-t TREE] [-a ALIGNMENT] [-c] [-k K]
 Arguments include:
 
 ```bash
-  -h, --help            show this help message and exit
+    -h, --help            show this help message and exit
   -i INDIR, --indir INDIR
                         The parent input directory where the trees (and
                         alignments) can be found
@@ -109,20 +109,28 @@ Arguments include:
   -c, --centroid        Do centroid reroot in preprocessing. Highly
                         recommended for large trees. Default: NO
   -k K, --k K           The maximum number of leaves that can be removed.
-                        Default: auto-select based on the data
+                        Default: auto-select based on the data; see also -s
+  -s KSCALING, --kscaling KSCALING
+                        If -k not given, we use k=min(n/a,b*sqrt(n)) by
+                        default; using this option, you can set the a,b
+                        constants; Default: '5,2'
   -q QUANTILES, --quantiles QUANTILES
-                        The quantile(s) to set threshold (false positive tolerance rate). Default is 0.05
+                        The quantile(s) to set threshold. Default is 0.05
+  -b MINIMPACT, --minimpact MINIMPACT
+                        Do not remove species on the per-species test if their
+                        impact on diameter is less than MINIPACT% where x is
+                        the given value. Default: 5
   -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
                         genes','auto'. Default: auto
   -o OUTDIR, --outdir OUTDIR
                         Output directory. Default: the same as input directory
-                        (if it is specified) or in the same directory with the input trees
+                        (if it is specified) or the same as the input trees
   -p TEMPDIR, --tempdir TEMPDIR
                         Directory to keep temporary files. If specified, the
                         temp files will be kept
   -r LIBDIR, --libdir LIBDIR
-                        Directory of the R libraries and scripts. Default: 3
-                        layers above the current directory
+                        Directory of the R libraries and scripts. Default: 2
+                        layers above the treeshrink package
 ```
 
 ### Examples:
