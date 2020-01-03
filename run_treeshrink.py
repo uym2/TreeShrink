@@ -25,6 +25,8 @@ def check_dir(dirName):
 def main():
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
+    print(treeshrink.PROGRAM_NAME + " was called as follow")
+    print(" ".join(argv))
     
 
     parser = argparse.ArgumentParser()
@@ -169,7 +171,7 @@ def main():
                 print ("WARNING: 'Per-species' mode was selected for a dataset having low occupancy species. Consider switching to 'All-genes' mode")
         elif mode == 'auto':
             mode = 'per-species'
-            print("Finish preprocessing. TreeShrink will run in 'Per-species' mode ...    ")
+            print("TreeShrink will run in 'Per-species' mode ...    ")
 
 # fit kernel density to the per-species distributions and compute per-species threshold (per-species mode)
     if mode == 'per-species':
