@@ -70,8 +70,8 @@ def __write_newick(node,outstream):
 				outstream.write(',')
 			__write_newick(child,outstream)
 		outstream.write(')')
-	if not node.is_leaf() and node.label is not None:
-			outstream.write(str(node.label))
+	#if not node.is_leaf() and node.label is not None:
+	#		outstream.write(str(node.label))
 
 	if not node.edge_length is None:
 		outstream.write(":"+str(node.edge_length))

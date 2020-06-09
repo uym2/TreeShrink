@@ -4,7 +4,7 @@ from treeshrink.sequence_lib import sample_from_list
 import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
 from treeshrink.tree_lib import prune_tree, get_taxa,tree_as_newick
-from sys import argv, stdout
+from sys import argv, stdout,setrecursionlimit
 from math import sqrt
 from subprocess import check_output,call
 import argparse
@@ -23,6 +23,7 @@ def check_dir(dirName):
     
 
 def main():
+    setrecursionlimit(5000)
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
     print(treeshrink.PROGRAM_NAME + " was called as follow")
