@@ -41,7 +41,8 @@ def main():
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
     parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than MINIPACT%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
-    parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: the same as input directory (if it is specified) or the same as the input trees")
+    parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
+    parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. Default: Guess from the input tree")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
     parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 2 layers above the treeshrink package")
 
@@ -220,13 +221,14 @@ def main():
 
     #treeName,treeExt = splitext(basename(intrees))
     #outtrees = args["output"] if args["output"] else treeName + "_shrunk" + treeExt
-    fName,ext = splitext(basename(intrees))
-    
+    fName,ext = splitext(basename(args["tree"]))
+    prefix = args["outprefix"] #if args["outprefix"] else fName
+
     for i,RS in enumerate(removing_sets):
         trees_shrunk = deepcopy(trees)
         
         if args["indir"] is None:
-            outfile = normpath(join(outdir,fName + "_RS_" + quantiles[i] + ".txt"))
+            outfile = normpath(join(outdir,prefix + "_RS_shrunk_" + quantiles[i] + ".txt"))
             with open(outfile,'w') as f:
                 for item in RS:
                     for s in item:
@@ -234,28 +236,29 @@ def main():
                     f.write("\n")
             for tree,rs in zip(trees_shrunk,RS):
                 prune_tree(tree,rs)
-                tree_as_newick(tree,outfile=normpath(join(outdir,fName + "_" + quantiles[i] + ext)),append=True)
+                tree_as_newick(tree,outfile=normpath(join(outdir,prefix+"_tree_shrunk_"+quantiles[i]+ext)),append=True)
 
             #trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
         else:
             for sd,item in zip(subdirs,RS):
-                outfile = normpath(join(outdir,sd, fName + "_shrunk_RS_" + quantiles[i] + ".txt"))
+                outfile = normpath(join(outdir,sd, prefix + "_RS_shrunk_" + quantiles[i] + ".txt"))
                 with open(outfile,'w') as f:
                     for s in item:
                         f.write(s + "\t")
             for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
                 prune_tree(tree,rs)
-                treeName,treeExt = splitext(args["tree"])
-                treefile = normpath(join(outdir,sd, treeName + "_shrunk_" + quantiles[i] + treeExt))
+                #treeName,treeExt = splitext(args["tree"])
+                treefile = normpath(join(outdir,sd, prefix + "_tree_shrunk_" + quantiles[i] + treeExt))
                 #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
                 alnName,alnExt = splitext(aln_filename)
+                #prefix = args["outprefix"] if args["outprefix"] else alnName
                 input_aln = normpath(join(args["indir"],sd,aln_filename))
                 if isfile(input_aln): 
-                    output_aln = normpath(join(outdir,sd,alnName+"_shrunk"+quantiles[i]+alnExt))
+                    output_aln = normpath(join(outdir,sd,prefix+"_aln_shrunk_"+quantiles[i]+alnExt))
                     alg = CompactAlignment()
                     alg.read_file_object(input_aln,'fasta')
                     S=set(alg.keys())
