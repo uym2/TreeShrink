@@ -32,7 +32,7 @@ def main():
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data; see also -s")
     parser.add_argument("-s","--kscaling",required=False,help="If -k not given, we use k=min(n/a,b*sqrt(n)) by default; using this option, you can set the a,b constants; Default: '5,2'")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
-    parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
+    parser.add_argument("-b","--minImpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
     parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. Default: Guess from the input tree")
@@ -67,7 +67,7 @@ def main():
     
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
-    minimpact = (float(args["minimpact"])/100)+1 if args["minimpact"] else 1.05
+    minImpact = (float(args["minImpact"])/100)+1 if args["minImpact"] else 1.05
     
     scaling = [int(x) for x in args["kscaling"].split(",")] if  args["kscaling"] else [5,2]
 
@@ -197,7 +197,7 @@ def main():
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
-                thresholds[i] = max(minimpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
                 print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
 
