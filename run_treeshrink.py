@@ -32,7 +32,7 @@ def main():
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data; see also -s")
     parser.add_argument("-s","--kscaling",required=False,help="If -k not given, we use k=min(n/a,b*sqrt(n)) by default; using this option, you can set the a,b constants; Default: '5,2'")
     parser.add_argument("-q","--quantiles",required=False,help="The quantile(s) to set threshold. Default is 0.05")
-    parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than MINIPACT%% where x is the given value. Default: 5")
+    parser.add_argument("-b","--minimpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
     parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. Default: Guess from the input tree")
