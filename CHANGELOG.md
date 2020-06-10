@@ -3,6 +3,7 @@
     * Remove internal labels in pruned trees
     * Allow output prefix
     * Add option to show version
+    * Show help message if no argument is provided
 * Version 1.3.3:
 	* Suppress quotes around dashes in the output trees
 * Version 1.3.2:

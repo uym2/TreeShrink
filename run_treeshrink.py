@@ -40,6 +40,10 @@ def main():
     #parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 2 layers above the treeshrink package")
     parser.add_argument("-v","--version",required=False,action='store_true',help="Show TreeShrink version.")
 
+    if len(argv) == 1:
+        parser.print_help()
+        exit(0)
+
     args = vars(parser.parse_args())
     
     if args["version"]:
