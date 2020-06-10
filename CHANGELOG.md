@@ -1,6 +1,7 @@
 * Version 1.3.4:
     * Set recursion depth to 5000
     * Remove internal labels in pruned trees
+    * Allow output prefix
 * Version 1.3.3:
 	* Suppress quotes around dashes in the output trees
 * Version 1.3.2:
