@@ -23,13 +23,6 @@ def check_dir(dirName):
     
 
 def main():
-    setrecursionlimit(5000)
-
-    print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
-    print(treeshrink.PROGRAM_NAME + " was called as follow")
-    print(" ".join(argv))
-    
-
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i","--indir",required=False,help="The parent input directory where the trees (and alignments) can be found")
@@ -44,15 +37,27 @@ def main():
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
     parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. Default: Guess from the input tree")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
-    parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 2 layers above the treeshrink package")
+    #parser.add_argument("-r","--libdir",required=False,help="Directory of the R libraries and scripts. Default: 2 layers above the treeshrink package")
+    parser.add_argument("-v","--version",required=False,action='store_true',help="Show TreeShrink version.")
 
     args = vars(parser.parse_args())
+    
+    if args["version"]:
+        print(treeshrink.PROGRAM_VERSION)
+        exit(0)
+
+    setrecursionlimit(5000)
+
+    print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
+    print(treeshrink.PROGRAM_NAME + " was called as follow")
+    print(" ".join(argv))
 
 
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
-    libdir = args["libdir"] if args["libdir"] else dirname(dirname(realpath(treeshrink.__file__)))
+    #libdir = args["libdir"] if args["libdir"] else dirname(dirname(realpath(treeshrink.__file__)))
+    libdir = dirname(dirname(realpath(treeshrink.__file__)))
 
     tempdir = set_tmp_dir(args["tempdir"])  
     
