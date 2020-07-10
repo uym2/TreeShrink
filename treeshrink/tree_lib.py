@@ -74,4 +74,4 @@ def __write_newick(node,outstream):
 	#		outstream.write(str(node.label))
 
 	if not node.edge_length is None:
-		outstream.write(":"+str(node.edge_length))
+		outstream.write(":"+"{:.10f}".format(node.edge_length))
