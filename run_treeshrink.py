@@ -266,17 +266,15 @@ def main():
             for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
                 prune_tree(tree,rs)
-                #treeName,treeExt = splitext(args["tree"])
-                treefile = normpath(join(outdir,sd, prefix + tree_tag + treeExt))
+                treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
                 #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
                 alnName,alnExt = splitext(aln_filename)
-                #prefix = args["outprefix"] if args["outprefix"] else alnName
                 input_aln = normpath(join(args["indir"],sd,aln_filename))
                 if isfile(input_aln): 
-                    output_aln = normpath(join(outdir,sd,prefix+aln_tag++alnExt))
+                    output_aln = normpath(join(outdir,sd,prefix+aln_tag+alnExt))
                     alg = CompactAlignment()
                     alg.read_file_object(input_aln,'fasta')
                     S=set(alg.keys())
