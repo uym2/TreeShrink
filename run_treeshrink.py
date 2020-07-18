@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from treeshrink.sequence_lib import sample_from_list
 import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
