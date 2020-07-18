@@ -2,6 +2,7 @@
     * Set recursion depth to 5000
     * Remove internal labels in pruned trees
     * Allow output prefix and allow outputing to an existing folder
+    * Add --force to force overriding existing files
     * Add option to show version
     * Show help message if no argument is provided
     * Prevent conversion to scientific form

@@ -36,7 +36,8 @@ def main():
     parser.add_argument("-b","--minImpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
-    parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. Default: 'output'")
+    parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. If the output directory contains some files with the specified prefix, automatically adjusts the prefix (e.g. output --> output1) to avoid overriding. Use --force to force overriding. Default: 'output'")
+    parser.add_argument("-f","--force",required=False,action='store_true',help="Force overriding of existing output files.")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
     parser.add_argument("-v","--version",required=False,action='store_true',help="Show TreeShrink version.")
 
@@ -95,8 +96,8 @@ def main():
         outdir = args["indir"]
     else:
         outdir = splitext(intrees)[0] + "_treeshrink"
-    if not make_dir(outdir):
-        print("Warning: outputs will be written to an existing directory " + outdir)
+    if not make_dir(outdir) and args["force"]:
+        print("Warning: the output directory " + outdir + " already exists. With --force, existing files with prefix '" + args["outprefix"]  + "' will be overrided")
 
     ''' Check to make sure output can be written
     if args["indir"]:
@@ -229,21 +230,28 @@ def main():
 # use home-made code to prune the tree instead
 
     fName,ext = splitext(basename(args["tree"]))
+    ext = ext if ext else '.nwk'
     prefix = args["outprefix"]
     counter = 0
-    # check if the outdir already has files with the specified prefix
+    # check if the outdir or any of its subdirs already has files with the specified prefix
     for File in listdir(outdir):
         if File.startswith(prefix):
              search_counter = re.search(r'\d+', File[len(prefix):])
              counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
-    if counter > 0:
+        if isdir(normpath(join(outdir,File))):
+            for File1 in listdir(normpath(join(outdir,File))):
+                if File1.startswith(prefix):
+                    search_counter = re.search(r'\d+', File1[len(prefix):])
+                    counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
+    if counter >0 and not args["force"]:
+        print("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")            
         prefix = prefix + str(counter)
      
     for i,RS in enumerate(removing_sets):
         trees_shrunk = deepcopy(trees)
-        RS_tag = '' if (len(removing_sets) < 2) else '_RS_shrunk_' + quantiles[i]
-        tree_tag = '' if (len(removing_sets) < 2) else '_tree_shrunk_' + quantiles[i]
-        aln_tag = '' if (len(removing_sets) < 2) else '_aln_shrunk_' + quantiles[i]
+        RS_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
+        tree_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
+        aln_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         
         if args["indir"] is None:
             outfile = normpath(join(outdir,prefix + RS_tag + ".txt"))
@@ -259,6 +267,7 @@ def main():
             #trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
         else:
             for sd,item in zip(subdirs,RS):
+                make_dir(normpath(join(outdir,sd)))
                 outfile = normpath(join(outdir,sd, prefix + RS_tag + ".txt"))
                 with open(outfile,'w') as f:
                     for s in item:
@@ -272,6 +281,7 @@ def main():
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
                 alnName,alnExt = splitext(aln_filename)
+                alnExt = alnExt if alnExt else '.fasta'
                 input_aln = normpath(join(args["indir"],sd,aln_filename))
                 if isfile(input_aln): 
                     output_aln = normpath(join(outdir,sd,prefix+aln_tag+alnExt))
@@ -289,7 +299,7 @@ def main():
         rmtree(tempdir)
 #    call(["rm","-r",tempdir])
 
-    print("Output files written to " + outdir) 
+    print("Output files written to " + outdir + " with prefix " + prefix + ".") 
 
     
 if __name__ == "__main__":
