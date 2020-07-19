@@ -33,12 +33,7 @@ An earlier version of TreeShrink is described in the following paper:
 
 
 #### Prerequisites:
-The tool TreeShrink is written in Python and R. You need to have the following installed:
-
-- Python (either 2 or 3) and 
-- R installed in your machine. 
-
-The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
+The tool TreeShrink is written in Python and R. The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
 
 ### Anaconda
 If you use anaconda, try:
@@ -50,8 +45,7 @@ conda install -c smirarab treeshrink
 this should work in most platforms. Let us know if it doesn't in the issues section. 
 
 ### Install from github
-If you have `git`, you can simply clone the TreeShrink repository to your machine `git clone https://github.com/uym2/TreeShrink.git`. Otherwise, you can download the zip file to your machine. 
-
+If you have `git`, you can clone the TreeShrink repository to your machine `git clone https://github.com/uym2/TreeShrink.git`. Otherwise, you can download the zip file to your machine. 
 
 After downloading TreeShrink, to install, run:
 
@@ -78,76 +72,31 @@ If you have troubles installing TreeShrink, probably the included packages are i
 2. If you use an ```R``` version before 3.4.0, you probably see TreeShrink run with a warning message **"package ‘BMS’ was built under R version 3.4.0"**. Although we have not observed any problem with this warning, we recommend upgrading ```R``` to version 3.4.0 or later. Alternatively, you can rebuild the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
 	- On Linux/Mac OS machines, go to the TreeShrink directory and type ```bash install_BMS.sh```.
 	- On Windows machines, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install_BMS.cmd```.
-
-
+3. Currently TreeShrink is not compatible to R 4.0. You have to scroll back to R 3.4 to run TreeShrink. 	
 
 ## Usage: 
+After installing TreeShrink, you can type 
 
-```bash
-run_treeshrink.py [-h] [-i INDIR] [-t TREE] [-a ALIGNMENT] [-c] [-k K]
-                         [-q QUANTILES] [-m MODE] [-o OUTDIR] [-p TEMPDIR]
-                         [-r LIBDIR]
-```
+~~~bash
+run_treeshrink.py -h
+~~~
 
-Arguments include:
+to learn about all the options. 
 
-```bash
-    -h, --help            show this help message and exit
-  -i INDIR, --indir INDIR
-                        The parent input directory where the trees (and
-                        alignments) can be found
-  -t TREE, --tree TREE  The name of the input tree/trees. If the input
-                        directory is specified (see -i option), each
-                        subdirectory under it must contain a tree with this
-                        name. Otherwise, all the trees can be included in this
-                        one file. Default: input.tre
-  -a ALIGNMENT, --alignment ALIGNMENT
-                        The name of the input alignment; can only be used when
-                        the input directory is specified (see -i option). Each
-                        subdirectory under it must contain an alignment with
-                        this name. Default: input.fasta
-  -c, --centroid        Do centroid reroot in preprocessing. Highly
-                        recommended for large trees. Default: NO
-  -k K, --k K           The maximum number of leaves that can be removed.
-                        Default: auto-select based on the data; see also -s
-  -s KSCALING, --kscaling KSCALING
-                        If -k not given, we use k=min(n/a,b*sqrt(n)) by
-                        default; using this option, you can set the a,b
-                        constants; Default: '5,2'
-  -q QUANTILES, --quantiles QUANTILES
-                        The quantile(s) to set threshold. Default is 0.05
-  -b MINIMPACT, --minimpact MINIMPACT
-                        Do not remove species on the per-species test if their
-                        impact on diameter is less than MINIPACT% where x is
-                        the given value. Default: 5
-  -m MODE, --mode MODE  Filtering mode: 'per-species', 'per-gene', 'all-
-                        genes','auto'. Default: auto
-  -o OUTDIR, --outdir OUTDIR
-                        Output directory. Default: the same as input directory
-                        (if it is specified) or the same as the input trees
-  -p TEMPDIR, --tempdir TEMPDIR
-                        Directory to keep temporary files. If specified, the
-                        temp files will be kept
-  -r LIBDIR, --libdir LIBDIR
-                        Directory of the R libraries and scripts. Default: 2
-                        layers above the treeshrink package
-```
-
-### Examples:
-The TreeShrink package comes with several testing trees that can be found in the `test_data` folder.
-
+The TreeShrink package comes with several testing trees that can be found in the [test_data](test_data) folder.
 The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
 
 ~~~bash
 run_treeshrink.py  -t test_data/mm10.trees
 ~~~
 
-After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`mm10_shrunk_0.05.trees`) and the removed species (`mm10_shrunk _RS_0.05.txt`). You should see 10 trees in `mm10_shrunk_0.05.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `mm10_shrunk _RS_0.05.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
+After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`output.trees`) and the removed species (`output.txt`). You should see 10 trees in `output.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `output.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
 
-The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-o```. Note that you can run TreeShrink with multiple α thresholds, as follow
+The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-o``` and the output prefix can be changed using ```-O```. 
+You can run TreeShrink with multiple α thresholds, as follow
 
 ~~~bash
-run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_treeshrink_multi
+run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_treeshrink_multi -O shrunk
 ~~~
  
  The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
@@ -179,85 +128,92 @@ run_treeshrink.py  -t test_data/mm10.trees -m all-genes -o test_data/mm10_treesh
 
 The input can also be a set of alignments and trees. Alignments does not impact the outlier detection and are included only if one wishes to filter outliers from both trees and alignments. After TreeShrink detects outliers (based solely on trees), it  produces a new alignment and a new tree by removing the corresponding sequences.
 
-To provide alignment and trees, your data need to follow a certain structure as follow: 
+To provide alignments and trees, your data must have the following structure: 
 
-- You need to have a top folder (e.g., `allgenes` below). 
-- Inside that folder, you need to put one directory per input gene tree/alignment. In our example, these are `4048`, `4103`, `4218`, `4234`, and `4308`. 
-- Inside each of these gene folders, you have a file for the gene tree and all the tree files should have the same exact name. In this case, the name is `RAxML_bipartitions.final `. 
-- Inside each of these gene folders, you can have a file for the gene alignment and all the alignment files should have the same exact name. In this case, the name is `alignment.fasta`.
-- Then, you can run TreeShrink and simply give it the name of the top folder using `-i`, the name of the gene tree files using `-t` and the name of the alignment files (if present) using `-a`. In this example, you will exectue:
+- You need to have a top folder (e.g., `test_data/mm_indir/`). 
+- Inside that folder, you need to put one directory per input gene tree/alignment. In our example, these are `gene1`, `gene2`,...,`gene10`. 
+- Inside each of these gene folders, you have a file for the gene tree and (optionally) a file for the alignment. All the tree files must have the same exact name. The same for all the alignment files. In our example, the trees are named `input.tree` and the alignments are named `input.fasta`.
+
+Then, you can run TreeShrink and simply give it the name of the top folder using `-i`, the name of the gene tree files using `-t`, and the name of the alignment files (if present) using `-a`.
+
+
+In this example, you will execute:
 
 ~~~ bash
-run_treeshrink.py -i allgenes -t RAxML_bipartitions.final -a alignment.fasta
+run_treeshrink.py -i test_data/mm_indir -t input.tree -a input.fasta
 ~~~
 
-- This will produce the removing sets, in addition to a filtered alignment and a filtered tree, as shown in the second list below. Note the addition of files for the shrunk tree (`RAxML_bipartitions_shrunk_0.05.final`) and the shrunk alignment (`alignment_shrunk0.05.fasta`) in addition to the files that give the name of filtered sequences (`RAxML_bipartitions_shrunk_RS_0.05.txt`).
+This will produce a removing set `output.txt`, a filtered alignment `output.fasta`, and a filtered tree `output.tree` for each subdirectory `gene1`, `gene2`, ..., `gene10` of `test_data/mm_indir`. You can change the output directory using `-o` and the output prefix using `-O`.
 
 Example input:
 
 ~~~bash
-> ls allgenes/*
+$ ls test_data/mm_indir/gene*
+test_data/mm_indir/gene1:
+input.fasta	input.tree
 
-allgenes/4048:
-RAxML_bipartitions.final
-alignment.fasta
+test_data/mm_indir/gene10:
+input.fasta	input.tree
 
-allgenes/4103:
-RAxML_bipartitions.final
-alignment.fasta
+test_data/mm_indir/gene2:
+input.fasta	input.tree
 
-allgenes/4218:
-RAxML_bipartitions.final
-alignment.fasta
+test_data/mm_indir/gene3:
+input.fasta	input.tree
 
-allgenes/4234:
-RAxML_bipartitions.final
-alignment.fasta
+test_data/mm_indir/gene4:
+input.fasta	input.tree
 
-allgenes/4308:
-RAxML_bipartitions.final
-alignment.fasta
+test_data/mm_indir/gene5:
+input.fasta	input.tree
+
+test_data/mm_indir/gene6:
+input.fasta	input.tree
+
+test_data/mm_indir/gene7:
+input.fasta	input.tree
+
+test_data/mm_indir/gene8:
+input.fasta	input.tree
+
+test_data/mm_indir/gene9:
+input.fasta	input.tree
 
 ~~~
-
 
 Example after running TreeShrink:
 
 ~~~ bash
-allgenes/4048:
-RAxML_bipartitions.final
-RAxML_bipartitions_shrunk_0.05.final
-RAxML_bipartitions_shrunk_RS_0.05.txt
-alignment.fasta
-alignment_shrunk0.05.fasta
+$ run_treeshrink.py -i test_data/mm_indir -t input.tree -a input.fasta
+$ ls test_data/mm_indir/gene*
+test_data/mm_indir/gene1:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
 
-allgenes/4103:
-RAxML_bipartitions.final
-RAxML_bipartitions_shrunk_0.05.final
-RAxML_bipartitions_shrunk_RS_0.05.txt
-alignment.fasta
-alignment_shrunk0.05.fasta
+test_data/mm_indir/gene10:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
 
-allgenes/4218:
-RAxML_bipartitions.final
-RAxML_bipartitions_shrunk_0.05.final
-RAxML_bipartitions_shrunk_RS_0.05.txt
-alignment.fasta
-alignment_shrunk0.05.fasta
+test_data/mm_indir/gene2:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
 
-allgenes/4234:
-RAxML_bipartitions.final
-RAxML_bipartitions_shrunk_0.05.final
-RAxML_bipartitions_shrunk_RS_0.05.txt
-alignment.fasta
-alignment_shrunk0.05.fasta
+test_data/mm_indir/gene3:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
 
-allgenes/4308:
-RAxML_bipartitions.final
-RAxML_bipartitions_shrunk_0.05.final
-RAxML_bipartitions_shrunk_RS_0.05.txt
-alignment.fasta
-alignment_shrunk0.05.fasta
+test_data/mm_indir/gene4:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
+
+test_data/mm_indir/gene5:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
+
+test_data/mm_indir/gene6:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
+
+test_data/mm_indir/gene7:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
+
+test_data/mm_indir/gene8:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
+
+test_data/mm_indir/gene9:
+input.fasta	input.tree	output.fasta	output.tree	output.txt
 
 ~~~
- 
