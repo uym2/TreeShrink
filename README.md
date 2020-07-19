@@ -83,7 +83,10 @@ run_treeshrink.py -h
 
 to learn about all the options. 
 
-The TreeShrink package comes with several testing trees that can be found in the [test_data](test_data) folder.
+## Examples:
+The TreeShrink package comes with several testing trees that can be found in the [test_data](test_data) folder. If you downloaded TreeShrink from Github, you should have the ```test_data``` folder in under the ```TreeShrink``` folder. If you installed using Anaconda, download the ```test_data``` from this page before trying the following examples.
+
+### The simplest use case
 The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
 
 ~~~bash
@@ -91,15 +94,17 @@ run_treeshrink.py  -t test_data/mm10.trees
 ~~~
 
 After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`output.trees`) and the removed species (`output.txt`). You should see 10 trees in `output.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `output.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
+If you wish to customize the outputs, use ```-o``` to change the output folder and ```-O``` to change and the output prefix.
 
-The α threshold can be adjusted using ```-q``` option. The output folder can be changed using ```-o``` and the output prefix can be changed using ```-O```. 
+### Adjusting α threshold
+The α threshold can be adjusted using ```-q``` option. 
 You can run TreeShrink with multiple α thresholds, as follow
 
 ~~~bash
 run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_treeshrink_multi -O shrunk
 ~~~
  
- The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
+The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
 As TreeShrink is running, it will output a bunch of messages to the console. We suggest saving these in a text log file:
 
