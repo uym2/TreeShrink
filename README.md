@@ -84,7 +84,7 @@ run_treeshrink.py -h
 to learn about all the options. 
 
 ## Examples:
-The TreeShrink package comes with several testing trees that can be found in the [test_data](test_data) folder. If you downloaded TreeShrink from Github, you should have the ```test_data``` folder in under the ```TreeShrink``` folder. If you installed using Anaconda, download the ```test_data``` from this page before trying the following examples.
+The TreeShrink package comes with several testing trees that can be found in [test_data.zip](test_data.zip). If you downloaded TreeShrink from Github, you should have ```test_data.zip``` in your ```TreeShrink``` folder. If you installed using Anaconda, you should download [test_data.zip](https://github.com/uym2/TreeShrink/blob/master/test_data.zip) to your machine. Unzip ```test_data.zip``` before running the following examples.
 
 ### The simplest use case
 The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
