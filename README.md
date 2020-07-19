@@ -75,8 +75,15 @@ If you have troubles installing TreeShrink, probably the included packages are i
 3. Currently TreeShrink is not compatible to R 4.0. You have to scroll back to R 3.4 to run TreeShrink. 	
 
 ## Usage: 
-The TreeShrink package comes with several testing trees that can be found in the `test_data` folder.
+After installing TreeShrink, you can type 
 
+~~~bash
+run_treeshrink.py -h
+~~~
+
+to learn about all the options. 
+
+The TreeShrink package comes with several testing trees that can be found in the [test_data](test_data) folder.
 The following command will produce the shrunk trees and the corresponding list of the species that were removed at false positive error rate `α = 0.05` (default)
 
 ~~~bash
