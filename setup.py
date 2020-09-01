@@ -14,20 +14,17 @@ def recursive_list_dir(path):
                 listing.append(z.split(path+'/')[1])
     return listing
 
-print(recursive_list_dir('Rlib'))
-
 param = {
     'name': treeshrink.PROGRAM_NAME,
     'version': treeshrink.PROGRAM_VERSION,
     'description': treeshrink.PROGRAM_DESCRIPTION,
     'author': treeshrink.PROGRAM_AUTHOR,
-    'author_email': ['treeshrink-users@googlegroups.com'],
     'url': treeshrink.PROGRAM_WEBSITE,
     'license': treeshrink.PROGRAM_LICENSE,
     'packages': find_packages()+['Rlib','R_scripts'],
     'package_data':{'':recursive_list_dir('Rlib')+recursive_list_dir('R_scripts')},
     'include_package_data': True,
-    'scripts' : ['run_treeshrink.py'],
+    'scripts' : ['run_treeshrink.py','decompose.py'],
     #'zip_safe': True,
     'keywords': 'Phylogenetics Evolution Biology',
     'long_description': """A Python implementation of the TreeShrink algorithm (Mai, Genome Biology, 2018)""",

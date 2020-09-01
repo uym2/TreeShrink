@@ -1,3 +1,8 @@
+* Version 1.3.5:
+    * Read each tree instead of using Dendropy TreeList to save memory
+    * Decomposition by long branches 
+    * Allow mutiple-copy gene trees and gene-to-species mapping via -g
+    * Output summary file
 * Version 1.3.4:
     * Set recursion depth to 5000
     * Remove internal labels in pruned trees
