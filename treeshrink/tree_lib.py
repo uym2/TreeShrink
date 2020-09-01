@@ -2,6 +2,59 @@ import sys
 from dendropy import Tree
 
 
+def list_leaves_below(node):
+# list all leaves below a node
+    stack = [node]
+    L = []
+    while stack:
+        u = stack.pop()
+        if u.is_leaf():
+            L.append(u.taxon.label)
+        else:        
+            stack += u.child_nodes()
+    return L        
+
+def refine_RS(T,RS,m=5,p=0.8):
+# refine the removing set RS such that
+# the refined RS has no subset of size m (default 20) or 
+# more taxa that takes up at least a proportion p 
+# (default 90%) of a clade in T
+    mapping = {}
+    for leaf in T.leaf_node_iter():
+        mapping[leaf.taxon.label] = leaf
+        leaf.is_critical = False
+    for s in RS:
+        leaf = mapping[s]
+        leaf.is_critical = True
+
+    # count the total number of taxa and the number of
+    # critical taxa below each node
+    for node in T.postorder_node_iter():
+        if node.is_leaf():
+            node.n_leaf = 1
+            node.n_critical = int(node.is_critical)
+        else:
+            node.n_leaf = sum(c.n_leaf for c in node.child_node_iter())
+            node.n_critical = sum(c.n_critical for c in node.child_node_iter())
+        node.stop_signal = False # to be used in the next topdown traversal
+            
+    # mark the nodes which define valid clade of critical taxa
+    retaining = []
+    for node in T.preorder_node_iter():
+        if node.stop_signal:
+            for c in node.child_node_iter():
+                c.stop_signal = True
+        else:
+            if node.n_critical >= m and node.n_critical/node.n_leaf >= p:
+                retaining += list_leaves_below(node)
+                for c in node.child_node_iter():
+                    c.stop_signal = True
+     
+    # subtract retaining from RS
+    refined_RS = list(set(RS)-set(retaining))
+    
+    return refined_RS    
+
 def prune_node(T,node):
     if node is not T.seed_node:
         p = node.parent_node
@@ -19,14 +72,15 @@ def prune_node(T,node):
                 u.add_child(v)
                 v.edge_length = l
 
-
-
 def prune_tree(T,RS):
 # prune the taxa in the removing set RS from tree T
-    L = list(T.leaf_node_iter())
-    for leaf in L:
-        if leaf.taxon.label in RS:
-            prune_node(T,leaf)
+    mapping = {}
+    for leaf in T.leaf_node_iter():
+        mapping[leaf.taxon.label] = leaf
+        
+    for s in RS:
+        leaf = mapping[s]
+        prune_node(T,leaf)
 
 def get_taxa(tree_file,scheme='newick'):
 	a_tree = Tree.get_from_path(tree_file,scheme,preserve_underscores=True)

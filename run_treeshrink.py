@@ -38,7 +38,7 @@ def main():
     parser.add_argument("-b","--minImpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
-    parser.add_argument("-P","--plot",required=False,action='store_true',help="Save plots to output directory. Default: False")
+#    parser.add_argument("-P","--plot",required=False,action='store_true',help="Save plots to output directory. Default: False")
     parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. If the output directory contains some files with the specified prefix, automatically adjusts the prefix (e.g. output --> output1) to avoid overriding. Use --force to force overriding. Default: 'output'")
     parser.add_argument("-f","--force",required=False,action='store_true',help="Force overriding of existing output files.")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
@@ -87,7 +87,8 @@ def main():
                     print("WARNING: failed to parse gene-to-species mapping file on line" + str(lineNum+1))
                     print(line)
                 lineNum += 1        
-        
+        print("Finished reading mapping file")
+
     if args["indir"]:
         treename = splitext(args["tree"])[0]
         subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))] #if args["tree"] else "input.tre")))]
@@ -115,21 +116,25 @@ def main():
     if not make_dir(outdir) and args["force"]:
         print("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
 
-    trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
+    #trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
+    with open(intrees,'r') as f_tree:
+        tree_strs = f_tree.readlines()
+    ntrees = len(tree_strs) 
     if not gene_names:
-        gene_names = [str(i) for i in range(len(trees))]
+        gene_names = [str(i) for i in range(ntrees)]
 
-    if mode=='auto' and len(trees) < MIN_TREE_NUM:
+    if mode=='auto' and ntrees < MIN_TREE_NUM:
         print("There are only " + str(len(trees)) + " gene trees in the dataset.")
         print("TreeShrink will run in 'All-genes' mode")
         mode='all-genes'
 
-    gene_list = [[] for i in range(len(trees))]
+    gene_list = [[] for i in range(ntrees)]
     species_map = {}
     occ = {}
-    removing_sets = [ [ [ ] for i in range(len(trees)) ] for j in range(len(quantiles)) ]
+    removing_sets = [ [ [ ] for i in range(ntrees) ] for j in range(len(quantiles)) ]
 
-    for t,a_tree in enumerate(trees):
+    for t,a_str in enumerate(tree_strs):
+        a_tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
         # solve k-shrink
         a_filter = TreeFilter(ddpTree=a_tree,centroid_reroot=args["centroid"],scaling=scaling)
         a_filter.optFilter(d=k)
@@ -230,9 +235,9 @@ def main():
             threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
             for t,gene in enumerate(gene_list):
                 for x,r in gene:
-                    s = g2sp[x] if x in g2sp else x
+                    #s = g2sp[x] if x in g2sp else x
                     if r > threshold:
-                        removing_sets[i][t].append(s)
+                        removing_sets[i][t].append(x)
 
     print("Writing output ...\n")
 # Dendropy's filter_leaf_nodes() seems to have problem
@@ -256,24 +261,7 @@ def main():
     if counter >0 and not args["force"]:
         print("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")            
         prefix = prefix + str(counter)
-   
-    if args["plot"]:
-        make_dir(normpath(join(outdir,prefix+"_plots")))
-        if mode == "per-gene":
-            for t in range(len(gene_names)): 
-                filename = normpath(join(tempdir,"gene_" + str(t)+".dat"))
-                fileplot = normpath(join(outdir,prefix+"_plots","genePlot_" + gene_names[t] + ".pdf"))    
-                call(["Rscript",normpath(join(libdir,"R_scripts","plot_pergene.R")),filename,fileplot])       
-        elif mode == "all-genes":
-            filename = normpath(join(tempdir,"all_genes.dat"))
-            fileplot = normpath(join(outdir,prefix+"_plots","genePlot_all.pdf"))    
-            call(["Rscript",normpath(join(libdir,"R_scripts","plot_allgenes.R")),filename,fileplot])       
-        elif mode == "per-species":
-            make_dir(normpath(join(outdir,prefix+"_plots")))
-            for s in sorted(species_map):
-                filename = normpath(join(tempdir,s + ".dat"))
-                fileplot = normpath(join(outdir,prefix+"_plots","spPlot_" + s + ".pdf"))    
-                call(["Rscript",normpath(join(libdir,"R_scripts","plot_perspecies.R")),filename,fileplot])       
+  
 
     # write summary file
     filename= normpath(join(outdir,prefix + "_summary.txt"))                
@@ -286,7 +274,7 @@ def main():
                 f.write("\n")
      
     for i,RS in enumerate(removing_sets):
-        trees_shrunk = deepcopy(trees)
+        #trees_shrunk = deepcopy(trees)
         RS_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         tree_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         aln_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
@@ -298,7 +286,8 @@ def main():
                     for s in item:
                         f.write(s + "\t")
                     f.write("\n")
-            for tree,rs in zip(trees_shrunk,RS):
+            for a_str,rs in zip(tree_strs,RS):
+                tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
                 prune_tree(tree,rs)
                 tree_as_newick(tree,outfile=normpath(join(outdir,prefix + tree_tag + ext)),append=True)
                 
@@ -310,7 +299,8 @@ def main():
                 with open(outfile,'w') as f:
                     for s in item:
                         f.write(s + "\t")
-            for sd,tree,rs in zip(subdirs,trees_shrunk,RS):
+            for sd,a_str,rs in zip(subdirs,tree_strs,RS):
+                tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
                 prune_tree(tree,rs)
                 treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
@@ -332,7 +322,28 @@ def main():
                         alg.remove_all(rs)
                         alg.mask_gapy_sites(1)
                         alg.write(output_aln,'fasta')
-
+    
+    # save plots 
+    '''
+    if args["plot"]:
+        make_dir(normpath(join(outdir,prefix+"_plots")))
+        if mode == "per-gene":
+            for t in range(len(gene_names)): 
+                filename = normpath(join(tempdir,"gene_" + str(t)+".dat"))
+                fileplot = normpath(join(outdir,prefix+"_plots","genePlot_" + gene_names[t] + ".pdf"))    
+                call(["Rscript",normpath(join(libdir,"R_scripts","plot_pergene.R")),filename,fileplot])       
+        elif mode == "all-genes":
+            filename = normpath(join(tempdir,"all_genes.dat"))
+            fileplot = normpath(join(outdir,prefix+"_plots","genePlot_all.pdf"))    
+            call(["Rscript",normpath(join(libdir,"R_scripts","plot_allgenes.R")),filename,fileplot])       
+        elif mode == "per-species":
+            make_dir(normpath(join(outdir,prefix+"_plots")))
+            for s in sorted(species_map):
+                filename = normpath(join(tempdir,s + ".dat"))
+                fileplot = normpath(join(outdir,prefix+"_plots","spPlot_" + s + ".pdf"))    
+                threshold = str(species_map[s][1][0])
+                call(["Rscript",normpath(join(libdir,"R_scripts","plot_perspecies.R")),filename,threshold,fileplot])       
+    '''
     if not args["tempdir"]:
         rmtree(tempdir)
 
