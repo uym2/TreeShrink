@@ -56,7 +56,6 @@ def decompose(tree,min_nleaf=20,min_brlen=1):
         T = stack.pop()
         output = bisect(T,min_nleaf=min_nleaf,min_brlen=min_brlen)
         if output['success']:
-            print(output['cut_branch'])
             stack += [output['T1'],output['T2']]
         else:
             tree_list.append(T)    

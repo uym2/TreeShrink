@@ -87,21 +87,23 @@ def main():
                     print("WARNING: failed to parse gene-to-species mapping file on line" + str(lineNum+1))
                     print(line)
                 lineNum += 1        
-        print("Finished reading mapping file")
 
     if args["indir"]:
         treename = splitext(args["tree"])[0]
         subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))] #if args["tree"] else "input.tre")))]
-        intrees = get_tmp_file(treename + ".trees")
-        with open(intrees,'w') as fout:
-            for d in subdirs:
-                #treename = args["tree"] if args["tree"] else "input.tre"
-                treefile = normpath(join(args["indir"],d,args["tree"]))
-                if exists(treefile):
-                    fout.write(open(treefile,'r').read())               
+        #intrees = get_tmp_file(treename + ".trees")
+        #with open(intrees,'w') as fout:
+        tree_strs = []
+        for d in subdirs:
+            #treename = args["tree"] if args["tree"] else "input.tre"
+            treefile = normpath(join(args["indir"],d,args["tree"]))
+            if exists(treefile):
+                tree_strs.append(open(treefile,'r').read())
+                #fout.write(open(treefile,'r').read())               
         gene_names = [basename(d) for d in subdirs]            
     else:
-        intrees = args["tree"]
+        #intrees = args["tree"]
+        tree_strs = open(args["tree"],'r').readlines()
         gene_names = []
 
     mode = args["mode"] if args["mode"] else 'auto'
@@ -112,19 +114,19 @@ def main():
     elif args["indir"]:
         outdir = args["indir"]
     else:
-        outdir = splitext(intrees)[0] + "_treeshrink"
+        outdir = splitext(args["tree"])[0] + "_treeshrink"
     if not make_dir(outdir) and args["force"]:
         print("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
 
     #trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
-    with open(intrees,'r') as f_tree:
-        tree_strs = f_tree.readlines()
+    #with open(intrees,'r') as f_tree:
+    #    tree_strs = f_tree.readlines()
     ntrees = len(tree_strs) 
     if not gene_names:
         gene_names = [str(i) for i in range(ntrees)]
 
     if mode=='auto' and ntrees < MIN_TREE_NUM:
-        print("There are only " + str(len(trees)) + " gene trees in the dataset.")
+        print("There are only " + str(ntrees) + " gene trees in the dataset.")
         print("TreeShrink will run in 'All-genes' mode")
         mode='all-genes'
 
@@ -154,8 +156,8 @@ def main():
             s = g2sp[x] if x in g2sp else x
             if mode == 'per-species' or mode == 'auto':
                 species_map[s] = [mapping[x]] if s not in species_map else species_map[s]+[mapping[x]]
-            if mode == 'per-species' or mode == 'all-genes' or mode == 'auto':
-                gene_list[t].append((x,mapping[x]))
+            #if mode == 'per-species' or mode == 'all-genes' or mode == 'auto':
+            gene_list[t].append((x,mapping[x]))
         
         # fit kernel density to this gene's species features (per-gene mode)
         if mode == 'per-gene':
