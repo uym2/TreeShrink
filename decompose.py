@@ -42,7 +42,7 @@ if args["indir"]:
             aln_files.append(aln_file if exists(aln_file) else None)
 else:
     tree_strs = open(args["tree"],'r').readlines()    
-    gene_names = [str(i) for i in range(len(tree_strs))]
+    gene_names = ["gene_" + str(i+1).rjust(4,'0') for i in range(len(tree_strs))]
     aln_files = None
 
 ntrees = len(tree_strs)
@@ -58,7 +58,7 @@ for i in range(ntrees):
     for t,T in enumerate(decomposed_trees):
         od = normpath(join(outdir,gene + "_decomposed_" + str(t+1)))
         mkdir(od)
-        T.write_tree_newick(normpath(join(od,"tree.nwk")))
+        T.write_tree_newick(normpath(join(od,"tree.tre")))
         if alnfile:
             A = aln.sub_alignment([node.label for node in T.traverse_leaves()])
             A.write_filepath(normpath(join(od,"aln.fasta")))
