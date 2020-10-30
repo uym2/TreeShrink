@@ -43,6 +43,7 @@ def main():
     parser.add_argument("-f","--force",required=False,action='store_true',help="Force overriding of existing output files.")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
     parser.add_argument("-v","--version",required=False,action='store_true',help="Show TreeShrink version.")
+    parser.add_argument("-x","--exceptions",required=False,help="A list of special species that will not be removed in any of the input trees.")
 
     if len(argv) == 1:
         parser.print_help()
@@ -87,6 +88,16 @@ def main():
                     print("WARNING: failed to parse gene-to-species mapping file on line" + str(lineNum+1))
                     print(line)
                 lineNum += 1        
+
+    # exception species
+    exceptions = []
+    if args["exceptions"]:
+        if exists(args["exceptions"]):
+            with open(args["exceptions"],'r') as f:
+                exceptions = f.read().split()
+        else:
+            exceptions = args["exceptions"].split()
+    exceptions = set(exceptions)
 
     if args["indir"]:
         treename = splitext(args["tree"])[0]
@@ -242,9 +253,6 @@ def main():
                         removing_sets[i][t].append(x)
 
     print("Writing output ...\n")
-# Dendropy's filter_leaf_nodes() seems to have problem
-# i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
-# use home-made code to prune the tree instead
 
     fName,ext = splitext(basename(args["tree"]))
     ext = ext if ext else '.nwk'
@@ -263,7 +271,6 @@ def main():
     if counter >0 and not args["force"]:
         print("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")            
         prefix = prefix + str(counter)
-  
 
     # write summary file
     filename= normpath(join(outdir,prefix + "_summary.txt"))                
@@ -274,6 +281,11 @@ def main():
                 s = g2sp[x] if x in g2sp else x
                 f.write(gene_names[t] + " " + s + " " + x + " " + str(log(r)))
                 f.write("\n")
+    
+    # write shrunk trees, removing sets, and filtered alignments
+    # Dendropy's filter_leaf_nodes() seems to have problem
+    # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
+    # use home-made code to prune the tree instead
      
     for i,RS in enumerate(removing_sets):
         #trees_shrunk = deepcopy(trees)
@@ -286,11 +298,12 @@ def main():
             with open(outfile,'w') as f:
                 for item in RS:
                     for s in item:
-                        f.write(s + "\t")
+                        if s not in exceptions:
+                            f.write(s + "\t")
                     f.write("\n")
             for a_str,rs in zip(tree_strs,RS):
                 tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
-                prune_tree(tree,rs)
+                prune_tree(tree,set(rs)-exceptions)
                 tree_as_newick(tree,outfile=normpath(join(outdir,prefix + tree_tag + ext)),append=True)
                 
             #trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
@@ -300,11 +313,13 @@ def main():
                 outfile = normpath(join(outdir,sd, prefix + RS_tag + ".txt"))
                 with open(outfile,'w') as f:
                     for s in item:
-                        f.write(s + "\t")
+                        if s not in exceptions:
+                            f.write(s + "\t")
             for sd,a_str,rs in zip(subdirs,tree_strs,RS):
                 tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
-                prune_tree(tree,rs)
+                rs1 = set(rs)-exceptions
+                prune_tree(tree,rs1)
                 treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
                 #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
@@ -321,7 +336,7 @@ def main():
                     if (L.difference(alg.keys())) or S.difference(L):
                         print("ERROR: For gene %s, alignment names don't match tree names. Will skip it.\n\tonly in tree:\t%s\n\tonly in alignment:\t%s"%(sd,str(L.difference(S)),str(S.difference(L))))
                     else:
-                        alg.remove_all(rs)
+                        alg.remove_all(rs1)
                         alg.mask_gapy_sites(1)
                         alg.write(output_aln,'fasta')
     

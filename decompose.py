@@ -10,7 +10,7 @@ from os import mkdir,getcwd,rmdir,listdir
 parser = argparse.ArgumentParser()
 parser.add_argument("-i","--indir",required=False,help="The parent input directory where the trees (and alignments) can be found")
 parser.add_argument("-t","--tree",required=False,default="input.tree",help="The name of the input tree/trees. Each subdirectory under must contain a tree with this name. Default: input.tree")
-parser.add_argument("-a","--alignment",required=False,help="The name of the input alignment. Each subdirectory must contain an alignment with this name. Default: input.fasta")
+parser.add_argument("-a","--alignment",required=False,help="The name of the input alignment. Each subdirectory must contain an alignment with this name. Default: None")
 parser.add_argument("--minSize",required=False,type=int,default=20,help="The minimum number of taxa in each subtree. Default: 20")
 parser.add_argument("--minBranch",required=False,type=float,default=1.0,help="The minimum branch length that could be cut. Default: 1.0")
 parser.add_argument("-o","--outdir",required=False,help="Output directory.")
@@ -38,8 +38,9 @@ if args["indir"]:
         if exists(normpath(join(args["indir"],d,args["tree"]))):
             gene_names.append(d)
             tree_strs.append(open(normpath(join(args["indir"],d,args["tree"])),'r').read())
-            aln_file = normpath(join(args["indir"],d,args["alignment"]))
-            aln_files.append(aln_file if exists(aln_file) else None)
+            if args["alignment"]:
+                aln_file = normpath(join(args["indir"],d,args["alignment"]))
+                aln_files.append(aln_file if exists(aln_file) else None)
 else:
     tree_strs = open(args["tree"],'r').readlines()    
     gene_names = ["gene_" + str(i+1).rjust(4,'0') for i in range(len(tree_strs))]

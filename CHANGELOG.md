@@ -1,3 +1,5 @@
+* Version 1.3.6:
+    * Allow exception species via -x. These species will NOT be removed in any tree.
 * Version 1.3.5:
     * Read each tree instead of using Dendropy TreeList to save memory
     * Decomposition by long branches 
