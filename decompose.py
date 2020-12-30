@@ -6,6 +6,7 @@ from treeswift import *
 import argparse
 from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
 from os import mkdir,getcwd,rmdir,listdir
+from brlen_filter import find_thresholds
 
 parser = argparse.ArgumentParser()
 parser.add_argument("-i","--indir",required=False,help="The parent input directory where the trees (and alignments) can be found")
@@ -28,6 +29,7 @@ elif args["indir"]:
 else:    
     outdir = treename + "_decomposed"
 mkdir(outdir)
+mkdir(normpath(join(outdir,'annotated_trees')))
 
 if args["indir"]:
     subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))]
@@ -48,10 +50,25 @@ else:
 
 ntrees = len(tree_strs)
 
+
+thresholds = find_thresholds(tree_strs,p=0.01)
+
 for i in range(ntrees):    
     tree = read_tree_newick(tree_strs[i])
     gene = gene_names[i]
-    decomposed_trees = decompose(tree,min_nleaf=min_nleaf,min_brlen=min_brlen)
+    thres = thresholds[i+1] if (i+1) in thresholds else 1000
+    decomposed_trees, ann_tree = decompose(tree,min_nleaf=min_nleaf,min_brlen=thres)
+    
+    # produce annotated trees
+    if len(decomposed_trees) > 1:
+        with open(normpath(join(outdir,'annotated_trees',gene + ".tre")),'w') as fout_ann:
+            fout_ann.write("#NEXUS\n")
+            fout_ann.write("begin trees;\n")
+            fout_ann.write("tree 1 = ")
+            fout_ann.write(ann_tree)
+            fout_ann.write("\n")
+            fout_ann.write("end;")
+    
     alnfile = aln_files[i] if aln_files else None
     if alnfile:
         aln = Alignment()

@@ -1,7 +1,7 @@
 from treeswift import *
 from heapq import *
 from treeshrink.alignment import Alignment
-
+from copy import deepcopy
 
 def bisect(tree,min_nleaf=50,min_brlen=1.5):
     # assume there is no unifurcation
@@ -45,22 +45,38 @@ def bisect(tree,min_nleaf=50,min_brlen=1.5):
             output['T2'] = new_tree
             output['cut_branch'] = br
             output['success'] = True
+            output['cut_pos'] = node.id # mark that we cut on the branch above this node
             return output
     return output        
 
 def decompose(tree,min_nleaf=20,min_brlen=1):
+    # give each node an ID
+    ID = 0
+    for node in tree.traverse_preorder():
+        node.id = ID
+        ID += 1
+    backup_tree = deepcopy(tree)    
+    
     stack = [tree]
     tree_list = []
+    cut_pos = []
     
     while stack:
         T = stack.pop()
         output = bisect(T,min_nleaf=min_nleaf,min_brlen=min_brlen)
         if output['success']:
             stack += [output['T1'],output['T2']]
+            cut_pos.append(output['cut_pos'])
         else:
             tree_list.append(T)    
-            
-    return tree_list
+    
+    # annotate
+    for node in backup_tree.traverse_preorder():
+        if node.id in cut_pos:
+            lb = node.label if node.label is not None else ''
+            node.label = lb + '[&!color=#0000ff]' 
+                        
+    return tree_list, backup_tree.newick()
 
 def main():                
     tree = read_tree_newick("test.tre")
