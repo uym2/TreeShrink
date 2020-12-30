@@ -72,7 +72,7 @@ If you have troubles installing TreeShrink, probably the included packages are i
 2. If you use an ```R``` version before 3.4.0, you probably see TreeShrink run with a warning message **"package ‘BMS’ was built under R version 3.4.0"**. Although we have not observed any problem with this warning, we recommend upgrading ```R``` to version 3.4.0 or later. Alternatively, you can rebuild the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
 	- On Linux/Mac OS machines, go to the TreeShrink directory and type ```bash install_BMS.sh```.
 	- On Windows machines, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install_BMS.cmd```.
-3. Currently TreeShrink is not compatible to R 4.0. You have to scroll back to R 3.4 to run TreeShrink. 	
+3. TreeShrink is NOT compatible to R 4.0. You have to scroll back to R 3.4 to run TreeShrink. We are sorry for the inconvenience.	
 
 ## Usage: 
 After installing TreeShrink, you can type 
