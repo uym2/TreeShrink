@@ -1,3 +1,5 @@
+* Version 1.3.7:
+    * Fixed the error in the message when -x is specified.
 * Version 1.3.6:
     * Allow exception species via -x. These species will NOT be removed in any tree.
 * Version 1.3.5:

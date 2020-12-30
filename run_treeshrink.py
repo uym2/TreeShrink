@@ -38,7 +38,6 @@ def main():
     parser.add_argument("-b","--minImpact",required=False,help="Do not remove species on the per-species test if their impact on diameter is less than x%% where x is the given value. Default: 5")
     parser.add_argument("-m","--mode",required=False,help="Filtering mode: 'per-species', 'per-gene', 'all-genes','auto'. Default: auto")
     parser.add_argument("-o","--outdir",required=False,help="Output directory. Default: If the input directory is specified, outputs will be placed in that input directory. Otherwise, a directory with the suffix 'treeshrink' will be created in the same place as the input trees")
-#    parser.add_argument("-P","--plot",required=False,action='store_true',help="Save plots to output directory. Default: False")
     parser.add_argument("-O","--outprefix",default="output",required=False,help="Output name prefix. If the output directory contains some files with the specified prefix, automatically adjusts the prefix (e.g. output --> output1) to avoid overriding. Use --force to force overriding. Default: 'output'")
     parser.add_argument("-f","--force",required=False,action='store_true',help="Force overriding of existing output files.")
     parser.add_argument("-p","--tempdir",required=False,help="Directory to keep temporary files. If specified, the temp files will be kept")
@@ -223,9 +222,8 @@ def main():
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles): 
                 thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
-                print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
-                #mvThres = exp(minVar_bisect([log(x) for x in species_map[s]]))
-                #print("minvar bisect threshold: " + str(mvThres) + "; " + "cut in " + str(sum(1 for x in species_map[s] if x > mvThres)) + " trees")
+                if s not in exceptions:
+                    print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
     #if mode == 'per-species':
         for t,gene in enumerate(gene_list):
@@ -305,8 +303,6 @@ def main():
                 tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
                 prune_tree(tree,set(rs)-exceptions)
                 tree_as_newick(tree,outfile=normpath(join(outdir,prefix + tree_tag + ext)),append=True)
-                
-            #trees_shrunk.write_to_path(normpath(join(outdir,fName + "_" + quantiles[i] + ext)),'newick',unquoted_underscores=True,real_value_format_specifier=".16g")  
         else:
             for sd,item in zip(subdirs,RS):
                 make_dir(normpath(join(outdir,sd)))
@@ -339,28 +335,6 @@ def main():
                         alg.remove_all(rs1)
                         alg.mask_gapy_sites(1)
                         alg.write(output_aln,'fasta')
-    
-    # save plots 
-    '''
-    if args["plot"]:
-        make_dir(normpath(join(outdir,prefix+"_plots")))
-        if mode == "per-gene":
-            for t in range(len(gene_names)): 
-                filename = normpath(join(tempdir,"gene_" + str(t)+".dat"))
-                fileplot = normpath(join(outdir,prefix+"_plots","genePlot_" + gene_names[t] + ".pdf"))    
-                call(["Rscript",normpath(join(libdir,"R_scripts","plot_pergene.R")),filename,fileplot])       
-        elif mode == "all-genes":
-            filename = normpath(join(tempdir,"all_genes.dat"))
-            fileplot = normpath(join(outdir,prefix+"_plots","genePlot_all.pdf"))    
-            call(["Rscript",normpath(join(libdir,"R_scripts","plot_allgenes.R")),filename,fileplot])       
-        elif mode == "per-species":
-            make_dir(normpath(join(outdir,prefix+"_plots")))
-            for s in sorted(species_map):
-                filename = normpath(join(tempdir,s + ".dat"))
-                fileplot = normpath(join(outdir,prefix+"_plots","spPlot_" + s + ".pdf"))    
-                threshold = str(species_map[s][1][0])
-                call(["Rscript",normpath(join(libdir,"R_scripts","plot_perspecies.R")),filename,threshold,fileplot])       
-    '''
     if not args["tempdir"]:
         rmtree(tempdir)
 
