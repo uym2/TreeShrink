@@ -17,7 +17,42 @@ from treeshrink.alignment import CompactAlignment
 from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 from treeshrink.util_lib import minVar_bisect
 import re
+from scipy.stats.mstats import mquantiles
+import statsmodels.api as sm
+from scipy.stats import gaussian_kde
+
+
+def find_threshold_lmquantile(data,q):
+    x = [log(y) for y in data]
+    t = mquantiles(x,prob=q)
+    return exp(t)
+
+def find_threshold_lkernel(data,q):
+    x = sorted([log(y) for y in data])
+    kernel = gaussian_kde(x,'silverman')
     
+    # compute cdf
+    cdf = [kernel.integrate_box_1d(-float("inf"),x[0])]
+    for i in range(len(x)-1):
+        cdf.append(cdf[-1]+kernel.integrate_box_1d(x[i],x[i+1]))
+    cdf.append(cdf[-1]+kernel.integrate_box_1d(x[-1],float("inf")))
+
+    # normalize cdf
+    s = cdf[-1]
+    cdf = [y/s for y in cdf]
+
+    # find threshold
+    for i,c in enumerate(cdf):
+        if c > q:
+            break
+                    
+    if c > q:
+        t = exp(x[i-1]) if i >0 else exp(x[0])-1e-4
+    else:
+        t = exp(x[-1])+1e-4    
+    
+    return t
+
 def make_dir(dirName):
     if exists(dirName) and isdir(dirName):
         return False
@@ -218,14 +253,15 @@ def main():
                 for v in species_map[s]:
                     f.write(str(v))
                     f.write("\n")
-        #if mode == 'per-species':
             thresholds = [ 0 for i in range(len(quantiles)) ]        
-            for i,q in enumerate(quantiles): 
+            for i,q in enumerate(quantiles):
+                t = max(minImpact,find_threshold_lmquantile(species_map[s],1.0-float(q)))
+                tt = max(minImpact,find_threshold_lkernel(species_map[s],1.0-float(q)))
                 thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                #print(t,thresholds[i])
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
-    #if mode == 'per-species':
         for t,gene in enumerate(gene_list):
             for x,r in gene:
                 s = g2sp[x] if x in g2sp else x
