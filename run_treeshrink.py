@@ -255,9 +255,8 @@ def main():
                     f.write("\n")
             thresholds = [ 0 for i in range(len(quantiles)) ]        
             for i,q in enumerate(quantiles):
-                t = max(minImpact,find_threshold_lmquantile(species_map[s],1.0-float(q)))
-                tt = max(minImpact,find_threshold_lkernel(species_map[s],1.0-float(q)))
-                thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                thresholds[i] = max(minImpact,find_threshold_lkernel(species_map[s],1.0-float(q)))
+                #thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
                 #print(t,thresholds[i])
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
