@@ -1,3 +1,6 @@
+* Version 1.3.8b: (unstable)
+    * Use Scipy stats instead of R to compute thresholds.
+    * Experiments show that the number of species removed at each alpha value may change, but the effect of filtering on gene tree discordance remain the same.
 * Version 1.3.7:
     * Fixed the error in the message when -x is specified.
 * Version 1.3.6:
