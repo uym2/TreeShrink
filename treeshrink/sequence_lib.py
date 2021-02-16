@@ -4,13 +4,11 @@ from os.path import isfile
 from os import remove
 from random import random
 from copy import copy
-from treeshrink import get_tmp_file
-
-try:
-    import cPickle as pickle
-except:
-    import pickle
-
+#try:
+#    import cPickle as pickle
+#except:
+#    import _pickle as pickle
+import pickle
 
 def get_taxon_list(filename):
     taxon_list = []
@@ -35,16 +33,6 @@ def gap_rm(str0,gap='-'):
             str1 =  str1 + c
     return str1
 
-
-indexfiles = {}
-def get_index_file_name(file_in):
-    try:
-        return indexfiles [file_in]
-    except KeyError:
-        tmp = get_tmp_file()
-        indexfiles[file_in] = tmp
-        return tmp
-
 def index_fasta(file_in,file_out=None,store_index_file=True):
     # only work for fasta format
     f = open(file_in,'r')
@@ -56,7 +44,7 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
         if not line:
             break
         if line[0] == '>':
-            seqName = line.rstrip()[1:]
+            seqName = line.rstrip().split()[0][1:]
             if seqName in count:
                 c = count[seqName]
                 p = float(c)/(c+1)
@@ -73,17 +61,21 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
 
     if not store_index_file:
         return seq_pointers
-    
+
     if not file_out:
-        file_out = get_index_file_name(file_in)
-    with open(file_out,'wb') as fout:
-        pickle.dump(seq_pointers,fout)
+        file_extension = file_in.split('.')[-1]
+        file_out = file_in[:-(len(file_extension)+1)]+'.idx'
+    #fout = open(file_out,'wb')
+    fout = open(file_out,'wb')
+    pickle.dump(seq_pointers,fout)
     f.close()
+    fout.close()
 
     return seq_pointers
 
 def load_index(file_in,store_index_file=True,renew_index_file=False):
-    file_idx = get_index_file_name(file_in)
+    file_extension = file_in.split('.')[-1]
+    file_idx = file_in[:-(len(file_extension)+1)] + '.idx'
 
     if renew_index_file or not isfile(file_idx):
         if renew_index_file:
@@ -97,22 +89,44 @@ def load_index(file_in,store_index_file=True,renew_index_file=False):
 
 def sample_from_list(file_in,taxa_list,file_out,store_index_file=True,renew_index_file=False):
     seq_pointers = load_index(file_in,store_index_file=store_index_file,renew_index_file=renew_index_file)
+    mask = None
     with open(file_in,'r') as fin:
+        for taxon in taxa_list:
+            seq = ""
+            try:
+                fin.seek(seq_pointers[taxon])
+            except:
+                print ('taxon ' + taxon + ' not found in input files')
+                continue
+            L = fin.readline() # bypass the label
+            L = fin.readline()
+            while L[0] != '>':
+                seq += L.rstrip()
+                L = fin.readline()
+                if not L:
+                    break
+            curr_mask = [x != '-' for x in seq]
+            mask = curr_mask if mask is None else [x | y for (x,y) in zip(mask,curr_mask)]
+            
         with open(file_out,'w') as fout:     
             for taxon in taxa_list:
+                seq = ""
                 try:
                     fin.seek(seq_pointers[taxon])
-                    fout.write(fin.readline())
+                except:
+                    print ('taxon ' + taxon + ' not found in input files')
+                    continue
+                fout.write(fin.readline())
+                L = fin.readline()
+                while L[0] != '>':
+                    seq += L.rstrip()
                     L = fin.readline()
-                    while L[0] != '>':
-                        fout.write(L.rstrip())
-                        L = fin.readline()
-                        if not L:
-                            break
-                    fout.write('\n')        
-                except KeyError as e:
-                    print ('taxon inconsistent in alignment and tree files: %s' %file_in )
-                    raise e
+                    if not L:
+                        break
+                seq_masked = "".join([x for (x,m) in zip(seq,mask) if m])
+                fout.write(seq_masked)
+                fout.write('\n')        
+            
 
 def filter_out_by_list(file_in,removing_list,file_out,store_index_file=True,renew_index_file=False):
     seq_pointers = load_index(file_in,store_index_file=store_index_file,renew_index_file=renew_index_file)
@@ -125,9 +139,8 @@ def filter_out_by_list(file_in,removing_list,file_out,store_index_file=True,rene
                     fin.seek(seq_pointers[taxon])
                     fout.write(fin.readline())
                     fout.write(fin.readline())
-                except KeyError as e:
-                    print ('taxon inconsistent in alignment and tree files: %s' %file_in)
-                    raise e
+                except:
+                    print ('taxon ' + taxon +  ' not found in input files')
 
 
 def count_gaps(seq_aln):
