@@ -5,7 +5,8 @@ from statistics import mean,stdev
 EPS = 1e-5
 
 def find_threshold_loglnorm(data,quantiles):
-    x = [log(log(y)) for y in data]
+    print(data)
+    x = [log(log(y+EPS)) for y in data if y+EPS>1]
     mu = mean(x)
     sigma = stdev(x)
     return [exp(t) for t in lognorm.ppf(quantiles, sigma, scale=exp(mu))]

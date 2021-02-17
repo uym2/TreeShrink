@@ -29,9 +29,11 @@ def main():
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-i","--indir",required=False,help="The parent input directory where the trees (and alignments) can be found")
+    parser.add_argument("--genes",required=False,help="Only run TreeShrink on these genes")
+    parser.add_argument("--range",required=False,help="Only run TreeShrink on genes in this range")
     parser.add_argument("-t","--tree",required=False,default="input.tree",help="The name of the input tree/trees. If the input directory is specified (see -i option), each subdirectory under it must contain a tree with this name. Otherwise, all the trees can be included in this one file. Default: input.tree")
     parser.add_argument("-g","--g2sp",required=False,help="The gene-name-to-species-name mapping file")
-    parser.add_argument("-a","--alignment",required=False,help="The name of the input alignment; can only be used when the input directory is specified (see -i option). Each subdirectory under it must contain an alignment with this name. Default: input.fasta")
+    parser.add_argument("-a","--alignment",required=False,help="The name of the input alignments; can only be used when the input directory is specified (see -i option). Each subdirectory under it must contain these alignment files.")
     parser.add_argument("-c","--centroid",required=False,action='store_true',help="Do centroid reroot in preprocessing. Highly recommended for large trees. Default: NO")
     parser.add_argument("-k","--k",required=False,help="The maximum number of leaves that can be removed. Default: auto-select based on the data; see also -s")
     parser.add_argument("-s","--kscaling",required=False,help="If -k not given, we use k=min(n/a,b*sqrt(n)) by default; using this option, you can set the a,b constants; Default: '5,2'")
@@ -98,24 +100,38 @@ def main():
         else:
             exceptions = args["exceptions"].split()
     exceptions = set(exceptions)
+    
+    if args["range"] is not None:
+        try:
+            s,e = [int(x)-1 for x in args["range"].strip().split()]
+        except:
+            print("Warning: invalid range given in -g")
+            s,e = 0,100000
+    else:
+        s,e = 0,100000
+
 
     if args["indir"]:
+        i = 0
+        gene_names = []
         treename = splitext(args["tree"])[0]
-        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))] #if args["tree"] else "input.tre")))]
-        #intrees = get_tmp_file(treename + ".trees")
-        #with open(intrees,'w') as fout:
+        subdirs = args["genes"].strip().split() if args["genes"] else listdir(args["indir"]) 
         tree_strs = []
         for d in subdirs:
-            #treename = args["tree"] if args["tree"] else "input.tre"
             treefile = normpath(join(args["indir"],d,args["tree"]))
             if exists(treefile):
-                tree_strs.append(open(treefile,'r').read())
-                #fout.write(open(treefile,'r').read())               
-        gene_names = [basename(d) for d in subdirs]            
+                if i > e:
+                    break
+                elif i >= s:
+                    print(treefile)
+                    tree_strs.append(open(treefile,'r').read())
+                    gene_names.append(basename(d))
+                i += 1
     else:
-        #intrees = args["tree"]
         tree_strs = open(args["tree"],'r').readlines()
-        gene_names = []
+        gene_names = [str(i) for i in range(len(tree_strs))]
+        tree_strs = tree_strs[s:e]        
+        gene_names = gene_names[s:e]
 
     mode = args["mode"] if args["mode"] else 'auto'
     k = int(args["k"]) if args["k"] else None
@@ -133,8 +149,6 @@ def main():
     #with open(intrees,'r') as f_tree:
     #    tree_strs = f_tree.readlines()
     ntrees = len(tree_strs) 
-    if not gene_names:
-        gene_names = [str(i) for i in range(ntrees)]
 
     if mode=='auto' and ntrees < MIN_TREE_NUM:
         print("There are only " + str(ntrees) + " gene trees in the dataset.")
@@ -172,13 +186,13 @@ def main():
         
         # fit kernel density to this gene's species features (per-gene mode)
         if mode == 'per-gene':
-            filename = get_tmp_file("gene_%s.dat" %str(t))
-            with open(filename,'w') as f:
-                for s in mapping:
-                    f.write(str(mapping[s]) + " " +s)
-                    f.write("\n")
-            thresholds = find_threshold_loglnorm(mapping.values(),[1-float(q) for q in quantiles])        
+            #filename = get_tmp_file("gene_%s.dat" %str(t))
+            #with open(filename,'w') as f:
+            #    for s in mapping:
+            #        f.write(str(mapping[s]) + " " +s)
+            #        f.write("\n")
             if len(mapping) > 1:
+                thresholds = find_threshold_loglnorm(mapping.values(),[1-float(q) for q in quantiles])        
                 for i,q in enumerate(quantiles):
                     threshold = thresholds[i]
                     for s in mapping:
@@ -291,7 +305,8 @@ def main():
     # Dendropy's filter_leaf_nodes() seems to have problem
     # i.e. it produces the trees that the treecmp tool cannot compute the MS distance (need further exploration)
     # use home-made code to prune the tree instead
-     
+    print("prefix: " + prefix)
+
     for i,RS in enumerate(removing_sets):
         #trees_shrunk = deepcopy(trees)
         RS_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
@@ -311,37 +326,39 @@ def main():
                 prune_tree(tree,set(rs)-exceptions)
                 tree_as_newick(tree,outfile=normpath(join(outdir,prefix + tree_tag + ext)),append=True)
         else:
-            for sd,item in zip(subdirs,RS):
+            for sd,item in zip(gene_names,RS):
                 make_dir(normpath(join(outdir,sd)))
                 outfile = normpath(join(outdir,sd, prefix + RS_tag + ".txt"))
                 with open(outfile,'w') as f:
                     for s in item:
                         if s not in exceptions:
                             f.write(s + "\t")
-            for sd,a_str,rs in zip(subdirs,tree_strs,RS):
+            for sd,a_str,rs in zip(gene_names,tree_strs,RS):
                 tree = Tree.get(data=a_str,schema='newick',preserve_underscores=True)
                 L = set(x.taxon.label for x in tree.leaf_node_iter())
                 rs1 = set(rs)-exceptions
                 prune_tree(tree,rs1)
-                treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
+                treefile = normpath(join(outdir,sd, prefix + "_" + fName + tree_tag + ext))
                 #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
-                
-                aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
-                alnName,alnExt = splitext(aln_filename)
-                alnExt = alnExt if alnExt else '.fasta'
-                input_aln = normpath(join(args["indir"],sd,aln_filename))
-                if isfile(input_aln): 
-                    output_aln = normpath(join(outdir,sd,prefix+aln_tag+alnExt))
-                    alg = CompactAlignment()
-                    alg.read_file_object(input_aln,'fasta')
-                    S=set(alg.keys())
-                    if (L.difference(alg.keys())) or S.difference(L):
-                        print("ERROR: For gene %s, alignment names don't match tree names. Will skip it.\n\tonly in tree:\t%s\n\tonly in alignment:\t%s"%(sd,str(L.difference(S)),str(S.difference(L))))
-                    else:
-                        alg.remove_all(rs1)
-                        alg.mask_gapy_sites(1)
-                        alg.write(output_aln,'fasta')
+               
+                if args["alignment"] is not None:
+                    for aln_filename in args["alignment"].strip().split():
+                        #aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
+                        alnName,alnExt = splitext(aln_filename)
+                        alnExt = alnExt if alnExt else '.fasta'
+                        input_aln = normpath(join(args["indir"],sd,aln_filename))
+                        if isfile(input_aln): 
+                            output_aln = normpath(join(outdir,sd,prefix+"_"+alnName+aln_tag+alnExt))
+                            alg = CompactAlignment()
+                            alg.read_file_object(input_aln,'fasta')
+                            S=set(alg.keys())
+                            if (L.difference(alg.keys())) or S.difference(L):
+                                print("ERROR: For gene %s, alignment names don't match tree names. Will skip it.\n\tonly in tree:\t%s\n\tonly in alignment:\t%s"%(sd,str(L.difference(S)),str(S.difference(L))))
+                            else:
+                                alg.remove_all(rs1)
+                                alg.mask_gapy_sites(1)
+                                alg.write(output_aln,'fasta')
     if not args["tempdir"]:
         rmtree(tempdir)
 
