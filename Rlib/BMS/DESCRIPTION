@@ -10,4 +10,4 @@ Description: Bayesian Model Averaging for linear models with a wide choice of (c
 License: Artistic-2.0
 URL: http://bms.zeugner.eu
 Packaged: 2013-11-22 09:10:26 UTC; root
-Built: R 3.4.0; ; 2017-12-13 22:22:45 UTC; unix
+Built: R 4.0.5; ; 2021-04-07 17:41:59 UTC; unix

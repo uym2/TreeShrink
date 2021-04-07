@@ -220,7 +220,7 @@ def main():
                     f.write("\n")
         #if mode == 'per-species':
             thresholds = [ 0 for i in range(len(quantiles)) ]        
-            for i,q in enumerate(quantiles): 
+            for i,q in enumerate(quantiles):
                 thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
