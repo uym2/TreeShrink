@@ -17,12 +17,24 @@ from treeshrink.alignment import CompactAlignment
 from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 from treeshrink.util_lib import minVar_bisect
 import re
-    
+import random    
+
 def make_dir(dirName):
     if exists(dirName) and isdir(dirName):
         return False
     mkdir(dirName)
     return True
+
+def test_Rlib(libdir):
+    filename = get_tmp_file("test_Rlib.txt")    
+    with open(filename,'w') as fout:
+        for i in range(300):
+            fout.write(str(1+random.lognormvariate(0,1)) + "\n")
+    try:
+        check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,"0.05"]).lstrip().rstrip()[5:]
+        return True
+    except:
+        return False
 
 def main():
     parser = argparse.ArgumentParser()
@@ -66,6 +78,12 @@ def main():
 
     libdir = dirname(dirname(realpath(treeshrink.__file__)))
     tempdir = set_tmp_dir(args["tempdir"])  
+
+    print("Testing R and BMS installation ...")
+    if not test_Rlib(libdir):
+        print("Failed sanity check on R and BMS installation. Please check your R and BMS version")    
+        return
+
     
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
@@ -220,7 +238,7 @@ def main():
                     f.write("\n")
         #if mode == 'per-species':
             thresholds = [ 0 for i in range(len(quantiles)) ]        
-            for i,q in enumerate(quantiles): 
+            for i,q in enumerate(quantiles):
                 thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
