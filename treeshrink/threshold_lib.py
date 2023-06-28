@@ -1,6 +1,7 @@
-from scipy.stats import gaussian_kde,lognorm
+from scipy.stats import gaussian_kde,lognorm,iqr
 from math import log, exp
 from statistics import mean,stdev
+import numpy as np
 
 EPS = 1e-5
 
@@ -13,7 +14,11 @@ def find_threshold_loglnorm(data,quantiles):
 
 def find_threshold_lkernel(data,quantiles):
     x = sorted([log(y) for y in data])
-    kernel = gaussian_kde(x,'silverman')
+    def __bw():
+        t = ((0.9* min(iqr(x)/1.34,np.std(x))*len(x)**(-1/5))/np.var(x))**(1/2)
+        return t
+    kernel = gaussian_kde(x,__bw())
+    #kernel = gaussian_kde(x,'silverman')
     
     # compute cdf
     cdf = [kernel.integrate_box_1d(-float("inf"),x[0])]
@@ -23,7 +28,7 @@ def find_threshold_lkernel(data,quantiles):
 
     thresholds = [0]*len(quantiles)
     for i,q in enumerate(quantiles):
-        cutoff_idx = __find_cutoff_idx__(cdf,q)
+        cutoff_idx = __find_cutoff_idx(cdf,q)
         if cutoff_idx < 0:
             t = exp(x[0]) - EPS
         else:    
@@ -31,8 +36,7 @@ def find_threshold_lkernel(data,quantiles):
         thresholds[i] = t
     return thresholds         
 
-
-def __find_cutoff_idx__(cdf,q):
+def __find_cutoff_idx(cdf,q):
     # normalize cdf
     s = cdf[-1]
     cdf = [y/s for y in cdf]
