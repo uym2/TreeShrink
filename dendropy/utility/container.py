@@ -353,7 +353,7 @@ class NormalizedBitmaskDict(collections.OrderedDict):
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-class CaseInsensitiveDict(collections.MutableMapping):
+class CaseInsensitiveDict(collections.abc.MutableMapping):
     """
     A case-insensitive ``dict``-like object.
 
