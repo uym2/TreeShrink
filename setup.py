@@ -5,13 +5,13 @@ from os.path import join,normpath,isfile
 
 def recursive_list_dir(path):
     listing=[]
-    for x in walk(path):
-        if isfile(x[0]):
-            listing.append(x[0].split(path+'/')[1])
-        for y in listdir(x[0]):
-            z = normpath(join(x[0],y))
+    for root, _, _ in walk(path):
+        if isfile(root):
+            listing.append(root.split(join(path, ""))[1])
+        for y in listdir(root):
+            z = normpath(join(root,y))
             if isfile(z):
-                listing.append(z.split(path+'/')[1])
+                listing.append(z.split(join(path,""))[1])
     return listing
 
 param = {
