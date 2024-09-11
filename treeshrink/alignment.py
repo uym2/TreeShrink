@@ -54,7 +54,7 @@ def read_fasta(src):
     file_obj = None
     if isinstance(src, str):
         try:
-            file_obj = open(src, "rU")
+            file_obj = open(src, "r")
         except IOError:
             print(("The file `%s` does not exist, exiting gracefully" % src))
     elif isinstance(src, filetypes):
@@ -86,7 +86,7 @@ def read_compact(src):
     file_obj = None
     if isinstance(src, str):
         try:
-            file_obj = open(src, "rU")
+            file_obj = open(src, "r")
         except IOError:
             print(("The file `%s` does not exist, exiting gracefully" % src))
     elif isinstance(src, filetypes):
@@ -271,7 +271,7 @@ def read_compact3(src):
     file_obj = None
     if isinstance(src, str):
         try:
-            file_obj = open(src, "rU")
+            file_obj = open(src, "r")
         except IOError:
             print(("The file `%s` does not exist, exiting gracefully" % src))
     elif isinstance(src, filetypes):
