@@ -21,7 +21,7 @@ param = {
     'author': treeshrink.PROGRAM_AUTHOR,
     'url': treeshrink.PROGRAM_WEBSITE,
     'license': treeshrink.PROGRAM_LICENSE,
-    'packages': find_packages()+['Rlib','R_scripts'],
+    'packages': find_packages()+['treeshrink','Rlib','R_scripts'],
     'package_data':{'':recursive_list_dir('Rlib')+recursive_list_dir('R_scripts')},
     'include_package_data': True,
     'scripts' : ['run_treeshrink.py','decompose.py','make_gene_folder.py'],
