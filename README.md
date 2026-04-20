@@ -33,7 +33,7 @@ An earlier version of TreeShrink is described in the following paper:
 
 
 #### Prerequisites:
-The tool TreeShrink is written in Python and R. The tool uses the Dendropy package in Python for tree manipulation and the BMS package in R for statistical tests. TreeShrink can run on Linux, Mac OS, and Windows.
+TreeShrink is written in Python and uses the Dendropy package for tree manipulation. Since v1.4.0, TreeShrink computes its statistical thresholds in pure Python and no longer requires R or the BMS R package at runtime. TreeShrink can run on Linux, Mac OS, and Windows.
 
 ### Anaconda
 If you use anaconda, try:
@@ -68,11 +68,8 @@ run_treeshrink -h
 
 If you have troubles installing TreeShrink, probably the included packages are incompatible with your system. Below are some clues to help you troubleshoot the problems:
 
-1. First, please make sure that both Python and R are properly installed and are in your PATH. Type ```python``` or ```R``` to check. 
-2. If you use an ```R``` version before 3.4.0, you probably see TreeShrink run with a warning message **"package ‘BMS’ was built under R version 3.4.0"**. Although we have not observed any problem with this warning, we recommend upgrading ```R``` to version 3.4.0 or later. Alternatively, you can rebuild the ```BMS``` package so that it is compatible with your ```R``` version. For your convenience, we provide a script to do this.
-	- On Linux/Mac OS machines, go to the TreeShrink directory and type ```bash install_BMS.sh```.
-	- On Windows machines, after going to the TreeShrink directory, double click the file ```install_BMS.cmd```. If you use command prompt, type ```install_BMS.cmd```.
-3. TreeShrink is NOT compatible to R 4.0. You have to scroll back to R 3.4 to run TreeShrink. We are sorry for the inconvenience.	
+1. First, please make sure that Python is properly installed and is in your PATH. Type ```python``` to check.
+2. Since v1.4.0, TreeShrink no longer requires R or the BMS R package. If you are using an older TreeShrink release, you may still need an R/BMS-compatible setup for threshold estimation.
 
 ## Usage: 
 After installing TreeShrink, you can type 

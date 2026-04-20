@@ -61,7 +61,6 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
                 c = count[seqName]
                 p = float(c)/(c+1)
                 r = random()
-                #print(r)
                 count[seqName] += 1   
                 if r <= p:
                     continue    

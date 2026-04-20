@@ -1,3 +1,6 @@
+* Version 1.4.0:
+    * Add pure Python implementation of TreeShrink threshold calculations.
+    * Remove the runtime dependency on R/BMS for threshold estimation.
 * Version 1.3.9:
     * TreeShrink works with R 4.0
 * Version 1.3.8b: (unstable)

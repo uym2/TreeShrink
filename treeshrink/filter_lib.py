@@ -11,7 +11,6 @@ def filter_branch(a_tree,root_method=None,unit_length=None,low_percentile=0,high
     print("Branch length threshod: ",thres)
     count_leaves(a_tree)
     for br in branch_list:
-        #print(br.length)
         if br.length > thres:
             remove_branch(a_tree,br)
 

@@ -1,12 +1,12 @@
 #! /usr/bin/env python
 
 from treeshrink.sequence_lib import sample_from_list
+from treeshrink.threshold_lib import threshold_l_kernel, threshold_loglnorm
 import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
 from treeshrink.tree_lib import prune_tree, get_taxa,tree_as_newick
 from sys import argv, stdout,setrecursionlimit
 from math import sqrt,log,exp
-from subprocess import check_output,call
 import argparse
 from dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
@@ -17,24 +17,13 @@ from treeshrink.alignment import CompactAlignment
 from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 from treeshrink.util_lib import minVar_bisect
 import re
-import random    
+import numpy as np
 
 def make_dir(dirName):
     if exists(dirName) and isdir(dirName):
         return False
     mkdir(dirName)
     return True
-
-def test_Rlib(libdir):
-    filename = get_tmp_file("test_Rlib.txt")    
-    with open(filename,'w') as fout:
-        for i in range(300):
-            fout.write(str(1+random.lognormvariate(0,1)) + "\n")
-    try:
-        check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,"0.05"]).lstrip().rstrip()[5:]
-        return True
-    except:
-        return False
 
 def main():
     parser = argparse.ArgumentParser()
@@ -72,19 +61,11 @@ def main():
     print(treeshrink.PROGRAM_NAME + " was called as follow")
     print(" ".join(argv))
 
-
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
-    libdir = dirname(dirname(realpath(treeshrink.__file__)))
     tempdir = set_tmp_dir(args["tempdir"])  
 
-    print("Testing R and BMS installation ...")
-    if not test_Rlib(libdir):
-        print("Failed sanity check on R and BMS installation. Please check your R and BMS version")    
-        return
-
-    
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
     minImpact = (float(args["minImpact"])/100)+1 if args["minImpact"] else 1.05
@@ -118,19 +99,14 @@ def main():
 
     if args["indir"]:
         treename = splitext(args["tree"])[0]
-        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))] #if args["tree"] else "input.tre")))]
-        #intrees = get_tmp_file(treename + ".trees")
-        #with open(intrees,'w') as fout:
+        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))]
         tree_strs = []
         for d in subdirs:
-            #treename = args["tree"] if args["tree"] else "input.tre"
             treefile = normpath(join(args["indir"],d,args["tree"]))
             if exists(treefile):
                 tree_strs.append(open(treefile,'r').read())
-                #fout.write(open(treefile,'r').read())               
         gene_names = [basename(d) for d in subdirs]            
     else:
-        #intrees = args["tree"]
         tree_strs = open(args["tree"],'r').readlines()
         gene_names = []
 
@@ -146,9 +122,6 @@ def main():
     if not make_dir(outdir) and args["force"]:
         print("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
 
-    #trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
-    #with open(intrees,'r') as f_tree:
-    #    tree_strs = f_tree.readlines()
     ntrees = len(tree_strs) 
     if not gene_names:
         gene_names = [str(i) for i in range(ntrees)]
@@ -184,7 +157,6 @@ def main():
             s = g2sp[x] if x in g2sp else x
             if mode == 'per-species' or mode == 'auto':
                 species_map[s] = [mapping[x]] if s not in species_map else species_map[s]+[mapping[x]]
-            #if mode == 'per-species' or mode == 'all-genes' or mode == 'auto':
             gene_list[t].append((x,mapping[x]))
         
         # fit kernel density to this gene's species features (per-gene mode)
@@ -194,9 +166,10 @@ def main():
                 for s in mapping:
                     f.write(str(mapping[s]) + " " +s)
                     f.write("\n")
+            y = np.loadtxt(filename, usecols=0)
             if len(mapping) > 1:
                 for i,q in enumerate(quantiles):
-                    threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_loglnorm.R")),filename,q]).lstrip().rstrip()[4:]) 
+                    threshold = threshold_loglnorm(y,e=float(q))
                     for s in mapping:
                         if mapping[s] > threshold: 
                             removing_sets[i][t].append(s)
@@ -236,14 +209,13 @@ def main():
                 for v in species_map[s]:
                     f.write(str(v))
                     f.write("\n")
-        #if mode == 'per-species':
-            thresholds = [ 0 for i in range(len(quantiles)) ]        
+            thresholds = [ 0 for i in range(len(quantiles)) ]
+            y = np.loadtxt(filename, usecols=0)
             for i,q in enumerate(quantiles):
-                thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                thresholds[i] = max(minImpact,threshold_l_kernel(y,e=float(q)))
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
-    #if mode == 'per-species':
         for t,gene in enumerate(gene_list):
             for x,r in gene:
                 s = g2sp[x] if x in g2sp else x
@@ -260,11 +232,11 @@ def main():
                 for s,r in gene:
                     f.write(str(r))
                     f.write("\n")
+        y = np.loadtxt(filename, usecols=0)
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
+            threshold = threshold_l_kernel(y,e=float(q))
             for t,gene in enumerate(gene_list):
                 for x,r in gene:
-                    #s = g2sp[x] if x in g2sp else x
                     if r > threshold:
                         removing_sets[i][t].append(x)
 
@@ -304,7 +276,6 @@ def main():
     # use home-made code to prune the tree instead
      
     for i,RS in enumerate(removing_sets):
-        #trees_shrunk = deepcopy(trees)
         RS_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         tree_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         aln_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
@@ -335,7 +306,6 @@ def main():
                 rs1 = set(rs)-exceptions
                 prune_tree(tree,rs1)
                 treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
-                #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"

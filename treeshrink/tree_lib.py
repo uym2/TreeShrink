@@ -61,13 +61,14 @@ def prune_node(T,node):
         p.remove_child(node)
         if p.num_child_nodes() == 1:
             v = p.child_nodes()[0]
+            l_v = v.edge_length
             p.remove_child(v)
             if p is T.seed_node:
                 T.seed_node = v
-            #    p.remove_child(v)
+                T.seed_node.edge_length = None
             else:
                 u = p.parent_node
-                l = p.edge_length + v.edge_length
+                l = p.edge_length + l_v
                 u.remove_child(p)
                 u.add_child(v)
                 v.edge_length = l
@@ -124,8 +125,5 @@ def __write_newick(node,outstream):
 				outstream.write(',')
 			__write_newick(child,outstream)
 		outstream.write(')')
-	#if not node.is_leaf() and node.label is not None:
-	#		outstream.write(str(node.label))
-
 	if not node.edge_length is None:
 		outstream.write(":"+"{:.10f}".format(node.edge_length))

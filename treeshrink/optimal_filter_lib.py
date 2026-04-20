@@ -1,4 +1,3 @@
-#from dendropy import Tree
 from dendropy.datamodel.treemodel import Tree
 from math import sqrt
 try:
@@ -28,12 +27,7 @@ class TreeFilter:
         a_tree = Centroid_Tree(ddpTree=ddpTree,tree_file=tree_file,schema=schema)
 
         if centroid_reroot:
-#            print("Rerooting at centroid ...")
             a_tree.Reroot()
-#        if tree_file:
-#            self.ddpTree = Tree.get_from_path(tree_file,schema,preserve_underscores=True)
-#        else:  
-#            self.ddpTree = ddpTree
 
         self.ddpTree = a_tree.ddpTree
 
@@ -42,7 +36,6 @@ class TreeFilter:
         self.records = {}
         self.a = scaling[0]
         self.b = scaling[1]
-        #print("Using a= %d , b= %d" %(self.a, self.b))
 
         diam = -1
 
@@ -54,10 +47,6 @@ class TreeFilter:
                    diam = self.records[node][3]
                    self.bestLCA = node
 
-        #print(self.records[self.bestLCA][0].taxon.label)
-        #print(self.records[self.bestLCA][1].taxon.label)
-
-        #self.myQueue = [first_entry]
         self.myQueue = Queue()
         self.best_entries = []
         self.min_diams = []
@@ -96,8 +85,6 @@ class TreeFilter:
         records[node] = [anchor1,anchor2,max1,MAX] if anchor1 else None
 
     def __substitute_anchor__(self,entry,anchor,inherit_info=True):
-        #print("previous level: " + str(entry.level))
-        #print("previous anchors: " + self.__get_anchor1__(entry).taxon.label,self.__get_anchor2__(entry).taxon.label)
         anchor1 = self.__get_anchor1__(entry)
         anchor2 = self.__get_anchor2__(entry)
 
@@ -113,7 +100,6 @@ class TreeFilter:
         if inherit_info:
             new_entry.info = entry.info
         else:
-            #new_entry.info = deepcopy(entry.info)
             new_entry.info.bestLCA = entry.info.bestLCA
             new_entry.info.records = {}
             for key in entry.info.records:
@@ -155,11 +141,6 @@ class TreeFilter:
         new_entry.backtrack = entry
         new_entry.removed = anchor
         new_entry.retained = retained_anchor
-
-        #print(new_entry.level)
-
-        #print(new_entry.removed.taxon.label + " removed")
-        #print("current anchors: " + self.__get_anchor1__(new_entry).taxon.label,self.__get_anchor2__(new_entry).taxon.label)
 
         return new_entry
 
@@ -224,7 +205,6 @@ class TreeFilter:
         print("Solving k-shrink with k = " + str(d));
 
         first_entry = Entry(bestLCA=self.bestLCA)
-        #print(self.__get_anchor1__(first_entry).taxon.label,self.__get_anchor2__(first_entry).taxon.label)
         self.myQueue.put(first_entry)
         
         curr_level = -1
@@ -246,16 +226,6 @@ class TreeFilter:
                 if min_diam is not None:
                     self.min_diams.append(min_diam)
                     self.best_entries.append(best_entry)
-                    
-                    #if best_entry:
-                        #print("Best: ")    
-                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[0].taxon.label)
-                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[1].taxon.label)
-                        #print(self.__lookup__(best_entry,best_entry.info.bestLCA)[3])
-                    #print(curr_entry.level)    
-                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[0].taxon.label)
-                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[1].taxon.label)
-                    #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[3])
                 min_diam = diam
                 best_entry = curr_entry
                 if curr_level < d:
@@ -263,30 +233,16 @@ class TreeFilter:
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor1,inherit_info=False))
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor2,inherit_info=True))
             else:
-                #print(curr_entry.level)
-                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[0].taxon.label)
-                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[1].taxon.label)
-                #print(self.__lookup__(curr_entry,curr_entry.info.bestLCA)[3])
                 if diam < min_diam:
                     min_diam  = diam
                     best_entry = curr_entry
                 if curr_level < d:
                     # add 1 entry
-                    #if anchor1 is curr_entry.retained:
-                    #    anchor = anchor2
-                    #elif anchor2 is curr_entry.retained:
-                    #    anchor = anchor1
-                    #else:
-                    #    print("FilterTree.optFilter: anchors inconsistent between child and parent!")
-                    #    return False
                     self.myQueue.put(self.__substitute_anchor__(curr_entry,anchor1,inherit_info=True))
 
             curr_entry.info = None
         self.min_diams.append(min_diam)
         self.best_entries.append(best_entry)
-
-
-        #print(self.min_diams)
 
     def __prune_taxon__(self,taxon):
         pnode = taxon.parent_node
