@@ -1,5 +1,5 @@
 import operator
-from dendropy import Tree
+from treeshrink._vendor.dendropy import Tree
 from copy import deepcopy
 from treeshrink.Tree_extend import MPR_Tree, MV00_Tree,MVDF_Tree
 

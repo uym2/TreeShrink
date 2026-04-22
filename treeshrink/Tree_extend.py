@@ -1,4 +1,4 @@
-from dendropy import Tree
+from treeshrink._vendor.dendropy import Tree
 import sys
 import math
 

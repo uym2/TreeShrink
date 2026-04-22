@@ -1,5 +1,5 @@
 import sys
-from dendropy import Tree
+from treeshrink._vendor.dendropy import Tree
 
 
 def list_leaves_below(node):

@@ -1,4 +1,4 @@
-from dendropy.datamodel.treemodel import Tree
+from treeshrink._vendor.dendropy.datamodel.treemodel import Tree
 from math import sqrt
 try:
     from queue import Queue # python 3

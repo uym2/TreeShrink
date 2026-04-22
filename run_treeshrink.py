@@ -9,7 +9,7 @@ from sys import argv, stdout,setrecursionlimit
 import sys
 from math import sqrt,log,exp
 import argparse
-from dendropy import Tree, TreeList
+from treeshrink._vendor.dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
 from os import mkdir,getcwd,rmdir,listdir
 from copy import deepcopy

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from random import random
 import sys
-from dendropy.datamodel.taxonmodel import Taxon
+from treeshrink._vendor.dendropy.datamodel.taxonmodel import Taxon
 from copy import deepcopy
 from functools import reduce
 import itertools
@@ -31,7 +31,7 @@ import re, os
 #from pasta import get_logger, log_exception, MESSENGER, TIMING_LOG
 from treeshrink.filemgr import open_with_intermediates
 
-from dendropy.dataio import register_reader       
+from treeshrink._vendor.dendropy.dataio import register_reader       
 
 #_LOG = get_logger(__name__)
 _INDEL = re.compile(r"[-]")
@@ -555,11 +555,11 @@ class Alignment(dict, object):
     def merge_in(self, she):
         merge_in(self,she)
 
-from dendropy.dataio.fastareader import FastaReader
-from dendropy import datamodel
-from dendropy.datamodel import datasetmodel as dataobject
-from dendropy.utility.error import DataParseError
-#from dendropy.dataio import fasta
+from treeshrink._vendor.dendropy.dataio.fastareader import FastaReader
+from treeshrink._vendor.dendropy import datamodel
+from treeshrink._vendor.dendropy.datamodel import datasetmodel as dataobject
+from treeshrink._vendor.dendropy.utility.error import DataParseError
+#from treeshrink._vendor.dendropy.dataio import fasta
 
 class FastaCustomReader(FastaReader):
     
@@ -656,8 +656,8 @@ class ProteinCustomFastaReader(FastaCustomReader):
     def __init__(self, **kwargs):
         FastaCustomReader.__init__(self, data_type="protein", **kwargs)        
 
-import dendropy
-from dendropy.dataio import register_reader       
+import treeshrink._vendor.dendropy as dendropy
+from treeshrink._vendor.dendropy.dataio import register_reader       
 register_reader("fasta", FastaCustomReader)
 register_reader("dnafasta", DNACustomFastaReader)
 register_reader("rnafasta", RNACustomFastaReader)
@@ -873,13 +873,12 @@ class MultiLocusDataset(list):
             try:
                 if os.path.isdir(seq_fn):
                     raise Exception('"%s" is a directory. A path to file was expected.\nMake sure that you are using the multilocus mode when the input source is a directory.\nUse the path to a FASTA file if you are running in single-locus mode.' % seq_fn)
-                fileobj = open(seq_fn, 'rU')
-                sd.read(fileobj,
-                        file_format=file_format,
-                        datatype=datatype,
-                        filename=seq_fn,
-                        careful_parse=careful_parse)
-                fileobj.close()
+                with open(seq_fn, 'r') as fileobj:
+                    sd.read(fileobj,
+                            file_format=file_format,
+                            datatype=datatype,
+                            filename=seq_fn,
+                            careful_parse=careful_parse)
                 #_LOG.debug("sd.datatype = %s" % sd.datatype)
             except Exception as x:
                 raise #Exception(x,"Error reading file:\n%s\n" % str(x))
@@ -922,7 +921,7 @@ class MultiLocusDataset(list):
 
     def create_dendropy_dataset(self):
         #_LOG.debug("creating dendropy dataset")
-        from dendropy import DataSet, TaxonNamespace
+        from treeshrink._vendor.dendropy import DataSet, TaxonNamespace
         taxon_set = TaxonNamespace()
         self.taxa_label_to_taxon = {}
         for n, element in enumerate(self):
