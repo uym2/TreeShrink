@@ -33,7 +33,7 @@ An earlier version of TreeShrink is described in the following paper:
 
 
 #### Prerequisites:
-TreeShrink is written in Python and uses the Dendropy package for tree manipulation. Since v1.4.0, TreeShrink computes its statistical thresholds in pure Python and no longer requires R or the BMS R package at runtime. TreeShrink can run on Linux, Mac OS, and Windows.
+TreeShrink is written in Python and can run on Linux, Mac OS, and Windows. TreeShrink requires Python 3.8 or newer. Since v1.4.0, TreeShrink computes its statistical thresholds in pure Python and no longer requires R or the BMS R package at runtime. The DendroPy code used internally is vendored under TreeShrink's private namespace, so users do not need to install DendroPy separately. The runtime Python dependencies installed by `setup.py` are `treeswift`, `numpy`, and `scipy`.
 
 ### Anaconda
 If you use anaconda, try:
@@ -61,14 +61,14 @@ python setup.py install --user
 to test, run:
 
 ~~~bash
-run_treeshrink -h
+run_treeshrink.py -h
 ~~~
 
 #### FAQ
 
-If you have troubles installing TreeShrink, probably the included packages are incompatible with your system. Below are some clues to help you troubleshoot the problems:
+If you have trouble installing TreeShrink, below are some clues to help you troubleshoot the problems:
 
-1. First, please make sure that Python is properly installed and is in your PATH. Type ```python``` to check.
+1. First, please make sure that Python 3.8 or newer is properly installed and is in your PATH. Type ```python``` to check.
 2. Since v1.4.0, TreeShrink no longer requires R or the BMS R package. If you are using an older TreeShrink release, you may still need an R/BMS-compatible setup for threshold estimation.
 
 ## Usage: 
@@ -90,7 +90,7 @@ The following command will produce the shrunk trees and the corresponding list o
 run_treeshrink.py  -t test_data/mm10.trees
 ~~~
 
-After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`output.trees`) and the removed species (`output.txt`). You should see 10 trees in `output.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `output.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
+After running the command, the program will generate the folder `test_data/mm10_treeshrink/`, inside which you will find the shrunk trees (`output.trees`), the removed species (`output.txt`), and the runtime log (`output.log`). You should see 10 trees in `output.trees` corresponding to 10 trees of the input file `mm10.trees`. Accordingly, there are 10 lines in `output.txt`, each shows the list of species that were removed in the corresponding tree (empty lines indicating that the tree has no species removed). 
 If you wish to customize the outputs, use ```-o``` to change the output folder and ```-O``` to change and the output prefix.
 
 ### Adjusting α threshold
@@ -103,11 +103,7 @@ run_treeshrink.py  -t test_data/mm10.trees -q "0.05 0.10" -o test_data/mm10_tree
  
 The program will generate the folder `test_data/mm10_treeshrink_multi/` inside which there are two sets of shrunk trees and removing sets at α = 0.05 and α = 0.10.
  
-As TreeShrink is running, it will output a bunch of messages to the console. We suggest saving these in a text log file:
-
-~~~bash
-run_treeshrink.py  -t test_data/mm10.trees > test_data/mm10.trees.treeshrinklog.txt
-~~~
+As TreeShrink is running, it prints runtime messages to the console and also writes the same messages to `<output directory>/<prefix>.log`. For the command above, the log file is `test_data/mm10_treeshrink_multi/shrunk.log`.
  
 ### Modes
  

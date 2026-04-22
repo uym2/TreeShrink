@@ -1,18 +1,5 @@
 from setuptools import setup, find_packages
 import treeshrink
-from os import walk, listdir
-from os.path import join,normpath,isfile
-
-def recursive_list_dir(path):
-    listing=[]
-    for root, _, _ in walk(path):
-        if isfile(root):
-            listing.append(root.split(join(path, ""))[1])
-        for y in listdir(root):
-            z = normpath(join(root,y))
-            if isfile(z):
-                listing.append(z.split(join(path,""))[1])
-    return listing
 
 param = {
     'name': treeshrink.PROGRAM_NAME,
@@ -21,19 +8,25 @@ param = {
     'author': treeshrink.PROGRAM_AUTHOR,
     'url': treeshrink.PROGRAM_WEBSITE,
     'license': treeshrink.PROGRAM_LICENSE,
-    'packages': find_packages()+['R_scripts'],
-    'package_data':{'':recursive_list_dir('R_scripts')},
+    'packages': find_packages(),
     'include_package_data': True,
+    'install_requires': [
+        'treeswift',
+        'numpy',
+        'scipy',
+    ],
+    'python_requires': '>=3.8',
     'scripts' : ['run_treeshrink.py','decompose.py','make_gene_folder.py'],
     'keywords': 'Phylogenetics Evolution Biology',
     'long_description': """A Python implementation of the TreeShrink algorithm (Mai, Genome Biology, 2018)""",
+    'long_description_content_type': 'text/plain',
     'classifiers': ["Environment :: Console",
                     "Intended Audience :: Developers",
                     "Intended Audience :: Science/Research",
                     "License :: OSI Approved :: GNU General Public License (GPL)",
                     "Natural Language :: English",
                     "Operating System :: OS Independent",
-                    "Programming Language :: Python",
+                    "Programming Language :: Python :: 3",
                     "Topic :: Scientific/Engineering :: Bio-Informatics",
                     ],
     }

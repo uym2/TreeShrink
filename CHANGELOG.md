@@ -1,6 +1,13 @@
 * Version 1.4.0:
     * Add pure Python implementation of TreeShrink threshold calculations.
     * Remove the runtime dependency on R/BMS for threshold estimation.
+    * Add automatic runtime logging to `<output directory>/<prefix>.log` while keeping messages visible on screen.
+    * Add unit tests for threshold calculations, runtime logging, Python 3 compatibility, and golden output validation against v1.3.9.
+    * Compare regression Newick outputs by tree semantics instead of byte-for-byte string identity.
+    * Fix Python 3 compatibility issues in TreeShrink-owned sequence and alignment file handling.
+    * Move vendored DendroPy under `treeshrink._vendor.dendropy` so TreeShrink no longer installs or imports a top-level `dendropy` package.
+    * Update packaging metadata and conda recipe for v1.4.0 dependencies: `treeswift`, `numpy`, and `scipy`.
+    * Remove obsolete bundled dependency archives and `ez_setup.py`.
 * Version 1.3.9:
     * TreeShrink works with R 4.0
 * Version 1.3.8b: (unstable)
