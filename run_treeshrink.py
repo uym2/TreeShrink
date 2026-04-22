@@ -6,6 +6,7 @@ import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
 from treeshrink.tree_lib import prune_tree, get_taxa,tree_as_newick
 from sys import argv, stdout,setrecursionlimit
+import sys
 from math import sqrt,log,exp
 import argparse
 from dendropy import Tree, TreeList
@@ -17,13 +18,92 @@ from treeshrink.alignment import CompactAlignment
 from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 from treeshrink.util_lib import minVar_bisect
 import re
+import traceback
 import numpy as np
+
+_ORIGINAL_STDOUT = None
+_ORIGINAL_STDERR = None
+_LOG_STREAM = None
+
+class TeeStream:
+    def __init__(self, terminal, log_stream):
+        self.terminal = terminal
+        self.log_stream = log_stream
+
+    def write(self, text):
+        self.terminal.write(text)
+        return self.log_stream.write(text)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_stream.flush()
+
+    def isatty(self):
+        return self.terminal.isatty()
+
+    @property
+    def encoding(self):
+        return self.terminal.encoding
 
 def make_dir(dirName):
     if exists(dirName) and isdir(dirName):
         return False
     mkdir(dirName)
     return True
+
+def get_output_dir(args):
+    if args["outdir"]:
+        return args["outdir"]
+    elif args["indir"]:
+        return args["indir"]
+    else:
+        return splitext(args["tree"])[0] + "_treeshrink"
+
+def get_prefix_counter(outdir,prefix):
+    counter = 0
+    for File in listdir(outdir):
+        if File.startswith(prefix):
+             search_counter = re.search(r'\d+', File[len(prefix):])
+             counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
+        if isdir(normpath(join(outdir,File))):
+            for File1 in listdir(normpath(join(outdir,File))):
+                if File1.startswith(prefix):
+                    search_counter = re.search(r'\d+', File1[len(prefix):])
+                    counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
+    return counter
+
+def prepare_output(args):
+    outdir = get_output_dir(args)
+    warnings = []
+    if not make_dir(outdir) and args["force"]:
+        warnings.append("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
+
+    prefix = args["outprefix"]
+    counter = get_prefix_counter(outdir,prefix)
+    if counter >0 and not args["force"]:
+        warnings.append("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")
+        prefix = prefix + str(counter)
+    return outdir,prefix,warnings
+
+def start_runtime_logging(logfile):
+    global _ORIGINAL_STDOUT, _ORIGINAL_STDERR, _LOG_STREAM
+    _ORIGINAL_STDOUT = sys.stdout
+    _ORIGINAL_STDERR = sys.stderr
+    _LOG_STREAM = open(logfile,'w')
+    sys.stdout = TeeStream(_ORIGINAL_STDOUT,_LOG_STREAM)
+    sys.stderr = TeeStream(_ORIGINAL_STDERR,_LOG_STREAM)
+
+def stop_runtime_logging():
+    global _ORIGINAL_STDOUT, _ORIGINAL_STDERR, _LOG_STREAM
+    if _ORIGINAL_STDOUT is not None:
+        sys.stdout = _ORIGINAL_STDOUT
+        _ORIGINAL_STDOUT = None
+    if _ORIGINAL_STDERR is not None:
+        sys.stderr = _ORIGINAL_STDERR
+        _ORIGINAL_STDERR = None
+    if _LOG_STREAM is not None:
+        _LOG_STREAM.close()
+        _LOG_STREAM = None
 
 def main():
     parser = argparse.ArgumentParser()
@@ -56,6 +136,12 @@ def main():
         exit(0)
 
     setrecursionlimit(5000)
+
+    outdir,prefix,output_warnings = prepare_output(args)
+    start_runtime_logging(normpath(join(outdir,prefix + ".log")))
+
+    for warning in output_warnings:
+        print(warning)
 
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
     print(treeshrink.PROGRAM_NAME + " was called as follow")
@@ -112,15 +198,6 @@ def main():
 
     mode = args["mode"] if args["mode"] else 'auto'
     k = int(args["k"]) if args["k"] else None
-
-    if args["outdir"]:
-        outdir = args["outdir"] 
-    elif args["indir"]:
-        outdir = args["indir"]
-    else:
-        outdir = splitext(args["tree"])[0] + "_treeshrink"
-    if not make_dir(outdir) and args["force"]:
-        print("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
 
     ntrees = len(tree_strs) 
     if not gene_names:
@@ -244,21 +321,6 @@ def main():
 
     fName,ext = splitext(basename(args["tree"]))
     ext = ext if ext else '.nwk'
-    prefix = args["outprefix"]
-    counter = 0
-    # check if the outdir or any of its subdirs already has files with the specified prefix
-    for File in listdir(outdir):
-        if File.startswith(prefix):
-             search_counter = re.search(r'\d+', File[len(prefix):])
-             counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
-        if isdir(normpath(join(outdir,File))):
-            for File1 in listdir(normpath(join(outdir,File))):
-                if File1.startswith(prefix):
-                    search_counter = re.search(r'\d+', File1[len(prefix):])
-                    counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
-    if counter >0 and not args["force"]:
-        print("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")            
-        prefix = prefix + str(counter)
 
     # write summary file
     filename= normpath(join(outdir,prefix + "_summary.txt"))                
@@ -330,4 +392,12 @@ def main():
 
     
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        if _LOG_STREAM is not None:
+            traceback.print_exc()
+            exit(1)
+        raise
+    finally:
+        stop_runtime_logging()

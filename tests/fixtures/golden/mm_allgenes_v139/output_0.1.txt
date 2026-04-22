@@ -1,0 +1,424 @@
+GAL	
+GAL	
+
+
+
+
+
+
+GAL	ORN	MON	MAC	
+
+
+
+
+ORN	GAL	MAC	MON	
+
+
+
+GAL	
+
+
+GAL	ORN	MAC	MON	
+
+ORN	GAL	MAC	MON	
+
+
+
+
+
+
+GAL	ORN	MAC	MON	
+GAL	MON	MAC	ORN	
+
+
+ORN	
+GAL	
+GAL	ORN	MON	MAC	
+
+
+
+GAL	CAV	MON	ORN	MAC	
+
+GAL	
+GAL	ORN	MON	MAC	
+GAL	ORN	MAC	MON	
+GAL	ORN	MAC	MON	
+
+
+
+
+
+ORN	
+
+
+
+
+
+ORN	
+ORN	
+
+GAL	
+
+
+
+
+
+
+ORN	
+
+
+
+
+
+
+ORN	GAL	MON	MAC	
+
+
+
+
+
+
+
+
+
+ORN	MON	GAL	MAC	
+
+
+GAL	
+
+ORN	GAL	MAC	MON	
+GAL	
+
+
+
+
+
+GAL	ORN	MON	MAC	
+
+
+
+
+
+
+
+
+
+
+
+
+MON	ORN	MAC	GAL	
+
+
+
+
+
+
+
+
+
+
+GAL	MON	MAC	ORN	
+
+GAL	ORN	
+GAL	ORN	MON	MAC	
+
+
+
+
+
+GAL	
+
+
+
+
+
+
+GAL	
+
+
+
+GAL	ORN	MON	MAC	
+
+
+
+
+
+
+
+GAL	
+GAL	
+ORN	
+
+
+ORN	GAL	MON	MAC	
+GAL	
+ORN	GAL	MON	MAC	
+ORN	
+ORN	GAL	MON	MAC	
+
+
+
+
+
+GAL	
+
+
+
+GAL	ORN	MON	MAC	
+
+
+ORN	GAL	
+
+
+
+
+
+
+
+
+ORN	
+
+GAL	
+
+
+
+
+
+GAL	
+
+
+
+
+
+
+
+
+
+GAL	ORN	MON	MAC	
+
+
+GAL	ORN	MAC	MON	
+
+
+
+
+GAL	
+GAL	
+
+
+GAL	ORN	MON	MAC	
+
+
+
+
+
+
+
+
+
+
+GAL	
+
+ORN	GAL	
+
+
+
+
+
+
+ORN	GAL	
+GAL	
+
+
+GAL	
+
+
+
+
+
+ORN	GAL	
+ORN	
+
+
+
+
+GAL	ORN	MAC	MON	
+
+GAL	ORN	MON	MAC	
+GAL	
+
+
+
+
+
+GAL	
+
+ORN	ERI	SOR	GAL	MON	MAC	
+
+
+
+GAL	
+GAL	
+ORN	GAL	
+GAL	ORN	MON	MAC	
+
+GAL	ORN	MAC	MON	
+GAL	ORN	
+
+
+
+
+
+GAL	
+
+
+
+GAL	MON	ORN	MAC	
+GAL	MON	ORN	MAC	
+
+GAL	
+
+
+GAL	
+
+
+
+
+
+GAL	
+GAL	ORN	
+
+GAL	ORN	MON	MAC	
+
+
+
+
+
+ORN	
+GAL	
+
+GAL	MAC	ORN	MON	
+
+
+
+
+
+
+GAL	
+
+GAL	ORN	MON	MAC	
+
+
+ORN	GAL	
+
+
+GAL	ORN	MON	MAC	
+GAL	
+
+
+
+MON	GAL	MAC	ORN	
+
+
+
+GAL	
+GAL	ORN	MAC	MON	
+GAL	ORN	MAC	MON	
+
+GAL	
+
+GAL	ORN	
+MON	GAL	ORN	MAC	
+GAL	
+GAL	ORN	MON	MAC	
+GAL	ORN	MON	MAC	
+ORN	GAL	
+ORN	GAL	
+GAL	ORN	MON	MAC	
+
+
+
+
+
+
+
+
+GAL	ORN	
+
+
+GAL	MAC	MON	ORN	
+
+GAL	ORN	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ORN	GAL	
+GAL	MON	ORN	MAC	
+
+
+
+
+
+
+
+
+ORN	GAL	MON	MAC	
+
+
+
+
+ORN	
+GAL	MAC	ORN	MON	
+
+
+
+
+
+
+
+ORN	
+
+
+GAL	
+
+GAL	ORN	MAC	MON	
+
+
+
+
+
+GAL	ORN	MON	MAC	
+ORN	
+
+
+ORN	GAL	
+
+GAL	ORN	
+
+
+GAL	
+GAL	DIP	ORN	MON	MAC	
+
+GAL	
+
