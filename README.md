@@ -215,3 +215,187 @@ test_data/mm_indir/gene9:
 input.fasta	input.tree	output.fasta	output.tree	output.txt
 
 ~~~
+
+## Gene folder utility
+
+TreeShrink also includes a helper script, [`make_gene_folder.py`](make_gene_folder.py), for converting a flat directory of tree and alignment files into the per-gene folder layout expected by commands that use `-i`.
+
+### What `make_gene_folder.py` does
+
+The script scans one input directory, groups files by basename, and creates one subdirectory per gene or locus in a new output directory.
+
+For each matching pair of files, it copies:
+
+- the tree file to `input.tree`
+- the alignment file to `input.fasta`
+
+This is mainly a convenience utility for preparing data for workflows that expect this structure:
+
+~~~bash
+mydata/
+  gene1/
+    input.tree
+    input.fasta
+  gene2/
+    input.tree
+    input.fasta
+~~~
+
+### Basic usage
+
+To see the command-line options:
+
+~~~bash
+python make_gene_folder.py -h
+~~~
+
+The main options are:
+
+- `-i`, `--indir`: input directory containing tree and alignment files
+- `-o`, `--outdir`: output directory to create; it must not already exist
+- `-t`, `--treeExt`: tree file extension to match
+- `-a`, `--alnExt`: alignment file extension to match
+
+### Example
+
+Suppose you start with a flat directory like this:
+
+~~~bash
+flat_data/
+  gene1.tree
+  gene1.fasta
+  gene2.tree
+  gene2.fasta
+~~~
+
+You can convert it to the folder-based layout with:
+
+~~~bash
+python make_gene_folder.py -i flat_data -o mydata -t .tree -a .fasta
+~~~
+
+This produces:
+
+~~~bash
+mydata/
+  gene1/
+    input.tree
+    input.fasta
+  gene2/
+    input.tree
+    input.fasta
+~~~
+
+### Notes
+
+- The output directory must not already exist.
+- Files are grouped by basename, so `gene1.tree` and `gene1.fasta` will both be placed under `mydata/gene1/`.
+- Extension matching is literal against filename suffixes returned by Python's `splitext`, so values such as `.tree` and `.fasta` are the safest choices.
+
+## Tree decomposition utility
+
+TreeShrink also includes a helper script, [`decompose.py`](decompose.py), for splitting large phylogenetic trees into smaller subtrees. This can be useful when you want to partition a dataset into more manageable pieces before downstream analysis.
+
+### What `decompose.py` does
+
+The script repeatedly cuts a tree at the longest eligible branch, subject to two constraints:
+
+- The branch length must be at least `--minBranch`.
+- Both sides of the cut must contain at least `--minSize` taxa.
+
+This process continues until no more valid cuts can be made. The output is a collection of subtrees. If an alignment is provided, the script also writes the corresponding sub-alignment for each subtree by keeping only the taxa present in that subtree.
+
+### Basic usage
+
+To see the command-line options:
+
+~~~bash
+python decompose.py -h
+~~~
+
+The main options are:
+
+- `-t`, `--tree`: input tree file name or path. Default: `input.tree`
+- `-i`, `--indir`: top-level input directory containing one subdirectory per gene/tree
+- `-a`, `--alignment`: alignment file name present in each input subdirectory
+- `--minSize`: minimum number of taxa allowed in each output subtree. Default: `20`
+- `--minBranch`: minimum branch length that may be cut. Default: `1.0`
+- `-o`, `--outdir`: output directory
+
+### Single-file mode
+
+If you provide `-t` without `-i`, the script reads trees from a single file and treats each line as one Newick tree:
+
+~~~bash
+python decompose.py -t test_data/mm10.trees --minSize 20 --minBranch 1.0
+~~~
+
+This creates an output directory named after the input tree file, for example:
+
+~~~bash
+mm10_decomposed/
+~~~
+
+Each input tree is assigned a generated name such as `gene_0001`, `gene_0002`, and so on. Every decomposed subtree is written to its own subdirectory:
+
+~~~bash
+mm10_decomposed/
+  gene_0001_decomposed_1/
+    tree.tre
+  gene_0001_decomposed_2/
+    tree.tre
+  gene_0002_decomposed_1/
+    tree.tre
+~~~
+
+### Directory mode with alignments
+
+You can also decompose a collection of gene trees stored in subdirectories, optionally along with matching alignments. The expected layout is:
+
+~~~bash
+mydata/
+  gene1/
+    input.tree
+    input.fasta
+  gene2/
+    input.tree
+    input.fasta
+~~~
+
+Run:
+
+~~~bash
+python decompose.py -i mydata -t input.tree -a input.fasta --minSize 20 --minBranch 1.0
+~~~
+
+By default this writes results to:
+
+~~~bash
+mydata_decomposed/
+~~~
+
+For each output subtree, the script creates one directory containing:
+
+- `tree.tre`: the decomposed subtree in Newick format
+- `aln.fasta`: the alignment restricted to the taxa found in that subtree
+
+An example output layout is:
+
+~~~bash
+mydata_decomposed/
+  gene1_decomposed_1/
+    tree.tre
+    aln.fasta
+  gene1_decomposed_2/
+    tree.tre
+    aln.fasta
+  gene2_decomposed_1/
+    tree.tre
+    aln.fasta
+~~~
+
+### Notes
+
+- The output directory must not already exist, because the script creates it with `mkdir`.
+- In single-file mode, the input file should contain one Newick tree per line.
+- Alignment files are optional. If `-a` is omitted, only subtree files are written.
