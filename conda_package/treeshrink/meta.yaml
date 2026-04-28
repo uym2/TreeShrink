@@ -4,7 +4,7 @@ package:
 
 source:
   git_url: https://github.com/uym2/TreeShrink.git
-  git_rev: v1.4.0
+  git_rev: refs/tags/v1.4.0
 
 requirements:
   host:
