@@ -8,14 +8,14 @@
 PROGRAM_NAME = "TREESHRINK"
 PROGRAM_AUTHOR = ["Uyen Mai","Siavash Mirarab"]
 PROGRAM_LICENSE = "GNU General Public License, version 3"
-PROGRAM_VERSION = "1.3.9"
+PROGRAM_VERSION = "1.4.0"
 PROGRAM_YEAR = "2017"
 PROGRAM_DESCRIPTION = "Fast and accurate detection of outlier long branches in collections of phylogenetic trees"
 PROGRAM_WEBSITE = "https://uym2.github.io/TreeShrink/"
 PROGRAM_INSTITUTE = "Department of Computer Science and Engineering, University of California at San Diego"
 
 
-from tempfile import mkdtemp,mktemp
+from tempfile import mkdtemp,NamedTemporaryFile
 from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
 from os import mkdir,rmdir
         
@@ -37,10 +37,9 @@ def set_tmp_dir(t):
 def get_tmp_file(name=None,prefix=None):
     global tempdir
     if name is None:
-        if prefix:
-            return mktemp(dir=tempdir,prefix=prefix)
-        else:
-            return mktemp(dir=tempdir)
+        tmp = NamedTemporaryFile(dir=tempdir,prefix=prefix,delete=False)
+        tmp.close()
+        return tmp.name
     else:
         return normpath(join(tempdir,name))
         

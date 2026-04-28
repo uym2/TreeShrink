@@ -2,7 +2,7 @@
 
 from treeshrink.filter_lib import filter_branch
 from sys import argv
-from dendropy import Tree
+from treeshrink._vendor.dendropy import Tree
 
 from os.path import splitext
 import argparse

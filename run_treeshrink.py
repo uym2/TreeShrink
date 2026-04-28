@@ -1,14 +1,15 @@
 #! /usr/bin/env python
 
 from treeshrink.sequence_lib import sample_from_list
+from treeshrink.threshold_lib import threshold_l_kernel, threshold_loglnorm
 import treeshrink
 from treeshrink.optimal_filter_lib import TreeFilter
 from treeshrink.tree_lib import prune_tree, get_taxa,tree_as_newick
 from sys import argv, stdout,setrecursionlimit
+import sys
 from math import sqrt,log,exp
-from subprocess import check_output,call
 import argparse
-from dendropy import Tree, TreeList
+from treeshrink._vendor.dendropy import Tree, TreeList
 from os.path import basename, dirname, splitext,realpath,join,normpath,isdir,isfile,exists
 from os import mkdir,getcwd,rmdir,listdir
 from copy import deepcopy
@@ -17,7 +18,32 @@ from treeshrink.alignment import CompactAlignment
 from treeshrink import set_tmp_dir, get_tmp_dir, get_tmp_file
 from treeshrink.util_lib import minVar_bisect
 import re
-import random    
+import traceback
+import numpy as np
+
+_ORIGINAL_STDOUT = None
+_ORIGINAL_STDERR = None
+_LOG_STREAM = None
+
+class TeeStream:
+    def __init__(self, terminal, log_stream):
+        self.terminal = terminal
+        self.log_stream = log_stream
+
+    def write(self, text):
+        self.terminal.write(text)
+        return self.log_stream.write(text)
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_stream.flush()
+
+    def isatty(self):
+        return self.terminal.isatty()
+
+    @property
+    def encoding(self):
+        return self.terminal.encoding
 
 def make_dir(dirName):
     if exists(dirName) and isdir(dirName):
@@ -25,16 +51,59 @@ def make_dir(dirName):
     mkdir(dirName)
     return True
 
-def test_Rlib(libdir):
-    filename = get_tmp_file("test_Rlib.txt")    
-    with open(filename,'w') as fout:
-        for i in range(300):
-            fout.write(str(1+random.lognormvariate(0,1)) + "\n")
-    try:
-        check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,"0.05"]).lstrip().rstrip()[5:]
-        return True
-    except:
-        return False
+def get_output_dir(args):
+    if args["outdir"]:
+        return args["outdir"]
+    elif args["indir"]:
+        return args["indir"]
+    else:
+        return splitext(args["tree"])[0] + "_treeshrink"
+
+def get_prefix_counter(outdir,prefix):
+    counter = 0
+    for File in listdir(outdir):
+        if File.startswith(prefix):
+             search_counter = re.search(r'\d+', File[len(prefix):])
+             counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
+        if isdir(normpath(join(outdir,File))):
+            for File1 in listdir(normpath(join(outdir,File))):
+                if File1.startswith(prefix):
+                    search_counter = re.search(r'\d+', File1[len(prefix):])
+                    counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
+    return counter
+
+def prepare_output(args):
+    outdir = get_output_dir(args)
+    warnings = []
+    if not make_dir(outdir) and args["force"]:
+        warnings.append("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
+
+    prefix = args["outprefix"]
+    counter = get_prefix_counter(outdir,prefix)
+    if counter >0 and not args["force"]:
+        warnings.append("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")
+        prefix = prefix + str(counter)
+    return outdir,prefix,warnings
+
+def start_runtime_logging(logfile):
+    global _ORIGINAL_STDOUT, _ORIGINAL_STDERR, _LOG_STREAM
+    _ORIGINAL_STDOUT = sys.stdout
+    _ORIGINAL_STDERR = sys.stderr
+    _LOG_STREAM = open(logfile,'w')
+    sys.stdout = TeeStream(_ORIGINAL_STDOUT,_LOG_STREAM)
+    sys.stderr = TeeStream(_ORIGINAL_STDERR,_LOG_STREAM)
+
+def stop_runtime_logging():
+    global _ORIGINAL_STDOUT, _ORIGINAL_STDERR, _LOG_STREAM
+    if _ORIGINAL_STDOUT is not None:
+        sys.stdout = _ORIGINAL_STDOUT
+        _ORIGINAL_STDOUT = None
+    if _ORIGINAL_STDERR is not None:
+        sys.stderr = _ORIGINAL_STDERR
+        _ORIGINAL_STDERR = None
+    if _LOG_STREAM is not None:
+        _LOG_STREAM.close()
+        _LOG_STREAM = None
 
 def main():
     parser = argparse.ArgumentParser()
@@ -68,23 +137,21 @@ def main():
 
     setrecursionlimit(5000)
 
+    outdir,prefix,output_warnings = prepare_output(args)
+    start_runtime_logging(normpath(join(outdir,prefix + ".log")))
+
+    for warning in output_warnings:
+        print(warning)
+
     print("Launching " + treeshrink.PROGRAM_NAME + " version " + treeshrink.PROGRAM_VERSION)
     print(treeshrink.PROGRAM_NAME + " was called as follow")
     print(" ".join(argv))
 
-
     MIN_OCC = 20
     MIN_TREE_NUM = 20
 
-    libdir = dirname(dirname(realpath(treeshrink.__file__)))
     tempdir = set_tmp_dir(args["tempdir"])  
 
-    print("Testing R and BMS installation ...")
-    if not test_Rlib(libdir):
-        print("Failed sanity check on R and BMS installation. Please check your R and BMS version")    
-        return
-
-    
     quantiles = [ q for q in args["quantiles"].split()] if args["quantiles"] else ["0.05"]
     
     minImpact = (float(args["minImpact"])/100)+1 if args["minImpact"] else 1.05
@@ -118,37 +185,20 @@ def main():
 
     if args["indir"]:
         treename = splitext(args["tree"])[0]
-        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))] #if args["tree"] else "input.tre")))]
-        #intrees = get_tmp_file(treename + ".trees")
-        #with open(intrees,'w') as fout:
+        subdirs = [d for d in listdir(args["indir"]) if exists(normpath(join(args["indir"],d,args["tree"])))]
         tree_strs = []
         for d in subdirs:
-            #treename = args["tree"] if args["tree"] else "input.tre"
             treefile = normpath(join(args["indir"],d,args["tree"]))
             if exists(treefile):
                 tree_strs.append(open(treefile,'r').read())
-                #fout.write(open(treefile,'r').read())               
         gene_names = [basename(d) for d in subdirs]            
     else:
-        #intrees = args["tree"]
         tree_strs = open(args["tree"],'r').readlines()
         gene_names = []
 
     mode = args["mode"] if args["mode"] else 'auto'
     k = int(args["k"]) if args["k"] else None
 
-    if args["outdir"]:
-        outdir = args["outdir"] 
-    elif args["indir"]:
-        outdir = args["indir"]
-    else:
-        outdir = splitext(args["tree"])[0] + "_treeshrink"
-    if not make_dir(outdir) and args["force"]:
-        print("Warning: the output directory " + outdir + " already exists. With --force, all existing files with prefix '" + args["outprefix"]  + "' will be overrided")
-
-    #trees = TreeList.get(path=intrees,schema='newick',preserve_underscores=True)
-    #with open(intrees,'r') as f_tree:
-    #    tree_strs = f_tree.readlines()
     ntrees = len(tree_strs) 
     if not gene_names:
         gene_names = [str(i) for i in range(ntrees)]
@@ -184,7 +234,6 @@ def main():
             s = g2sp[x] if x in g2sp else x
             if mode == 'per-species' or mode == 'auto':
                 species_map[s] = [mapping[x]] if s not in species_map else species_map[s]+[mapping[x]]
-            #if mode == 'per-species' or mode == 'all-genes' or mode == 'auto':
             gene_list[t].append((x,mapping[x]))
         
         # fit kernel density to this gene's species features (per-gene mode)
@@ -194,9 +243,10 @@ def main():
                 for s in mapping:
                     f.write(str(mapping[s]) + " " +s)
                     f.write("\n")
+            y = np.loadtxt(filename, usecols=0)
             if len(mapping) > 1:
                 for i,q in enumerate(quantiles):
-                    threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_loglnorm.R")),filename,q]).lstrip().rstrip()[4:]) 
+                    threshold = threshold_loglnorm(y,e=float(q))
                     for s in mapping:
                         if mapping[s] > threshold: 
                             removing_sets[i][t].append(s)
@@ -236,14 +286,13 @@ def main():
                 for v in species_map[s]:
                     f.write(str(v))
                     f.write("\n")
-        #if mode == 'per-species':
-            thresholds = [ 0 for i in range(len(quantiles)) ]        
+            thresholds = [ 0 for i in range(len(quantiles)) ]
+            y = np.loadtxt(filename, usecols=0)
             for i,q in enumerate(quantiles):
-                thresholds[i] = max(minImpact,float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:]))
+                thresholds[i] = max(minImpact,threshold_l_kernel(y,e=float(q)))
                 if s not in exceptions:
                     print("%s:\n\t will be cut in %d trees where its impact is above %f for quantile %s" %(s,sum(1 for x in species_map[s] if x>thresholds[i]),thresholds[i],q,))
             species_map[s] = (species_map[s],thresholds)
-    #if mode == 'per-species':
         for t,gene in enumerate(gene_list):
             for x,r in gene:
                 s = g2sp[x] if x in g2sp else x
@@ -260,11 +309,11 @@ def main():
                 for s,r in gene:
                     f.write(str(r))
                     f.write("\n")
+        y = np.loadtxt(filename, usecols=0)
         for i,q in enumerate(quantiles):
-            threshold = float(check_output(["Rscript",normpath(join(libdir,"R_scripts","find_threshold_lkernel.R")),libdir,filename,q]).lstrip().rstrip()[5:])
+            threshold = threshold_l_kernel(y,e=float(q))
             for t,gene in enumerate(gene_list):
                 for x,r in gene:
-                    #s = g2sp[x] if x in g2sp else x
                     if r > threshold:
                         removing_sets[i][t].append(x)
 
@@ -272,21 +321,6 @@ def main():
 
     fName,ext = splitext(basename(args["tree"]))
     ext = ext if ext else '.nwk'
-    prefix = args["outprefix"]
-    counter = 0
-    # check if the outdir or any of its subdirs already has files with the specified prefix
-    for File in listdir(outdir):
-        if File.startswith(prefix):
-             search_counter = re.search(r'\d+', File[len(prefix):])
-             counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
-        if isdir(normpath(join(outdir,File))):
-            for File1 in listdir(normpath(join(outdir,File))):
-                if File1.startswith(prefix):
-                    search_counter = re.search(r'\d+', File1[len(prefix):])
-                    counter = max(counter,1 if not search_counter else int(search_counter.group())+1)
-    if counter >0 and not args["force"]:
-        print("WARNING: " + outdir + " has already had some files with prefix '" + prefix + "'. Automatically changes prefix to '" + prefix + str(counter) + "' to avoid overriding. Rerun with --force if you wish to override existing files.")            
-        prefix = prefix + str(counter)
 
     # write summary file
     filename= normpath(join(outdir,prefix + "_summary.txt"))                
@@ -304,7 +338,6 @@ def main():
     # use home-made code to prune the tree instead
      
     for i,RS in enumerate(removing_sets):
-        #trees_shrunk = deepcopy(trees)
         RS_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         tree_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
         aln_tag = '' if (len(removing_sets) < 2) else '_' + quantiles[i]
@@ -335,7 +368,6 @@ def main():
                 rs1 = set(rs)-exceptions
                 prune_tree(tree,rs1)
                 treefile = normpath(join(outdir,sd, prefix + tree_tag + ext))
-                #tree.write_to_path(treefile,'newick',unquoted_underscores=True,real_value_format_specifier=".16g")
                 tree_as_newick(tree,outfile=treefile,append=False)
                 
                 aln_filename = args["alignment"] if args["alignment"] else "input.fasta"
@@ -360,4 +392,12 @@ def main():
 
     
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception:
+        if _LOG_STREAM is not None:
+            traceback.print_exc()
+            exit(1)
+        raise
+    finally:
+        stop_runtime_logging()

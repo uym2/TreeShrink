@@ -22,10 +22,10 @@ def get_taxon_list(filename):
 
 def hash_taxon_seq(filename):
     taxon_dict = {}
-    f = open(filename,'r')
-    for line in f:
-        if line[0] == '>':
-            taxon_dict[line[1:-1]] = gap_rm(f.next().rstrip())
+    with open(filename,'r') as f:
+        for line in f:
+            if line[0] == '>':
+                taxon_dict[line[1:-1]] = gap_rm(next(f).rstrip())
     return taxon_dict
 
 def gap_rm(str0,gap='-'):
@@ -61,7 +61,6 @@ def index_fasta(file_in,file_out=None,store_index_file=True):
                 c = count[seqName]
                 p = float(c)/(c+1)
                 r = random()
-                #print(r)
                 count[seqName] += 1   
                 if r <= p:
                     continue    

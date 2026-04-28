@@ -107,5 +107,4 @@ def minCV_bisect(L):
             cutoff = (L[int(k-1)]+L[int(k)])/2
             cutoff_idx = k-1
         k -= 1    
-    #gvf = (var0-minVar)/var0 if var0 else None 
     return cutoff, cutoff_idx
