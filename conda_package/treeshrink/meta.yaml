@@ -8,16 +8,21 @@ source:
 
 requirements:
   host:
-    - python >=3.8
+    - python >=3.8, <3.13
     - setuptools
 
   run:
-    - python >=3.8
+    - python >=3.8, <3.13
     - treeswift
     - numpy
     - scipy
 
 test:
+  requires:
+    - python <3.13
+    - numpy
+    - scipy
+    - treeswift
   imports:
     - treeshrink
   commands:
