@@ -36,13 +36,21 @@ An earlier version of TreeShrink is described in the following paper:
 TreeShrink is written in Python and can run on Linux, Mac OS, and Windows. TreeShrink requires Python 3.8 or newer. Since v1.4.0, TreeShrink computes its statistical thresholds in pure Python and no longer requires R or the BMS R package at runtime. The DendroPy code used internally is vendored under TreeShrink's private namespace, so users do not need to install DendroPy separately. The runtime Python dependencies installed by `setup.py` are `treeswift`, `numpy`, and `scipy`.
 
 ### Anaconda
-If you use anaconda, try:
+If you use Conda, try:
 
 ~~~bash
-conda install -c smirarab treeshrink
+conda install treeshrink
 ~~~
 
-this should work in most platforms. Let us know if it doesn't in the issues section. 
+This should work on most platforms. Let us know if it doesn't in the issues section. 
+
+If you don't have Bioconda, you need to first add it as a channel:
+
+~~~bash
+conda config --add channels defaults
+conda config --add channels bioconda
+conda config --add channels conda-forge
+~~~
 
 ### Install from github
 If you have `git`, you can clone the TreeShrink repository to your machine `git clone https://github.com/uym2/TreeShrink.git`. Otherwise, you can download the zip file to your machine. 
